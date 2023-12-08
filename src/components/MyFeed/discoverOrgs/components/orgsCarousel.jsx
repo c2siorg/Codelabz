@@ -45,6 +45,7 @@ const OrgsCarousel = () => {
   const dispatch = useDispatch();
   const firestore = useFirestore();
   useEffect(() => {
+    console.log(launchedOrgs)
     getLaunchedOrgsData()(firestore, dispatch);
     return () => {};
   }, [firestore, dispatch]);
