@@ -33,6 +33,7 @@ export const signInWithGoogle = () => async (firebase, dispatch) => {
       type: "popup"
     });
     dispatch({ type: actions.SIGN_IN_SUCCESS });
+    window.location.href = '/dashboard';
   } catch (e) {
     dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
   }
@@ -50,6 +51,7 @@ export const signInWithProviderID =
         type: "popup"
       });
       dispatch({ type: actions.SIGN_IN_SUCCESS });
+      window.location.href = '/dashboard';
     } catch (e) {
       if (e.code === "auth/account-exists-with-different-credential") {
         const methods = await firebase
