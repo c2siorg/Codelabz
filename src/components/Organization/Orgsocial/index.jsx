@@ -17,16 +17,16 @@ const Orgsocial = props => {
   console.log(props.toOpen);
   const classes = useStyles();
 
-  const CurrentOrg = useSelector(
-    ({
-      profile: {
-        data: { organizations }
-      },
-      org: {
-        general: { current }
-      }
-    }) => organizations.find(element => element.org_handle === current)
-  );
+  const CurrentOrg = useSelector((state) => {
+    const {
+      profile: { data: { organizations } = {} }, 
+      org: { general: { current } = {} } 
+    } = state;
+
+    return organizations && Array.isArray(organizations)
+      ? organizations.find(element => element.org_handle === current)
+      : null;
+  });
 
   const [OrgData, setOrgData] = useState(CurrentOrg);
 
