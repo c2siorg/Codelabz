@@ -64,7 +64,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
-    gap:"4rem",
+    gap: "4rem",
     maxHeight: "35rem",
     margin: "0 0 2rem 0",
     background: "white",
