@@ -8,22 +8,67 @@ import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/lab/Skeleton";
 import Box from "@mui/material/Box";
 import TutorialImg from "../../../../assets/images/tutorialCard.png";
-import React from "react";
+import React , { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import EditIcon from '@mui/icons-material/Edit';
+import { uploadTutorialIcon } from "../../../../store/actions";
+import { useFirebase } from "react-redux-firebase";
 
 const TutorialCard = ({
   tutorialData: { tutorial_id, title, summary, icon, owner },
   loading
 }) => {
+
+  const [tutorialIcon,setTutorialIcon]=useState(null)
+
+  const firebase = useFirebase();
+
+  const fileInputRef = useRef(null);
+
+  const handleEditIconClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileInputChange = async (event) => {
+    const selectedFile = event.target.files[0];
+    const res = await uploadTutorialIcon(selectedFile,tutorial_id)(firebase)
+    if(res.length > 0){
+      setTutorialIcon(res)
+    }
+    
+  };
+
+
   return (
     <Card style={{ height: "100%" }} data-testId="tutorialCard">
       <CardActionArea>
+        <EditIcon
+        style={{
+          zIndex:1,
+          right:0,
+          top:0,
+          position:"absolute",
+          marginLeft:"auto",
+          color:"gray"
+        }}
+        onClick={handleEditIconClick}
+        />
+                <input
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          ref={fileInputRef}
+          onChange={handleFileInputChange}
+        />
         <CardMedia
           component="img"
           alt="Tutorial icon"
           height="140"
-          image={icon ? icon : TutorialImg}
+          image={tutorialIcon ? `data:image/png;base64, ${tutorialIcon}` : icon ? `data:image/png;base64, ${icon}` : TutorialImg}
           title="Tutorial icon"
+          style={{
+            zIndex:0
+          }}
         />
 
         <CardContent>
