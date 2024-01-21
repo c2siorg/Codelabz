@@ -69,6 +69,7 @@ export default function CardWithoutPicture({ tutorial }) {
   const classes = useStyles();
   const [alignment, setAlignment] = React.useState("left");
   const [count, setCount] = useState(1);
+  const [tags, setTags] = useState([])
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
@@ -96,20 +97,39 @@ export default function CardWithoutPicture({ tutorial }) {
     }) => data
   );
 
+  useEffect(() => {
+    console.log(tutorial, user)
+  }, [])
+
   const getTime = timestamp => {
     return timestamp.toDate().toDateString();
   };
+
+  useEffect(() => {
+    if (tutorial.tags) {
+      const tagsArray = tutorial.tags.split(' ');
+      setTags(tagsArray)
+    }
+    console.log(tutorial)
+  }, [])
+
 
   return (
     <Card className={classes.root} data-testId="codelabz">
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
-            {user?.photoURL && user?.photoURL.length > 0 ? (
-              <img src={user?.photoURL} />
-            ) : (
-              user?.displayName[0]
-            )}
+            {tutorial?.profilePic ?
+              <img src={`/src/assets/images/${tutorial?.profilePic}`} alt="" />
+
+              :
+              user?.photoURL && user?.photoURL.length > 0 ? (
+                <img src={user?.photoURL} />
+              ) : (
+                user?.displayName[0]
+              )
+            }
+
           </Avatar>
         }
         title={
@@ -121,7 +141,7 @@ export default function CardWithoutPicture({ tutorial }) {
               color="textPrimary"
               data-testId="UserName"
             >
-              {user?.displayName}
+              {tutorial?.name ? tutorial.name : user?.displayName}
             </Typography>
             {tutorial?.owner && (
               <>
@@ -139,9 +159,29 @@ export default function CardWithoutPicture({ tutorial }) {
             )}
           </React.Fragment>
         }
-        subheader={tutorial?.createdAt ? getTime(tutorial?.createdAt) : ""}
+        subheader={tutorial?.createdAt ? getTime(tutorial?.createdAt) : tutorial.date}
       />
-      <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
+      {tutorial?.tutorial_id ?
+        <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
+          <CardContent
+            className={classes.contentPadding}
+            data-testId="codelabzDetails"
+          >
+            <Typography variant="h5" color="text.primary" data-testId="Title">
+              {tutorial?.title}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              paragraph
+              data-testId="Description"
+            >
+              {tutorial?.summary}
+            </Typography>
+          </CardContent>
+        </Link>
+        :
         <CardContent
           className={classes.contentPadding}
           data-testId="codelabzDetails"
@@ -156,26 +196,40 @@ export default function CardWithoutPicture({ tutorial }) {
             paragraph
             data-testId="Description"
           >
-            {tutorial?.summary}
+            {tutorial?.description}
           </Typography>
         </CardContent>
-      </Link>
+      }
+
       <CardActions className={classes.settings} disableSpacing>
-        <Chip
-          label="HTML"
-          component="a"
-          href="#chip"
-          clickable
-          variant="outlined"
-          className={classes.margin}
-        />
+        {tutorial.tags ?
+          tags.map((tag) => (
+            <Chip
+              label={tag}
+              component="a"
+              href="#chip"
+              clickable
+              variant="outlined"
+              className={classes.margin}
+            />
+          ))
+          :
+          <Chip
+            label="HTML"
+            component="a"
+            href="#chip"
+            clickable
+            variant="outlined"
+            className={classes.margin}
+          />
+        }
         <Typography
           variant="overline"
           display="block"
           className={classes.time}
           data-testId="Time"
         >
-          {"10 min"}
+          {tutorial.time ? tutorial.time : "10 min"}
         </Typography>
         <div className={classes.grow} />
         <ToggleButtonGroup

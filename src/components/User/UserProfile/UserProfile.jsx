@@ -106,9 +106,9 @@ function UserProfile(props) {
           <Grid>
             {userList.persons.map(person => {
               return person.Heading == "CardWithoutPicture" ? (
-                <CardWithoutPicture {...person} className={classes.card} />
+                <CardWithoutPicture tutorial={person} className={classes.card} />
               ) : (
-                <CardWithPicture {...person} className={classes.card} />
+                <CardWithPicture tutorial={person} className={classes.card} />
               );
             })}
           </Grid>
