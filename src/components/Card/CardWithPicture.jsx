@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { getUserProfileData } from "../../store/actions";
 
+
 const useStyles = makeStyles(theme => ({
   root: {
     margin: "0.5rem",
@@ -75,6 +76,8 @@ export default function CardWithPicture({ tutorial }) {
   const classes = useStyles();
   const [alignment, setAlignment] = React.useState("left");
   const [count, setCount] = useState(1);
+  const [tags, setTags] = useState([])
+
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
@@ -106,24 +109,44 @@ export default function CardWithPicture({ tutorial }) {
     return timestamp.toDate().toDateString();
   };
 
+  useEffect(() => {
+    if (tutorial.tags) {
+      const tagsArray = tutorial.tags.split(' ');
+      setTags(tagsArray)
+    }
+    console.log(tutorial)
+  },[])
+
+
+
   return (
     <Card className={classes.root}>
-      <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
-        <CardMedia
-          className={classes.media}
-          image={tutorial?.featured_image}
-          title="code"
-          data-testId="Image"
-        />
-      </Link>
+      {tutorial.featured_image ?
+        <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
+          <CardMedia
+            className={classes.media}
+            image={tutorial?.featured_image}
+            title="code"
+            data-testId="Image"
+          />
+        </Link>
+        : ""}
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
-            {user?.photoURL && user?.photoURL.length > 0 ? (
-              <img src={user?.photoURL} />
-            ) : (
-              user?.displayName[0]
-            )}
+            {tutorial.profilePic ?
+              <img src={`/src/assets/images/${tutorial?.profilePic}`} alt="" />
+
+              :
+              user?.photoURL && user?.photoURL.length > 0 ? (
+                <img src={user?.photoURL} />
+              ) : (
+                user?.displayName[0]
+              )
+            }
+
+
+
           </Avatar>
         }
         title={
@@ -135,7 +158,7 @@ export default function CardWithPicture({ tutorial }) {
               color="textPrimary"
               data-testId="UserName"
             >
-              {user?.displayName}
+              {tutorial.name ? tutorial.name : user?.displayName}
             </Typography>
             {tutorial?.owner && (
               <>
@@ -153,9 +176,25 @@ export default function CardWithPicture({ tutorial }) {
             )}
           </React.Fragment>
         }
-        subheader={tutorial?.createdAt ? getTime(tutorial?.createdAt) : ""}
+        subheader={tutorial?.createdAt ? getTime(tutorial?.createdAt) : tutorial.date}
       />
-      <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
+      {tutorial.tutorial_id ?
+        <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
+          <CardContent className={classes.contentPadding}>
+            <Typography variant="h5" color="text.primary" data-testId="Title">
+              {tutorial?.title}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              paragraph
+              data-testId="Description"
+            >
+              {tutorial?.summary}
+            </Typography>
+          </CardContent>
+        </Link> :
         <CardContent className={classes.contentPadding}>
           <Typography variant="h5" color="text.primary" data-testId="Title">
             {tutorial?.title}
@@ -167,26 +206,41 @@ export default function CardWithPicture({ tutorial }) {
             paragraph
             data-testId="Description"
           >
-            {tutorial?.summary}
+            {tutorial?.description}
           </Typography>
         </CardContent>
-      </Link>
+      }
+
       <CardActions className={classes.settings} disableSpacing>
-        <Chip
-          label="HTML"
-          component="a"
-          href="#chip"
-          clickable
-          variant="outlined"
-          className={classes.margin}
-        />
+        {tutorial.tags ?
+          tags.map((tag) => (
+            <Chip
+              label={tag}
+              component="a"
+              href="#chip"
+              clickable
+              variant="outlined"
+              className={classes.margin}
+            />
+          ))
+          :
+          <Chip
+            label="HTML"
+            component="a"
+            href="#chip"
+            clickable
+            variant="outlined"
+            className={classes.margin}
+          />
+        }
+
         <Typography
           variant="overline"
           display="block"
           className={classes.time}
           data-testId="Time"
         >
-          {"10 min"}
+          {tutorial.time ? tutorial.time : "10 min"}
         </Typography>
         <div className={classes.grow} />
         <ToggleButtonGroup

@@ -54,14 +54,7 @@ function Feeds() {
           <Grid item xs={12}>
             <CardWithoutPicture
               className={classes.postCard}
-              name={person.name}
-              title={person.title}
-              contentDescription={person.description}
-              tags={person.tags}
-              profilePic={person.profilePic}
-              organizationName={person.org}
-              date={person.date}
-              time={person.time}
+              tutorial={person}
             />
           </Grid>
         ))}
