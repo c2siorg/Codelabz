@@ -55,6 +55,7 @@ function Activity() {
               }}
               acitvitylist={acitvitylist}
             />
+            
           </Grid>
         </div>
       </Grid>

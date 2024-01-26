@@ -8,6 +8,14 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+  
+// import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ListItemText from "@mui/material/ListItemText";
 import List from "@mui/material/List";
 import Tabs from "@mui/material/Tabs";
@@ -46,6 +54,8 @@ function HomePage({ background = "white", textColor = "black" }) {
   const [value, setValue] = useState(2);
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const [footerContent, setFooterContent] = useState([
     { name: "Help", link: "https://dev.codelabz.io/" },
     { name: "About", link: "https://dev.codelabz.io/" },
@@ -194,6 +204,56 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
+  const [sortBy, setSortBy] = useState(''); // Default no sorting
+  const [filterByTitle, setFilterByTitle] = useState(''); // Default no filter by title
+  const [filterByOwner, setFilterByOwner] = useState(''); // Default no filter by owner
+  const [filterByKeywords, setFilterByKeywords] = useState(''); // Default no filter by keywords
+
+  const sortedAndFilteredTutorials = tutorials
+    .filter((tutorial) => tutorial.title.toLowerCase().includes(filterByTitle.toLowerCase()))
+    .filter((tutorial) => tutorial.owner.toLowerCase().includes(filterByOwner.toLowerCase()))
+    .filter((tutorial) => tutorial.summary.toLowerCase().includes(filterByKeywords.toLowerCase()))
+    .sort((a, b) => (sortBy === 'createdAt' ? b.createdAt.seconds - a.createdAt.seconds : 0));
+
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
+  };
+
+  const handleFilterByTitleChange = (event) => {
+    setFilterByTitle(event.target.value);
+  };
+
+  const handleFilterByOwnerChange = (event) => {
+    setFilterByOwner(event.target.value);
+  };
+
+  const handleFilterByKeywordsChange = (event) => {
+    setFilterByKeywords(event.target.value);
+  };
+  const [isFiltersOpen, setFiltersOpen] = useState(false);
+
+  const handleToggleFilters = () => {
+    setFiltersOpen(!isFiltersOpen);
+  };
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  const handleResize = () => {
+    setScreenWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    setScreenWidth(window.innerWidth);
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  const isFlexDisplay = screenWidth >= 1321;
+
   return (
     <Card
       className={classes.wrapper}
@@ -239,13 +299,84 @@ function HomePage({ background = "white", textColor = "black" }) {
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />
           </Box>
-          {tutorials.map(tutorial => {
+          {console.log(tutorials)}
+          <div>
+          <div>
+      {/* <p>Current screen width: {screenWidth}</p> */}
+      
+    </div>
+      <Accordion style={{marginTop:"20px"}} expanded={isFiltersOpen} onChange={handleToggleFilters}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="filters-content"
+          id="filters-header"
+        >
+          <Typography>Filters</Typography>
+        </AccordionSummary> 
+        <AccordionDetails>
+        <div style={{ display: isFlexDisplay ? 'flex' : 'block', alignItems: 'center', gap: '20px', marginBottom: '20px', '@media (min-width: 1320px)': {
+        display: 'block',
+      } }}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <label htmlFor="sortBy" style={{ fontWeight: 'bold' }}><Typography>Sort By:</Typography></label>
+    <select id="sortBy" value={sortBy} onChange={handleSortChange} style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: isFlexDisplay ? '150px' : '100%' }}>
+      <option value="">None</option>
+      <option value="createdAt">Date Created</option>
+      {/* Add more sorting options as needed */}
+    </select>
+  </div>
+
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <label htmlFor="filterTitle" style={{ fontWeight: 'bold' }}><Typography>Search By Title:</Typography></label>
+    <input
+      id="filterTitle"
+      type="text"
+      value={filterByTitle}
+      onChange={handleFilterByTitleChange}
+      style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: isFlexDisplay ? '100px' : '95%' }}
+    />
+  </div>
+
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <label htmlFor="filterOwner" style={{ fontWeight: 'bold' }}><Typography>Search By Owner:</Typography></label>
+    <input
+      id="filterOwner"
+      type="text"
+      value={filterByOwner}
+      onChange={handleFilterByOwnerChange}
+      style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', width: isFlexDisplay ? '120px' : '95%'}}
+    />
+  </div>
+
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <label htmlFor="filterKeywords" style={{ fontWeight: 'bold' }}><Typography>Search by Keyword:</Typography></label>
+    <input
+      id="filterKeywords"
+      type="text"
+      value={filterByKeywords}
+      onChange={handleFilterByKeywordsChange}
+      style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minWidth: '100px' }}
+    />
+  </div>
+</div>
+        </AccordionDetails>
+      </Accordion>
+
+      {sortedAndFilteredTutorials.map((tutorial) =>
+        !tutorial?.featured_image ? (
+          <CardWithoutPicture key={tutorial.tutorial_id} tutorial={tutorial} />
+        ) : (
+          <CardWithPicture key={tutorial.tutorial_id} tutorial={tutorial} />
+        )
+      )}
+    </div>
+          {/* {tutorials.map(tutorial => {
             return !tutorial?.featured_image ? (
               <CardWithoutPicture tutorial={tutorial} />
             ) : (
               <CardWithPicture tutorial={tutorial} />
             );
-          })}
+          })} */}
           <Box
             sx={{
               width: "100%",
