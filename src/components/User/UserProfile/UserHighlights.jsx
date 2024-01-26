@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserHighlights = ({ organizations }) => {
+const UserHighlights = ({ organizations,props }) => {
   const classes = useStyles();
 
   return (
@@ -26,7 +26,7 @@ const UserHighlights = ({ organizations }) => {
         />
       </Grid>
       <Grid className={classes.bottomMargin}>
-        <SocialIcons />
+        <SocialIcons props={props}/>
       </Grid>
       <Grid
         container
