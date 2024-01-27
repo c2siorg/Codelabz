@@ -70,19 +70,6 @@ function UserProfile(props) {
     }
   ]);
 
-  useEffect(() => {
-    let orgdata = [];
-    props?.profileData.organizations.map(item =>
-      orgdata.push({
-        name: item,
-        img: [OrgUser]
-      })
-    );
-    setUpOrganizations(orgdata);
-  }, [props]);
-
-  
-
   return (
     <>
       <div className={classes.parentBody}>
