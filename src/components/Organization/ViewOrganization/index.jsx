@@ -167,124 +167,124 @@ const ViewOrganization = () => {
   };
 
   return (
-      <div
-    style={{
-      width: "100%",
-      backgroundColor: "#F9F9F9",
-      minHeight: "100vh"
-    }}
-  >
-    {loading || !currentOrgData ? (
-      <React.Fragment>
-        <Spinner />
-      </React.Fragment>
-    ) : (
-      <div>
-        {currentOrgData && (
-          <React.Fragment>
-            <Banner
-              bannerImage="https://i.postimg.cc/zXvv1vwL/Org-Banner-Demo.png"
-              contributors={currentOrgData.contributorsCount}
-              feed={currentOrgData.feedCount}
-              followers={currentOrgData.followerCount}
-              name={currentOrgData.org_name}
-              profileImage={
-                currentOrgData.org_image ? currentOrgData.org_image : NoImage
-              }
-              story="Think Different"
-              handle={handle}
-              isOrgBelongsToUser={organizations.includes(handle)}
-              isUserSubscribed={currentOrgData.userSubscription}
-              handleOrgSubscription={handleOrgSubscription}
-            />
-            <Container
-              maxWidth="xl"
-              style={{
-                marginTop: "2rem"
-              }}
-            >
-              <Grid
-                container
-                justifyContent="center"
-                className={classes.grid}
+    <div
+      style={{
+        width: "100%",
+        backgroundColor: "#F9F9F9",
+        minHeight: "100vh"
+      }}
+    >
+      {loading || !currentOrgData ? (
+        <React.Fragment>
+          <Spinner />
+        </React.Fragment>
+      ) : (
+        <div>
+          {currentOrgData && (
+            <React.Fragment>
+              <Banner
+                bannerImage="https://i.postimg.cc/zXvv1vwL/Org-Banner-Demo.png"
+                contributors={currentOrgData.contributorsCount}
+                feed={currentOrgData.feedCount}
+                followers={currentOrgData.followerCount}
+                name={currentOrgData.org_name}
+                profileImage={
+                  currentOrgData.org_image ? currentOrgData.org_image : NoImage
+                }
+                story="Think Different"
+                handle={handle}
+                isOrgBelongsToUser={organizations.includes(handle)}
+                isUserSubscribed={currentOrgData.userSubscription}
+                handleOrgSubscription={handleOrgSubscription}
+              />
+              <Container
+                maxWidth="xl"
+                style={{
+                  marginTop: "2rem"
+                }}
               >
                 <Grid
-                  item
                   container
-                  xs={12}
-                  sm={12}
-                  md={8}
-                  className={classes.feedGrid}
+                  justifyContent="center"
+                  className={classes.grid}
                 >
-                  <Grid item xs={12} container direction="column">
-                    <Grid item xs={12}>
-                      <ActivityList
-                        acitvitylist={[
-                          {
-                            id: 1,
-                            text: "About"
-                          },
-                          {
-                            id: 2,
-                            text: "Feeds"
-                          }
-                        ]}
-                        toggle={item => {
-                          setActivity(item.id);
-                        }}
-                        value={Activity}
-                        classname={classes.acitvitylist}
-                      />
-                      {Activity === 1 && <About />}
-                      {Activity === 2 && <Feeds />}
-                    </Grid>
-                  </Grid>
-                </Grid>
-                {Activity === 2 && (
                   <Grid
                     item
                     container
                     xs={12}
-                    md={4}
-                    justifyContent="flex-start"
-                    direction="column"
-                    spacing={5}
-                    className={classes.activity}
+                    sm={12}
+                    md={8}
+                    className={classes.feedGrid}
                   >
-                    <Grid item>
-                      <Description
-                        Heading={"Description"}
-                        Content={currentOrgData.org_description}
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Description
-                        Heading={"CodeLabz you may like"}
-                        Content={currentOrgData.org_description}
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Orgusers
-                        Users={ContributersUsers}
-                        title={"Contributors"}
-                      />
-                    </Grid>
-                    <Grid item>
-                      <Orgusers
-                        Users={ContributersUsers}
-                        title={"Contributors"}
-                      />
+                    <Grid item xs={12} container direction="column">
+                      <Grid item xs={12}>
+                        <ActivityList
+                          acitvitylist={[
+                            {
+                              id: 1,
+                              text: "About"
+                            },
+                            {
+                              id: 2,
+                              text: "Feeds"
+                            }
+                          ]}
+                          toggle={item => {
+                            setActivity(item.id);
+                          }}
+                          value={Activity}
+                          classname={classes.acitvitylist}
+                        />
+                        {Activity === 1 && <About />}
+                        {Activity === 2 && <Feeds />}
+                      </Grid>
                     </Grid>
                   </Grid>
-                )}
-              </Grid>
-            </Container>
-          </React.Fragment>
-        )}
-      </div>
-    )}
-    {currentOrgData === false && "No organization with the provided handle"}
-  </div>
+                  {Activity === 2 && (
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      md={4}
+                      justifyContent="flex-start"
+                      direction="column"
+                      spacing={5}
+                      className={classes.activity}
+                    >
+                      <Grid item>
+                        <Description
+                          Heading={"Description"}
+                          Content={currentOrgData.org_description}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Description
+                          Heading={"CodeLabz you may like"}
+                          Content={currentOrgData.org_description}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Orgusers
+                          Users={ContributersUsers}
+                          title={"Contributors"}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Orgusers
+                          Users={ContributersUsers}
+                          title={"Contributors"}
+                        />
+                      </Grid>
+                    </Grid>
+                  )}
+                </Grid>
+              </Container>
+            </React.Fragment>
+          )}
+        </div>
+      )}
+      {currentOrgData === false && "No organization with the provided handle"}
+    </div>
   );
 };
 
