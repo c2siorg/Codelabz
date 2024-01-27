@@ -37,7 +37,7 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   useEffect(() => {
     setAllSaved(true);
   }, [id]);
-
+  
   useEffect(() => {
     try {
       if (!ydoc) {
@@ -98,6 +98,10 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
         placeholder: "Start collaborating...",
         theme: "snow"
       });
+      if (data) {
+        ytext.delete(0, ytext.length);
+        ytext.insert(0, data.replace(/<[^>]+>/g, ""));
+      }
 
       // provider.awareness.setLocalStateField("user", {
       //   name: currentUserHandle,
