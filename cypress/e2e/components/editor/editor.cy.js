@@ -92,16 +92,33 @@ describe("Editor Test | CodeLabz", () => {
 
   it("should support rich text", function () {
     cy.get(".ql-editor").type("{selectall}{backspace}");
+    cy.get(".ql-bold").click();
     cy.get(".ql-editor")
       .type("{ctrl}b")
       .type("bold")
       .type("{ctrl}b")
       .type("{enter}");
+      cy.get(".ql-bold").click();
     cy.get(".ql-italic").click();
     cy.get(".ql-editor").type("italic");
     cy.get(".ql-italic").click();
     cy.get(".ql-editor").type("{rightarrow}{enter}");
+    cy.get(".ql-underline").click();
     cy.get(".ql-editor").type("{ctrl}u").type("underlined").type("{ctrl}u");
+    cy.get(".ql-underline").click();
+    cy.get(".ql-strike").should('exist');
+    cy.get(".ql-underline").should('exist');
+    cy.get(".ql-blockquote").should('exist');
+    cy.get(".ql-code-block").should('exist');    
+    cy.get(".ql-header").should('exist');
+    cy.get(".ql-list").should('exist');    
+    cy.get(".ql-script").should('exist');
+    cy.get(".ql-direction").should('exist');
+    cy.get(".ql-icon-picker").should('exist');
+    cy.get(".ql-align").should('exist');
+    cy.get(".ql-link").should('exist');
+    cy.get(".ql-image").should('exist');
+
     cy.get("[data-testId=previewMode]").click();
     cy.fixture("editor").then(editorTestData => {
       cy.get("[data-testid=tutorial-content]").should(
