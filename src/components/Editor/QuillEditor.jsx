@@ -37,10 +37,7 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   useEffect(() => {
     setAllSaved(true);
   }, [id]);
-  useEffect(() => {
-    console.log("Hi");
-  });
-
+  
   useEffect(() => {
     try {
       if (!ydoc) {
