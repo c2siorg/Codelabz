@@ -97,7 +97,7 @@ function UserProfile(props) {
                 }
                 name={props.profileData.displayName}
                 story={
-                  props.profileData.description.length>0? props.profileData.description:
+                  props.profileData.description? props.profileData.description:
                   "Lorem ipsum dolor sit amet, consectetuer adipiscing elit"
                 }
                 followers={402}
