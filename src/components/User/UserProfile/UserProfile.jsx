@@ -97,7 +97,6 @@ function UserProfile(props) {
                 }
                 name={props.profileData.displayName}
                 story={
-                  props.profileData.description.length>0? props.profileData.description:
                   "Lorem ipsum dolor sit amet, consectetuer adipiscing elit"
                 }
                 followers={402}
@@ -130,7 +129,7 @@ function UserProfile(props) {
 
         {/* Credentials and Highlights Card.Display it on screen size above 760px */}
         <Grid className={classes.rightBody}>
-          <UserHighlights props={props} organizations={organizations} />
+          <UserHighlights organizations={organizations} />
         </Grid>
       </div>
     </>
