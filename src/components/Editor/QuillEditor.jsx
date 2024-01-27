@@ -37,10 +37,10 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   useEffect(() => {
     setAllSaved(true);
   }, [id]);
-  useEffect(()=>{
-    console.log("Hi")
-  })
-  
+  useEffect(() => {
+    console.log("Hi");
+  });
+
   useEffect(() => {
     try {
       if (!ydoc) {
@@ -103,7 +103,7 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
       });
       if (data) {
         ytext.delete(0, ytext.length);
-        ytext.insert(0, data.replace(/<[^>]+>/g, ''));
+        ytext.insert(0, data.replace(/<[^>]+>/g, ""));
       }
 
       // provider.awareness.setLocalStateField("user", {
