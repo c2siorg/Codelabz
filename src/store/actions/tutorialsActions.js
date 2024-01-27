@@ -355,7 +355,10 @@ export const removeStep =
         .doc(tutorial_id)
         .collection("steps")
         .doc(step_id)
-        .delete();
+        .update({
+          deleted: true,
+          updatedAt: firestore.FieldValue.serverTimestamp()
+        });
 
       // const data = await firestore
       //   .collection("tutorials")
