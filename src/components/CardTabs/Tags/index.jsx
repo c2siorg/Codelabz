@@ -62,7 +62,6 @@ const TagCard = props => {
                   id={index}
                   className={classes.chip}
                   data-testId={index === 0 ? "TagsChip" : ""}
-                  sx={{ backgroundColor: '#03AAFA', color: '#ffffff' }}
                 />
               );
             })}
