@@ -140,10 +140,10 @@ const ViewOrganization = () => {
 
   const currentOrgData = useSelector(
     ({
-      org: {
-        data: { data }
-      }
-    }) => data
+      profile: {
+        data: { organizations }
+      },
+    }) => (organizations ? organizations[0] : undefined)
   );
 
   const organizations = useSelector(
@@ -167,34 +167,34 @@ const ViewOrganization = () => {
   };
 
   return (
-    <div
+      <div
     style={{
       width: "100%",
       backgroundColor: "#F9F9F9",
       minHeight: "100vh"
     }}
   >
-    {loading || !CurrentOrg ? (
+    {loading || !currentOrgData ? (
       <React.Fragment>
         <Spinner />
       </React.Fragment>
     ) : (
       <div>
-        {CurrentOrg && (
+        {currentOrgData && (
           <React.Fragment>
             <Banner
               bannerImage="https://i.postimg.cc/zXvv1vwL/Org-Banner-Demo.png"
-              contributors={CurrentOrg.contributorsCount}
-              feed={CurrentOrg.feedCount}
-              followers={CurrentOrg.followerCount}
-              name={CurrentOrg.org_name}
+              contributors={currentOrgData.contributorsCount}
+              feed={currentOrgData.feedCount}
+              followers={currentOrgData.followerCount}
+              name={currentOrgData.org_name}
               profileImage={
-                CurrentOrg.org_image ? CurrentOrg.org_image : NoImage
+                currentOrgData.org_image ? currentOrgData.org_image : NoImage
               }
               story="Think Different"
               handle={handle}
               isOrgBelongsToUser={organizations.includes(handle)}
-              isUserSubscribed={CurrentOrg.userSubscription}
+              isUserSubscribed={currentOrgData.userSubscription}
               handleOrgSubscription={handleOrgSubscription}
             />
             <Container
@@ -254,13 +254,13 @@ const ViewOrganization = () => {
                     <Grid item>
                       <Description
                         Heading={"Description"}
-                        Content={CurrentOrg.org_description}
+                        Content={currentOrgData.org_description}
                       />
                     </Grid>
                     <Grid item>
                       <Description
                         Heading={"CodeLabz you may like"}
-                        Content={CurrentOrg.org_description}
+                        Content={currentOrgData.org_description}
                       />
                     </Grid>
                     <Grid item>
@@ -283,7 +283,7 @@ const ViewOrganization = () => {
         )}
       </div>
     )}
-    {CurrentOrg === false && "No organization with the provided handle"}
+    {currentOrgData === false && "No organization with the provided handle"}
   </div>
   );
 };
