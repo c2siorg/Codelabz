@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   content: {
+    width: 720,
     "@media (max-width: 380px)": {
       padding: 10
     }
@@ -22,7 +23,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between",
     alignItems: "stretch",
     height: 135,
-    width: 210,
+    width: '60%',
     "@media (max-width: 380px)": {
       width: 150
     }
@@ -96,7 +97,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "space-between",
     alignItems: "stretch",
     height: 135,
-    width: 180,
+    width: '60%',
     "@media (max-width: 380px)": {
       width: 140
     }
