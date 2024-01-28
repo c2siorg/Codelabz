@@ -140,10 +140,10 @@ const ViewOrganization = () => {
 
   const currentOrgData = useSelector(
     ({
-      org: {
-        data: { data }
-      }
-    }) => data
+      profile: {
+        data: { organizations }
+      },
+    }) => (organizations ? organizations[0] : undefined)
   );
 
   const organizations = useSelector(
