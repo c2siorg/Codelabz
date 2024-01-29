@@ -149,7 +149,7 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
       binding = new QuillBinding(ytext, editor, provider.awareness);
       const length = editor.getLength();
       editor.deleteText(0, length, "user");
-      editor.clipboard.dangerouslyPasteHTML(0, data);
+        editor.clipboard.dangerouslyPasteHTML(0, data);
     } catch (err) {
       console.log(err);
     }
