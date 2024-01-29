@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import DOMPurify from "dompurify";
 import "../../../css/quillEditor.css";
 // import "quill/dist/quill.snow.css";
