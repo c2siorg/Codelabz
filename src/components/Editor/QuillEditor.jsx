@@ -39,13 +39,13 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   }, [id]);
 
   function deltaToHtml(delta) {
-    let html = '';
-    delta.ops.forEach((op) => {
+    let html = "";
+    delta.ops.forEach(op => {
       if (op.insert) {
         let text = op.insert;
-        if (typeof text === 'string') {
+        if (typeof text === "string") {
           const attributes = op.attributes || {};
-          let style = '';
+          let style = "";
 
           // Extract font and size from attributes
           if (attributes.font) {
@@ -61,8 +61,8 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
           }
 
           // Add new line if it's present in the original text
-          if (text.includes('\n')) {
-            text = text.replace(/\n/g, '<br>');
+          if (text.includes("\n")) {
+            text = text.replace(/\n/g, "<br>");
           }
 
           html += text;
@@ -73,8 +73,8 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   }
 
   useEffect(() => {
-    console.log(data)
-  }, [])
+    console.log(data);
+  }, []);
 
   useEffect(() => {
     try {
@@ -139,10 +139,13 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
         theme: "snow"
       });
 
-
       const content = editor.getContents();
       const formattedText = deltaToHtml(content);
-      setCurrentStepContent(tutorial_id, id, formattedText)(firestore, dispatch);
+      setCurrentStepContent(
+        tutorial_id,
+        id,
+        formattedText
+      )(firestore, dispatch);
       binding = new QuillBinding(ytext, editor, provider.awareness);
       const length = editor.getLength();
       editor.deleteText(0, length, "user");
