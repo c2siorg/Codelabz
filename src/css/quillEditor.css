@@ -364,6 +364,9 @@
 .ql-editor .ql-font-monospace {
   font-family: Monaco, Courier New, monospace;
 }
+.ql-font-monospace {
+  font-family: Monaco, Courier New, monospace;
+}
 .ql-editor .ql-size-small {
   font-size: 0.75em;
 }
