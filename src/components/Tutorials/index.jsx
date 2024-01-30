@@ -266,7 +266,7 @@ const ViewTutorial = () => {
                 {!isDesktop && stepPanelVisible ? null : (
                   <>
                     {mode === "view" && (
-                      <div data-testId="tutorial-content">
+                      <div data-testId="tutorial-content" className="ql-editor">
                         <HtmlTextRenderer html={currentStepContent} />
                       </div>
                     )}
@@ -282,7 +282,7 @@ const ViewTutorial = () => {
                         />
 
                         <QuillEditor
-                          data={stepsData[currentStep].content}
+                          data={currentStepContent}
                           tutorial_id={tutorialData.tutorial_id}
                           id={stepsData[currentStep].id}
                           key={
