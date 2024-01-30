@@ -29,7 +29,7 @@ const OrgTabPanel = ({ orgList, user }) => {
         handle: org.org_handle
       }))
     ]);
-    setSelectedTab({tab:0,data:listData[0]})
+    setSelectedTab({ tab: 0, data: listData[0] });
   }, [orgList]);
 
   return (
@@ -95,7 +95,7 @@ const OrgTutorialsComponent = ({ organizations, user }) => {
       const updated_orgs = _.reverse(
         _.sortBy(merged_orgs, ["tutorials_count"])
       );
-      console.log(updated_orgs)
+      console.log(updated_orgs);
       setOrgData(updated_orgs);
     }
   }, [organizations, org]);
