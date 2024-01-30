@@ -73,10 +73,6 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   }
 
   useEffect(() => {
-    console.log(data);
-  }, []);
-
-  useEffect(() => {
     try {
       if (!ydoc) {
         // yjs document
@@ -86,8 +82,6 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
         ydoc.on("update", () => {
           // deltaText is quill editor's data structure to store text
           const deltaText = ydoc.getText("quill").toDelta();
-          // console.log(deltaText[0].ops)
-          // const formattedText = deltaToHtml(deltaText[0].insert);
           var config = {};
           var converter = new QuillDeltaToHtmlConverter(deltaText, config);
 
