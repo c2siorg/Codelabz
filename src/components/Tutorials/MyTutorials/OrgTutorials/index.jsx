@@ -79,7 +79,6 @@ const OrgTutorialsComponent = ({ organizations, user }) => {
   const [orgData, setOrgData] = React.useState([]);
 
   useEffect(() => {
-    // console.log(org)
     if (org.length > 0) {
       const org_list = organizations.map(o => o.org_handle);
 
@@ -95,7 +94,6 @@ const OrgTutorialsComponent = ({ organizations, user }) => {
       const updated_orgs = _.reverse(
         _.sortBy(merged_orgs, ["tutorials_count"])
       );
-      console.log(updated_orgs);
       setOrgData(updated_orgs);
     }
   }, [organizations, org]);
