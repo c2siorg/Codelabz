@@ -122,7 +122,6 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const onSubmit = formData => {
     formData.preventDefault();
-    console.log(formValue);
     const tutorialData = {
       ...formValue,
       tutorialBanner: tutorialBanner,
@@ -130,6 +129,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       is_org: userHandle !== formValue.owner,
       completed: false
     };
+    console.log(tutorialData);
     createTutorial(tutorialData)(firebase, firestore, dispatch, history);
   };
 
