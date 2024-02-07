@@ -30,7 +30,7 @@ import CardWithPicture from "../Card/CardWithPicture";
 import CardWithoutPicture from "../Card/CardWithoutPicture";
 import Activity from "../Topbar/Activity";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
-import NewTutorial from "../Tutorials/NewTutorial";
+// import NewTutorial from "../Tutorials/NewTutorial";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import {

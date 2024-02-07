@@ -43,6 +43,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [imageIconClicked,setImageIconClicked]=useState(false)
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
@@ -116,6 +117,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   useEffect(() => {
     setVisible(viewModal);
+    setImageIconClicked(false)
   }, [viewModal]);
 
   const onSubmit = formData => {
@@ -128,7 +130,6 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       is_org: userHandle !== formValue.owner,
       completed: false
     };
-    console.log(tutorialData);
     createTutorial(tutorialData)(firebase, firestore, dispatch, history);
   };
 
@@ -154,15 +155,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   };
 
   const handleFileChange = event => {
-    console.log("getting called");
+    setImageIconClicked(true)
     const selectedFile = event.target.files[0];
 
     if (selectedFile) {
-      console.log("getting called2");
       const reader = new FileReader();
 
       reader.onloadend = () => {
-        console.log("getting called3");
         const base64Result = reader.result;
         setTutorialBanner(base64Result);
       };
@@ -252,7 +251,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           />
 
           <IconButton>
-            <ImageIcon onClick={handleIconClick} />
+            <ImageIcon onClick={handleIconClick} sx={{color : imageIconClicked ? '#1876d3' : ''}} />
             <input
               type="file"
               ref={fileInputRef}
