@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createTutorial } from "../../../store/actions";
@@ -48,6 +48,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     summary: "",
     owner: ""
   });
+  const [tutorialBanner, setTutorialBanner] = useState(null)
 
   const loadingProp = useSelector(
     ({
@@ -103,14 +104,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const orgList =
     allowOrgs > 0
       ? organizations
-          .map((org, i) => {
-            if (org.permissions.includes(3) || org.permissions.includes(2)) {
-              return org;
-            } else {
-              return null;
-            }
-          })
-          .filter(Boolean)
+        .map((org, i) => {
+          if (org.permissions.includes(3) || org.permissions.includes(2)) {
+            return org;
+          } else {
+            return null;
+          }
+        })
+        .filter(Boolean)
       : null;
 
   useEffect(() => {
@@ -119,8 +120,10 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const onSubmit = formData => {
     formData.preventDefault();
+    console.log(formValue)
     const tutorialData = {
       ...formValue,
+      tutorialBanner:tutorialBanner,
       created_by: userHandle,
       is_org: userHandle !== formValue.owner,
       completed: false
@@ -138,12 +141,37 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const handleChange = e => {
     const { name, value } = e.target;
-
     setformValue(prev => ({
       ...prev,
       [name]: value
     }));
   };
+
+
+
+  const fileInputRef = useRef(null);
+
+  const handleIconClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    console.log("getting called")
+    const selectedFile = event.target.files[0];
+
+    if (selectedFile) {
+      console.log("getting called2")
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        console.log("getting called3")
+        const base64Result = reader.result;
+        setTutorialBanner(base64Result)
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
 
   const classes = useStyles();
   return (
@@ -174,7 +202,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             description={"Tutorial Creation Failed"}/
           </Alert>
         )}
-        <Typography variant="h5">Create a Tutorial</Typography>
+        <Typography variant="h5">`Create a Tutorial`</Typography>
         <Box
           sx={{
             py: 2,
@@ -227,7 +255,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           />
 
           <IconButton>
-            <ImageIcon />
+            <ImageIcon onClick={handleIconClick} />
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
           </IconButton>
           <IconButton>
             <MovieIcon />
