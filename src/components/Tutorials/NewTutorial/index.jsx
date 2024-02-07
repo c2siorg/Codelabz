@@ -48,7 +48,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     summary: "",
     owner: ""
   });
-  const [tutorialBanner, setTutorialBanner] = useState(null)
+  const [tutorialBanner, setTutorialBanner] = useState(null);
 
   const loadingProp = useSelector(
     ({
@@ -104,14 +104,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const orgList =
     allowOrgs > 0
       ? organizations
-        .map((org, i) => {
-          if (org.permissions.includes(3) || org.permissions.includes(2)) {
-            return org;
-          } else {
-            return null;
-          }
-        })
-        .filter(Boolean)
+          .map((org, i) => {
+            if (org.permissions.includes(3) || org.permissions.includes(2)) {
+              return org;
+            } else {
+              return null;
+            }
+          })
+          .filter(Boolean)
       : null;
 
   useEffect(() => {
@@ -120,10 +120,10 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const onSubmit = formData => {
     formData.preventDefault();
-    console.log(formValue)
+    console.log(formValue);
     const tutorialData = {
       ...formValue,
-      tutorialBanner:tutorialBanner,
+      tutorialBanner: tutorialBanner,
       created_by: userHandle,
       is_org: userHandle !== formValue.owner,
       completed: false
@@ -147,31 +147,28 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   };
 
-
-
   const fileInputRef = useRef(null);
 
   const handleIconClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (event) => {
-    console.log("getting called")
+  const handleFileChange = event => {
+    console.log("getting called");
     const selectedFile = event.target.files[0];
 
     if (selectedFile) {
-      console.log("getting called2")
+      console.log("getting called2");
       const reader = new FileReader();
 
       reader.onloadend = () => {
-        console.log("getting called3")
+        console.log("getting called3");
         const base64Result = reader.result;
-        setTutorialBanner(base64Result)
+        setTutorialBanner(base64Result);
       };
       reader.readAsDataURL(selectedFile);
     }
   };
-
 
   const classes = useStyles();
   return (
@@ -259,7 +256,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             <input
               type="file"
               ref={fileInputRef}
-              style={{ display: 'none' }}
+              style={{ display: "none" }}
               onChange={handleFileChange}
             />
           </IconButton>
