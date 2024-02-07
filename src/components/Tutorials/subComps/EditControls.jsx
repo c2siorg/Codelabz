@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import RemoveStepModal from "./RemoveStepModal";
 import ColorPickerModal from "./ColorPickerModal";
 import { Box, Stack } from "@mui/system";
+import { Link } from "react-router-dom";
 
 const EditControls = ({
   isPublished,
@@ -192,6 +193,8 @@ const EditControls = ({
                   <FileCopyIcon /> Preview mode
                 </Button>
               )}
+              {/* redirecting to /tutorials page */}
+              <Link to="/tutorials">
               <Button
                 data-testid="publishTutorial"
                 onClick={handlePublishTutorial}
@@ -200,6 +203,7 @@ const EditControls = ({
               >
                 <FileCopyIcon /> {isPublished ? "Unpublish" : "Publish"}
               </Button>
+              </Link>
               <DropdownMenu key="more" />
             </>
           )}
