@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createTutorial } from "../../../store/actions";
@@ -43,11 +43,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [imageIconClicked,setImageIconClicked]=useState(false)
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
     owner: ""
   });
+  const [tutorialBanner, setTutorialBanner] = useState(null);
 
   const loadingProp = useSelector(
     ({
@@ -115,12 +117,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   useEffect(() => {
     setVisible(viewModal);
+    setImageIconClicked(false)
   }, [viewModal]);
 
   const onSubmit = formData => {
     formData.preventDefault();
     const tutorialData = {
       ...formValue,
+      tutorialBanner: tutorialBanner,
       created_by: userHandle,
       is_org: userHandle !== formValue.owner,
       completed: false
@@ -138,11 +142,31 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const handleChange = e => {
     const { name, value } = e.target;
-
     setformValue(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const fileInputRef = useRef(null);
+
+  const handleIconClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = event => {
+    setImageIconClicked(true)
+    const selectedFile = event.target.files[0];
+
+    if (selectedFile) {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const base64Result = reader.result;
+        setTutorialBanner(base64Result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
   };
 
   const classes = useStyles();
@@ -227,7 +251,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           />
 
           <IconButton>
-            <ImageIcon />
+            <ImageIcon onClick={handleIconClick} sx={{color : imageIconClicked ? '#1876d3' : ''}} />
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
           </IconButton>
           <IconButton>
             <MovieIcon />
