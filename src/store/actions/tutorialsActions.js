@@ -130,7 +130,6 @@ export const createTutorial =
 
         const documentID = document.id;
         const step_id = `${documentID}_${new Date().getTime()}`;
-        console.log(typeof tutorialBanner, tutorialBanner);
         await document.set({
           created_by,
           editors: [created_by],
