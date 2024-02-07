@@ -32,6 +32,7 @@ const BaseTutorialsComponent = ({ owner = "", ownerName = "", users = [] }) => {
     const index = [...user, ...org];
 
     const index_array = index.filter(e => e.owner === owner);
+    console.log(index, index_array);
     return (
       <div>
         <Grid container item>
