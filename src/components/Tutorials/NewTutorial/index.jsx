@@ -198,7 +198,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             description={"Tutorial Creation Failed"}/
           </Alert>
         )}
-        <Typography variant="h5">`Create a Tutorial`</Typography>
+        <Typography variant="h5">Create a Tutorial</Typography>
         <Box
           sx={{
             py: 2,
