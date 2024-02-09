@@ -11,10 +11,12 @@ import QuillCursors from "quill-cursors";
 import { FirestoreProvider, getColor } from "@gmcfall/yjs-firestore-provider";
 import { onlineFirebaseApp } from "../../config";
 import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
-import { ImageResize } from 'quill-image-resize-module';
-
+window.Quill = Quill;
+(async function () {
+  let res = await import("quill-image-resize");
+  Quill.register("modules/imageResize", res.default);
+})();
 Quill.register("modules/cursors", QuillCursors);
-Quill.register('modules/imageResize', ImageResize);
 
 const QuillEditor = ({ id, data, tutorial_id }) => {
   const [allSaved, setAllSaved] = useState(true);
@@ -39,6 +41,40 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   useEffect(() => {
     setAllSaved(true);
   }, [id]);
+
+  function deltaToHtml(delta) {
+    let html = "";
+    delta.ops.forEach(op => {
+      if (op.insert) {
+        let text = op.insert;
+        if (typeof text === "string") {
+          const attributes = op.attributes || {};
+          let style = "";
+
+          // Extract font and size from attributes
+          if (attributes.font) {
+            style += `font-family: ${attributes.font};`;
+          }
+          if (attributes.size) {
+            style += `font-size: ${attributes.size}px;`;
+          }
+
+          // Add other formatting styles as needed
+          if (style) {
+            text = `<span style="${style}">${text}</span>`;
+          }
+
+          // Add new line if it's present in the original text
+          if (text.includes("\n")) {
+            text = text.replace(/\n/g, "<br>");
+          }
+
+          html += text;
+        }
+      }
+    });
+    return html;
+  }
 
   useEffect(() => {
     try {
@@ -96,18 +132,23 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
           history: {
             userOnly: true
           },
-          ImageResize: {modules: [ 'Resize', 'DisplaySize', 'Toolbar' ]},
+          imageResize: { modules: ["Resize", "DisplaySize", "Toolbar"] }
         },
         placeholder: "Start collaborating...",
         theme: "snow"
       });
 
-      // provider.awareness.setLocalStateField("user", {
-      //   name: currentUserHandle,
-      //   color: getColor(currentUserHandle)
-      // });
-
+      const content = editor.getContents();
+      const formattedText = deltaToHtml(content);
+      setCurrentStepContent(
+        tutorial_id,
+        id,
+        formattedText
+      )(firestore, dispatch);
       binding = new QuillBinding(ytext, editor, provider.awareness);
+      const length = editor.getLength();
+      editor.deleteText(0, length, "user");
+      editor.clipboard.dangerouslyPasteHTML(0, data);
     } catch (err) {
       console.log(err);
     }
