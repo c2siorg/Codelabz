@@ -74,16 +74,27 @@ const useStyles = makeStyles(theme => ({
 export default function CardWithPicture({ tutorial }) {
   const classes = useStyles();
   const [alignment, setAlignment] = React.useState("left");
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(0);
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
+
   const handleIncrement = () => {
-    setCount(count + 1);
+    if (count == 1) {
+      setCount(count - 1);
+    }
+    else{
+      setCount(count + 1);
+    }
   };
 
   const handleDecrement = () => {
-    setCount(count - 1);
+    if (count == -1) {
+      setCount(count + 1);
+    }
+    else {
+      setCount(count - 1);
+    }
   };
 
   const handleAlignment = (event, newAlignment) => {
