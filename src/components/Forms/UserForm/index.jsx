@@ -197,223 +197,151 @@ const UserForm = () => {
         noValidate
         sx={{
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
+          gap: "15px",
+          padding: "20px"
         }}
       >
-        <Box>
-          <FormControl
-            variant="standard"
-            style={{ marginRight: 25, marginBottom: 10 }}
-          >
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-              error={nameValidateError}
-              helperText={nameValidateError ? nameValidateErrorMessage : null}
-            >
-              Name
-            </InputLabel>
-            <Input
+        <Box sx={{ display: 'flex', gap: '15px', width: '100%' }}>
+          <FormControl variant="outlined" sx={{ width: '50%' }}>
+            <InputLabel htmlFor="name-input">Name</InputLabel>
+            <OutlinedInput
+              id="name-input"
               value={name}
-              id="bootstrap-input"
-              className={classes.input}
-              data-testId="name"
               onChange={event => onChangeName(event.target.value)}
-              helperText={nameValidateError ? nameValidateErrorMessage : null}
+              label="Name"
             />
             <Typography className={classes.errorMessage}>
               {nameValidateErrorMessage}
             </Typography>
           </FormControl>
-          <Box
-            variant="standard"
-            style={{ display: "inline-flex", flexDirection: "column" }}
-          >
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-              error={countryValidateError}
+  
+          <FormControl variant="outlined" sx={{ width: '50%' }}>
+            <InputLabel htmlFor="country-select">Country of residence</InputLabel>
+            <Select
+              value={country}
+              onChange={event => onChangeCountry(event.target.value)}
+              label="Country of residence"
+              inputProps={{ id: 'country-select' }}
             >
-              Country of residence
-            </InputLabel>
-            <FormControl
-              data-testId="selectCountry"
-              style={{ marginTop: "3px" }}
-            >
-              <Select
-                value={country}
-                onChange={event => onChangeCountry(event.target.value)}
-                input={<OutlinedInput style={{ height: 40, width: 250 }} />}
-                displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                {children}
-              </Select>
-            </FormControl>
-          </Box>
+              {countryList.map(country => (
+                <MenuItem key={country.code} value={country.name}>
+                  {country.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
-        <Box>
-          <FormControl
-            variant="standard"
-            style={{ marginTop: "15px", marginRight: "25px" }}
-          >
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-            >
-              Website
-            </InputLabel>
-            <Input
+  
+        <Box sx={{ display: 'flex', gap: '15px', width: '100%' }}>
+          <FormControl variant="outlined" sx={{ width: '50%' }}>
+            <InputLabel htmlFor="website-input">Website</InputLabel>
+            <OutlinedInput
+              id="website-input"
               value={website}
-              id="bootstrap-input"
-              className={classes.input}
-              data-testId="website"
               onChange={event => onChangeOrgWebsite(event.target.value)}
+              label="Website"
             />
             <Typography className={classes.errorMessage}>
               {websiteValidateErrorMessage}
             </Typography>
           </FormControl>
-          <FormControl variant="standard" style={{ marginTop: "13px" }}>
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-            >
-              Description
-            </InputLabel>
-            <Input
+  
+          <FormControl variant="outlined" sx={{ width: '50%' }}>
+            <InputLabel htmlFor="description-input">Description</InputLabel>
+            <OutlinedInput
+              id="description-input"
               value={description}
-              id="bootstrap-input"
-              className={classes.input}
-              data-testId="description"
               onChange={event => onChangeDescription(event.target.value)}
+              label="Description"
             />
             <Typography className={classes.errorMessage}>
               {descriptionValidateErrorMessage}
             </Typography>
           </FormControl>
         </Box>
-        <Box style={{ marginTop: 30 }}>
-          <TextField
-            label="Facebook"
-            variant="outlined"
-            placeholder="username"
-            value={facebook}
-            data-testId="editProfileFacebook"
-            onChange={event => onChangeFacebook(event.target.value)}
-            fullWidth
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <FacebookIcon className={classes.fb}>
-                    <span className="sm-text">Facebook</span>
-                  </FacebookIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    facebook.com/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
-        <Box style={{ marginTop: 15 }}>
-          <TextField
-            label="Twitter"
-            variant="outlined"
-            value={twitter}
-            placeholder="username"
-            data-testId="editProfileTwitter"
-            onChange={event => onChangeTwitter(event.target.value)}
-            fullWidth
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <TwitterIcon className={classes.tw}>
-                    <span className="sm-text">Twitter</span>
-                  </TwitterIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    twitter.com/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
-
-        <Box style={{ marginTop: 15 }}>
-          <TextField
-            label="LinkedIn"
-            variant="outlined"
-            value={linkedin}
-            data-testId="editProfileLinkedin"
-            placeholder="username"
-            onChange={event => onChangeLinkedin(event.target.value)}
-            fullWidth
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <LinkedInIcon className={classes.li}>
-                    <span className="sm-text">Twitter</span>
-                  </LinkedInIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    linkedin.com/in/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
-
-        <Box style={{ marginTop: 15 }}>
-          <TextField
-            label="GitHub"
-            variant="outlined"
-            value={github}
-            placeholder="username"
-            onChange={event => onChangeGithub(event.target.value)}
-            fullWidth
-            data-testId="editProfileGithub"
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <GitHubIcon className={classes.git}>
-                    <span className="sm-text">Github</span>
-                  </GitHubIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    github.com/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
+  
+        <TextField
+          label="Facebook"
+          variant="outlined"
+          placeholder="username"
+          value={facebook}
+          onChange={event => onChangeFacebook(event.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FacebookIcon />
+              </InputAdornment>
+            ),
+            style: { marginTop: "15px" }
+          }}
+        />
+  
+        <TextField
+          label="Twitter"
+          variant="outlined"
+          placeholder="username"
+          value={twitter}
+          onChange={event => onChangeTwitter(event.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <TwitterIcon />
+              </InputAdornment>
+            ),
+            style: { marginTop: "15px" }
+          }}
+        />
+  
+        <TextField
+          label="LinkedIn"
+          variant="outlined"
+          placeholder="username"
+          value={linkedin}
+          onChange={event => onChangeLinkedin(event.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LinkedInIcon />
+              </InputAdornment>
+            ),
+            style: { marginTop: "15px" }
+          }}
+        />
+  
+        <TextField
+          label="GitHub"
+          variant="outlined"
+          placeholder="username"
+          value={github}
+          onChange={event => onChangeGithub(event.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <GitHubIcon />
+              </InputAdornment>
+            ),
+            style: { marginTop: "15px" }
+          }}
+        />
+  
+        <Button
+          fullWidth
+          size="small"
+          variant="contained"
+          color="primary"
+          style={{
+            backgroundColor: "SeaGreen",
+            padding: "10px",
+            font:"18px",
+            fontWeight:"600"
+          }}
+          data-testId="editProfileSave"
+          onClick={onSubmit}
+        >
+          {loading ? "Saving..." : "Save"}
+        </Button>
       </Box>
-      <Button
-        fullWidth
-        size="small"
-        variant="contained"
-        color="primary"
-        style={{
-          backgroundColor: "SeaGreen",
-          marginTop: 15
-        }}
-        data-testId="editProfileSave"
-        onClick={onSubmit}
-      >
-        {loading ? "Saving..." : "Save"}
-      </Button>
     </Card>
   );
 };
