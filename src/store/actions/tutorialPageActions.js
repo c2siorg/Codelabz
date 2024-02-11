@@ -218,3 +218,102 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
   }
 };
+
+
+export const upvoteTutorial =
+  (tutorial_id, userId) =>
+    async (firebase, firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.UPVOTE_START});
+        const tutorialRef = firestore.collection("cl_comments").doc(tutorial_id);
+        const tutorialDoc = await tutorialRef.get();
+
+        if (tutorialDoc.exists) {
+          const data = tutorialDoc.data();
+          if (data.downvoters && data.downvoters.includes(userId)) {
+            // If user has already downvoted, remove from downvoters array
+            await tutorialRef.update({
+              downvotes: firebase.firestore.FieldValue.increment(-1),
+              downvoters: firebase.firestore.FieldValue.arrayRemove(userId)
+            });
+          } else if (data.upvoters && data.upvoters.includes(userId)) {
+            // If user has already upvoted, remove from upvoters array
+            await tutorialRef.update({
+              upvotes: firebase.firestore.FieldValue.increment(-1),
+              upvoters: firebase.firestore.FieldValue.arrayRemove(userId)
+            });
+            
+            const updatedDoc = await tutorialRef.get();
+            const updatedData = updatedDoc.data();
+            dispatch({ type: actions.UPVOTE_SUCCESS,payload:{upvotes:updatedData.upvotes,downvotes:updatedData.downvotes}});
+            
+            return;
+          }
+
+          // Add user to upvoters array
+          await tutorialRef.update({
+            upvotes: firebase.firestore.FieldValue.increment(1),
+            upvoters: firebase.firestore.FieldValue.arrayUnion(userId)
+          });
+          const updatedDoc = await tutorialRef.get();
+          const updatedData = updatedDoc.data();
+          dispatch({ type: actions.UPVOTE_SUCCESS,payload:{upvotes:updatedData.upvotes,downvotes:updatedData.downvotes}});
+          // Optional: Fetch updated tutorial data and dispatch an action to update the state if needed
+          // Example: dispatch(fetchTutorialData(tutorial_id));
+        }
+      } catch (error) {
+        
+        dispatch({ type: actions.UPVOTE_FAIL, payload: error.message });
+      }
+    };
+
+
+export const downvoteTutorial =
+  (tutorial_id, userId) =>
+    async (firebase, firestore, dispatch) => {
+      try {
+        const tutorialRef = firestore.collection("cl_comments").doc(tutorial_id);
+        const tutorialDoc = await tutorialRef.get();
+
+        if (tutorialDoc.exists) {
+          const data = tutorialDoc.data();
+          if (data.upvoters && data.upvoters.includes(userId)) {
+            // If user has already upvoted, remove from upvoters array
+            await tutorialRef.update({
+              upvotes: firebase.firestore.FieldValue.increment(-1),
+              upvoters: firebase.firestore.FieldValue.arrayRemove(userId)
+            });
+
+            return;
+
+          } else if (data.downvoters && data.downvoters.includes(userId)) {
+            // If user has already downvoted, remove from downvoters array
+            await tutorialRef.update({
+              downvotes: firebase.firestore.FieldValue.increment(-1),
+              downvoters: firebase.firestore.FieldValue.arrayRemove(userId)
+            });
+            const updatedDoc = await tutorialRef.get();
+            const updatedData = updatedDoc.data();
+            dispatch({ type: actions.DOWNVOTE_SUCCESS,payload:{downvotes:updatedData.downvotes,upvotes: updatedData.upvotes}});
+            return;
+          }
+
+          // Add user to downvoters array
+          await tutorialRef.update({
+            downvotes: firebase.firestore.FieldValue.increment(1),
+            downvoters: firebase.firestore.FieldValue.arrayUnion(userId)
+          });
+
+          const updatedDoc = await tutorialRef.get();
+          const updatedData = updatedDoc.data();
+          dispatch({ type: actions.DOWNVOTE_SUCCESS,payload:{downvotes:updatedData.downvotes,upvotes: updatedData.upvotes}});
+
+          // Optional: Fetch updated tutorial data and dispatch an action to update the state if needed
+          // Example: dispatch(fetchTutorialData(tutorial_id));
+        }
+      } catch (error) {
+        dispatch({ type: actions.DOWNVOTE_FAIL, payload: error.message });
+      }
+    };
+
+    

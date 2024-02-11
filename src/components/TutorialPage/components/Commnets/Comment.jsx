@@ -27,7 +27,9 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import {
   getCommentData,
   getCommentReply,
-  addComment
+  addComment,
+  upvoteTutorial,
+  downvoteTutorial
 } from "../../../../store/actions/tutorialPageActions";
 const useStyles = makeStyles(() => ({
   container: {
@@ -53,10 +55,12 @@ const useStyles = makeStyles(() => ({
 }));
 
 const Comment = ({ id }) => {
+  // console.log(id);
   const classes = useStyles();
   const [showReplyfield, setShowReplyfield] = useState(false);
   const [alignment, setAlignment] = React.useState("left");
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(0);
+  const[flag,setFlag]=useState(false);
   const firestore = useFirestore();
   const firebase = useFirebase();
   const dispatch = useDispatch();
@@ -71,8 +75,11 @@ const Comment = ({ id }) => {
       }
     }) => data
   );
+  // console.log(commentsArray);
 
   const [data] = commentsArray.filter(comment => comment.comment_id == id);
+  // console.log(data);
+ 
 
   const repliesArray = useSelector(
     ({
@@ -82,14 +89,55 @@ const Comment = ({ id }) => {
     }) => replies
   );
 
+
+  const profileData = useSelector(({ firebase: { profile } }) => profile);
+  // console.log(profileData);
+
   const [replies] = repliesArray.filter(replies => replies.comment_id == id);
 
   const handleIncrement = () => {
-    setCount(count + 1);
+    upvoteTutorial(id,profileData.uid)(firebase,firestore,dispatch);
+    if(data.downvoters && data.downvoters.includes(profileData.uid)){
+      setCount(prev=>prev+2);
+    data.downvoters=  data.downvoters.filter((id)=>id!==profileData.uid);
+      data.upvoters.push(profileData.uid);
+      return;
+    }
+    else if(data.upvoters && data.upvoters.includes(profileData.uid)){
+      setCount(prev=>prev-1)
+      data.upvoters = data.upvoters.filter(id => id !== profileData.uid);
+     
+      return;
+    }
+    setCount(prev=>prev+1);
+    if(data.upvoters==undefined){
+      data.upvoters=[];
+    }
+    data.upvoters.push(profileData.uid);
+    
   };
 
   const handleDecrement = () => {
-    setCount(count - 1);
+    downvoteTutorial(id,profileData.uid)(firebase,firestore,dispatch);
+    if(data.downvoters && data.downvoters.includes(profileData.uid)){
+      setCount(prev=>prev+1);
+    data.downvoters=  data.downvoters.filter((id)=>id!==profileData.uid);
+     
+      return;
+    }
+    else if(data.upvoters && data.upvoters.includes(profileData.uid)){
+      setCount(prev=>prev-2)
+    data.upvoters=  data.upvoters.filter((id)=>id!==profileData.uid);
+      data.downvoters.push(profileData.uid);
+
+      return;
+    }
+    if(data.downvoters==undefined){
+      data.downvoters=[]
+    }
+    setCount(prev=>prev-1);
+    data.downvoters.push(profileData.uid);
+    
   };
 
   const handleAlignment = (event, newAlignment) => {
@@ -106,6 +154,12 @@ const Comment = ({ id }) => {
     };
     addComment(commentData)(firebase, firestore, dispatch);
   };
+
+  useEffect(()=>{
+    
+    const [data1]=commentsArray.filter(comment => comment.comment_id == id);
+    setCount((data1?.upvotes?data1.upvotes:0)-(data1?.downvotes?data1.downvotes:0));
+  },[commentsArray,flag]);
 
   return (
     data && (
