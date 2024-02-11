@@ -1,6 +1,8 @@
 {
   "functions": {
-    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run lint"],
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint"
+    ],
     "source": "functions"
   },
   "hosting": {
@@ -38,7 +40,8 @@
     "storage": {
       "port": 9199,
       "host": "127.0.0.1"
-    }
+    },
+    "singleProjectMode": true
   },
   "storage": {
     "rules": "storage.rules"
