@@ -12,6 +12,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AddIcon from "@mui/icons-material/Add";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import { toast } from "react-toastify";
+
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
 import FormatPaintIcon from "@mui/icons-material/FormatPaint";
@@ -105,12 +107,20 @@ const EditControls = ({
   };
   const handlePublishTutorial = async () => {
     setPublishLoad(true);
-    await publishUnpublishTutorial(owner, tutorial_id, isPublished)(
-      firebase,
-      firestore,
-      dispatch
-    );
-    setPublishLoad(false);
+    try {
+      await publishUnpublishTutorial(owner, tutorial_id, isPublished)(
+        firebase,
+        firestore,
+        dispatch
+      );
+      setPublishLoad(false);
+
+      toast.info(`Tutorial ${isPublished ? "Unpublished" : "Published"}!`);
+    } catch (error) {
+      // Handle error if needed
+      setPublishLoad(false);
+      toast.error("Failed to publish/unpublish tutorial.");
+    }
   };
 
   return (

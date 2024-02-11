@@ -1,6 +1,7 @@
 import * as actions from "./actionTypes";
 import _ from "lodash";
 import { functions } from "../../config";
+import { toast } from 'react-toastify';
 
 export const signIn = credentials => async (firebase, dispatch) => {
   try {
@@ -50,6 +51,8 @@ export const signInWithProviderID =
         type: "popup"
       });
       dispatch({ type: actions.SIGN_IN_SUCCESS });
+
+      
     } catch (e) {
       if (e.code === "auth/account-exists-with-different-credential") {
         const methods = await firebase
@@ -77,8 +80,8 @@ export const signOut = () => async (firebase, dispatch) => {
     dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
     dispatch({ type: actions.CLEAR_ORG_USER_STATE });
     await firebase.logout();
-    window.location.href = "/login";
-    // window.location.reload();
+    toast.success('Logout successful');
+  
   } catch (e) {
     console.log(e.message);
   }
