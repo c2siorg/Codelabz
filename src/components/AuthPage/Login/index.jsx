@@ -14,6 +14,8 @@ import MailOutlined from "@mui/icons-material/MailOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import React, { useEffect, useState } from "react";
+import { toast } from 'react-toastify';
+
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
 import { Link } from "react-router-dom";
@@ -94,6 +96,7 @@ const Login = ({
     setError("");
     if (validateEmail() & validatePassword()) {
       await signIn({ email: email, password: password })(firebase, dispatch);
+      toast.success('Login successful');
     }
   };
 
