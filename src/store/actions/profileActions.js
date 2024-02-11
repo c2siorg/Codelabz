@@ -114,7 +114,8 @@ export const updateUserProfile =
     link_linkedin,
     link_twitter,
     description,
-    country
+    country,
+    organizations
   }) =>
   async (firebase, firestore, dispatch) => {
     try {
@@ -129,6 +130,7 @@ export const updateUserProfile =
           link_twitter,
           description,
           country,
+          organizations,
           updatedAt: firestore.FieldValue.serverTimestamp()
         },
         { useSet: false, merge: true }
