@@ -69,26 +69,26 @@ export default function CardWithoutPicture({ tutorial }) {
   const classes = useStyles();
   const [alignment, setAlignment] = React.useState("left");
   const [count, setCount] = useState(0);
-  const [inc, setInc] = useState(true);
-  const [dec, setDec] = useState(true);
 
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
 
   const handleIncrement = () => {
-    if (count != 1) {
-        setCount(count + 1);
-        setInc(false);
-        setDec(true);
+    if (count == 1) {
+      setCount(count - 1);
     }
-};
+    else{
+      setCount(count + 1);
+    }
+  };
 
   const handleDecrement = () => {
-    if(count != -1){
+    if (count == -1) {
+      setCount(count + 1);
+    }
+    else {
       setCount(count - 1);
-      setInc(true);
-      setDec(false);
     }
   };
 
@@ -200,7 +200,6 @@ export default function CardWithoutPicture({ tutorial }) {
         >
           <ToggleButton
             className={classes.small}
-            disabled={!inc}
             onClick={handleIncrement}
             value="left"
             aria-label="left aligned"
@@ -210,7 +209,6 @@ export default function CardWithoutPicture({ tutorial }) {
           </ToggleButton>
           <ToggleButton
             className={classes.small}
-            disabled={!dec}
             onClick={handleDecrement}
             value="center"
             aria-label="centered"
