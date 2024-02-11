@@ -33,7 +33,6 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
       }
     }) => handle
   );
-
   useEffect(() => {
     setAllSaved(true);
   }, [id]);
@@ -72,25 +71,30 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
       const editor = new Quill(editorRef.current, {
         modules: {
           cursors: true,
-          toolbar: [
-            ["bold", "italic", "underline", "strike"], // toggled buttons
-            ["blockquote", "code-block"],
+          toolbar: {
+            container: [
+              ["bold", "italic", "underline", "strike"], // toggled buttons
+              ["blockquote", "code-block"],
 
-            [{ header: 1 }, { header: 2 }], // custom button values
-            [{ list: "ordered" }, { list: "bullet" }],
-            [{ script: "sub" }, { script: "super" }], // superscript/subscript
-            [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-            [{ direction: "rtl" }], // text direction
+              [{ header: 1 }, { header: 2 }], // custom button values
+              [{ list: "ordered" }, { list: "bullet" }],
+              [{ script: "sub" }, { script: "super" }], // superscript/subscript
+              [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+              [{ direction: "rtl" }], // text direction
 
-            [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+              [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+              [{ header: [1, 2, 3, 4, 5, 6, false] }],
 
-            [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-            [{ font: [] }],
-            [{ align: [] }],
-            ["clean"], // remove formatting button
-            ["link", "image"]
-          ],
+              [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+              [{ font: [] }],
+              [{ align: [] }],
+              ["clean"], // remove formatting button
+              ["link", "image"],
+            ],
+            handlers: {
+              "link": handleCustomLink,
+            }
+          },
           history: {
             userOnly: true
           }
@@ -98,6 +102,35 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
         placeholder: "Start collaborating...",
         theme: "snow"
       });
+
+
+      function handleCustomLink() {
+        const isPresent=document.getElementById("customModal")
+        if (isPresent) {
+          console.log(isPresent)
+          document.body.removeChild(customModal);
+        } else {
+          const range = editor.getSelection();
+          const customModal = document.createElement("div");
+          customModal.className = "customModal"
+          customModal.id = "customModal"
+          customModal.innerHTML = `
+          <input type="text" id="linkUrl" name="linkUrl" placeholder="Enter image URL" style="width: 95%;height:90% ;padding: 10px; margin: 10px 10px 10px 10px; box-sizing: border-box; text-align: center;">
+          <button id="confirmLink" style="padding: 10px; height:90% ; margin: 10px 10px 10px 10px; background-color: #0388d0; color: white; border: none; border-radius: 5px; cursor: pointer;">Insert</button>
+        `;
+          const confirmButton = customModal.querySelector("#confirmLink");
+          confirmButton.addEventListener("click", () => {
+            const linkUrl = customModal.querySelector("#linkUrl").value;
+            if (linkUrl) {
+              this.quill.insertEmbed(range.index, 'image', linkUrl, Quill.sources.USER);
+            }
+            document.body.removeChild(customModal);
+          });
+
+
+          document.body.appendChild(customModal);
+        }
+      }
 
       // provider.awareness.setLocalStateField("user", {
       //   name: currentUserHandle,
@@ -119,18 +152,22 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
   }, []);
 
   return (
-    <div style={{ flexGrow: 1 }}>
-      <Prompt
-        when={!allSaved}
-        message="You have unsaved changes, are you sure you want to leave?"
-      />
-      <div
-        ref={containerRef}
-        style={{ minHeight: "100%", display: "flex", flexDirection: "column" }}
-      >
-        <div id="quill-editor" ref={editorRef} style={{ flexGrow: 1 }} />
+    <>
+
+      <div style={{ flexGrow: 1 }}>
+        <Prompt
+          when={!allSaved}
+          message="You have unsaved changes, are you sure you want to leave?"
+        />
+        <div
+          id="main-container"
+          ref={containerRef}
+          style={{ minHeight: "100%", display: "flex", flexDirection: "column" }}
+        >
+          <div id="quill-editor" ref={editorRef} style={{ flexGrow: 1 }} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

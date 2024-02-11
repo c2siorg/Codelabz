@@ -955,3 +955,31 @@
 .ql-container.ql-snow {
   border: 1px solid #ccc;
 }
+
+.customModal{
+  position: fixed;
+  top: 52%;
+  left: 50%;
+  display: flex;
+  box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  transform: translate(20%, 30%);
+  background: white;
+  padding: 10px;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  text-align: center;
+  animation-name: slideIn;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out; 
+}
+
+@keyframes slideIn {
+  0% {
+    top: 45%; /* Start position above the viewport */
+    opacity: 0;
+  }
+  100% {
+    top: 50%; /* Final position at the center of the viewport */
+    opacity: 1;
+  }
+}
