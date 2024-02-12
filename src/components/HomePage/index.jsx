@@ -22,6 +22,7 @@ import { userList } from "./userList";
 import useStyles from "./styles";
 import SideBar from "../SideBar/index";
 import TagCard from "../CardTabs/Tags/index";
+import DynamicDashboard from "../CardTabs/DynamicActivities/index"
 import EventsCard from "../CardTabs/Events/index";
 import OrgUser from "../../assets/images/org-user.svg";
 import UserCard from "../CardTabs/Users/index";
@@ -318,6 +319,21 @@ function HomePage({ background = "white", textColor = "black" }) {
               <TagCard tags={tags} />
             </Grid>
           </Grid>
+          <Grid
+            item
+            container
+            alignContent="center"
+            direction="column"
+            style={{
+              width: "100%"
+            }}
+           
+          >
+            <Grid item style={{ minWidth: "100%" }}>
+            <DynamicDashboard/>
+            </Grid>
+          </Grid>
+       
           <Grid
             container
             alignContent="center"
