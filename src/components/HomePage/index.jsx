@@ -37,6 +37,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import { fetchUsers } from "../../store/actions/profileActions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -110,32 +111,32 @@ function HomePage({ background = "white", textColor = "black" }) {
     "React"
   ]);
 
-  const [usersToFollow, setUsersToFollow] = useState([
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    }
-  ]);
+  // const [usersToFollow, setUsersToFollow] = useState([
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   }
+  // ]);
 
   const [contributors, setContributors] = useState([
     {
@@ -175,6 +176,8 @@ function HomePage({ background = "white", textColor = "black" }) {
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
     getFeed();
+    console.log("0----");
+    fetchUsers(profileData.uid)(firebase,firestore,dispatch);
   }, []);
   const tutorials = useSelector(
     ({
@@ -183,6 +186,16 @@ function HomePage({ background = "white", textColor = "black" }) {
       }
     }) => homepageFeedArray
   );
+const userData=useSelector((state)=>state.profile.fetchUser.users);
+
+  // console.log(userData)
+  userData.forEach(ele => {
+    ele.img= [OrgUser]
+  });
+  // setUsersToFollow(userData);
+  
+  // console.log("--]]")
+  
 
   const notification = () => {};
   const handleChange = (event, newValue) => {
@@ -294,7 +307,7 @@ function HomePage({ background = "white", textColor = "black" }) {
                 <EventsCard title={"Popular Events"} events={upcomingEvents} />
               </TabPanel>
               <TabPanel value="3" style={{ padding: 0 }}>
-                <UserCard title={"Who to Follow"} users={usersToFollow} />
+                <UserCard title={"Who to Follow"} users={userData} />
               </TabPanel>
               <TabPanel value="4" style={{ padding: 0 }}>
                 <UserCard title={"Contributors"} users={contributors} />
@@ -341,7 +354,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             data-testId="homepageUsersToFollow"
           >
             <Grid item style={{ minWidth: "100%" }}>
-              <UserCard title={"Who to Follow"} users={usersToFollow} />
+              <UserCard title={"Who to Follow"} users={userData} />
             </Grid>
           </Grid>
           <Grid
