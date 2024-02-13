@@ -35,13 +35,13 @@ const UserElement = ({ user, index, useStyles }) => {
             sx={{ fontWeight: 600, fontSize: "1rem" }}
             data-testId={index == 0 ? "UserName" : ""}
           >
-            {user.name}
+            {user.displayName?user.displayName:user.name}
           </Box>
           <Box
             sx={{ fontWeight: 400, fontSize: "0.8rem" }}
             data-testId={index == 0 ? "UserDesg" : ""}
           >
-            {user.desg}
+            {`Software Engineer`}
           </Box>
         </Box>
       </Box>

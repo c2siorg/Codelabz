@@ -297,3 +297,30 @@ const getAllOrgsOfCurrentUser = () => async (firebase, firestore) => {
     console.log(e);
   }
 };
+
+
+export const fetchUsers = (uid) => async (firebase, firestore, dispatch) => {
+  try {
+    // Assuming you have already initialized Firebase
+    // console.log("0----0");
+    
+    const usersRef = firestore.collection('cl_user').limit(5); // Assuming 'users' is the name of your collection
+    const snapshot = await usersRef.get();
+    
+    const userData = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    const data=userData.filter(obj=>obj.id!==uid);
+    // console.log(data)
+
+    dispatch({
+      type: actions.FETCH_USERS_SUCCESS,
+      payload: data
+    });
+  } catch (error) {
+    // Handle error if any
+    console.error("Error fetching users:", error);
+  }
+};
