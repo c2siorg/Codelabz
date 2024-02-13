@@ -364,6 +364,9 @@
 .ql-editor .ql-font-monospace {
   font-family: Monaco, Courier New, monospace;
 }
+.ql-font-monospace {
+  font-family: Monaco, Courier New, monospace;
+}
 .ql-editor .ql-size-small {
   font-size: 0.75em;
 }
@@ -623,7 +626,18 @@
   background-color: #f0f0f0;
   border-radius: 3px;
 }
+.ql-editor pre {
+  color: white;
+  background-color: #a7a6a6;
+  border-radius: 3px;
+}
 .ql-snow .ql-editor pre {
+  white-space: pre-wrap;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 5px 10px;
+}
+.ql-editor pre {
   white-space: pre-wrap;
   margin-bottom: 5px;
   margin-top: 5px;
@@ -635,9 +649,11 @@
 }
 .ql-snow .ql-editor pre.ql-syntax {
   background-color: #23241f;
-  color: #f8f8f2;
+  color: #c3c3bf;
   overflow: visible;
 }
+
+
 .ql-snow .ql-editor img {
   max-width: 100%;
 }
