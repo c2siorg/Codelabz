@@ -267,7 +267,10 @@ const ViewTutorial = () => {
                   <>
                     {mode === "view" && (
                       <div data-testId="tutorial-content" className="ql-snow">
-                        <div data-testId="tutorial-content" className="ql-editor">
+                        <div
+                          data-testId="tutorial-content"
+                          className="ql-editor"
+                        >
                           <HtmlTextRenderer html={currentStepContent} />
                         </div>
                       </div>
