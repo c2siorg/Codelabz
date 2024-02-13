@@ -195,6 +195,7 @@ export const isUserFollower = async (followerId, followingId, firestore) => {
     .collection("user_followers")
     .doc(`${followingId}_${followerId}`)
     .get();
+
   return followerDoc.exists;
 };
 
