@@ -266,8 +266,10 @@ const ViewTutorial = () => {
                 {!isDesktop && stepPanelVisible ? null : (
                   <>
                     {mode === "view" && (
-                      <div data-testId="tutorial-content" className="ql-editor">
-                        <HtmlTextRenderer html={currentStepContent} />
+                      <div data-testId="tutorial-content" className="ql-snow">
+                        <div data-testId="tutorial-content" className="ql-editor">
+                          <HtmlTextRenderer html={currentStepContent} />
+                        </div>
                       </div>
                     )}
                     {mode === "edit" && (

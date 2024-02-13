@@ -641,6 +641,12 @@
   color: #f8f8f2;
   overflow: visible;
 }
+/* .ql-editor pre{
+  background-color: #23241f;
+  color: #f8f8f2;
+  overflow: visible;
+} */
+
 .ql-snow .ql-editor img {
   max-width: 100%;
 }
