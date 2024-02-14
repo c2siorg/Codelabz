@@ -116,29 +116,29 @@ export const updateUserProfile =
     description,
     country
   }) =>
-  async (firebase, firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.PROFILE_EDIT_START });
-      await firebase.updateProfile(
-        {
-          displayName,
-          website,
-          link_facebook,
-          link_github,
-          link_linkedin,
-          link_twitter,
-          description,
-          country,
-          updatedAt: firestore.FieldValue.serverTimestamp()
-        },
-        { useSet: false, merge: true }
-      );
-      dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
-      dispatch({ type: actions.CLEAR_PROFILE_EDIT_STATE });
-    } catch (e) {
-      dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
-    }
-  };
+    async (firebase, firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.PROFILE_EDIT_START });
+        await firebase.updateProfile(
+          {
+            displayName,
+            website,
+            link_facebook,
+            link_github,
+            link_linkedin,
+            link_twitter,
+            description,
+            country,
+            updatedAt: firestore.FieldValue.serverTimestamp()
+          },
+          { useSet: false, merge: true }
+        );
+        dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
+        dispatch({ type: actions.CLEAR_PROFILE_EDIT_STATE });
+      } catch (e) {
+        dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
+      }
+    };
 
 export const uploadProfileImage =
   (file, user_handle) => async (firebase, dispatch) => {
@@ -297,3 +297,24 @@ const getAllOrgsOfCurrentUser = () => async (firebase, firestore) => {
     console.log(e);
   }
 };
+
+
+export const backupEmailUpdate =
+  (id, email) => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.BACKUP_EMAIL_START });
+      await firestore
+        .collection("cl_user")
+        .doc(id)
+        .update({
+          backupEmail: email
+        });
+      dispatch({
+        type: actions.BACKUP_EMAIL_SUCCESS,
+
+      });
+
+    } catch (e) {
+      dispatch({ type: actions.BACKUP_EMAIL_FAILED, payload: e.message });
+    }
+  };

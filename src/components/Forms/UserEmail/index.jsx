@@ -8,18 +8,26 @@ import {
   Typography,
   MenuItem,
   Select,
-  OutlinedInput
+  OutlinedInput,
+  Button
 } from "@mui/material";
+import { backupEmailUpdate } from "../../../store/actions/profileActions";
 import { Input } from "../../ui-helpers/Inputs/PrimaryInput";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import { set } from "lodash";
 
 const UserEmail = () => {
   const classes = useStyles();
-
-  const [primaryEmail, setPrimaryEmail] = useState(data.primaryEmail);
-  const [backupEmail, setBackupEmail] = useState(data.backupEmail);
-
+  const firebase = useFirebase();
+  const firestore = useFirestore();
+  const dispatch = useDispatch();
   const profileData = useSelector(({ firebase: { profile } }) => profile);
+  const [primaryEmail, setPrimaryEmail] = useState(data.primaryEmail);
+  const [backupEmail, setBackupEmail] = useState(profileData.backupEmail ? profileData.backupEmail : []);
+  const [prevEmail, setPrevEmail] = useState(profileData.backupEmail ? profileData.backupEmail[0] : []);
+
+  const [newEmail, setNewEmail] = useState("");
 
   const handleChangePrimaryEmail = event => {
     setPrimaryEmail(event.target.value);
@@ -28,6 +36,16 @@ const UserEmail = () => {
   const handleChangeBackupEmail = event => {
     setBackupEmail(event.target.value);
   };
+
+  const handler = (e) => {
+    e.preventDefault();
+    if (newEmail.length > 0) {
+      const data = [...backupEmail, newEmail]
+      setBackupEmail(data);
+      backupEmailUpdate(profileData.uid, data)(firebase, firestore, dispatch);
+      setNewEmail("");
+    }
+  }
 
   return (
     <Card className={classes.card}>
@@ -54,8 +72,12 @@ const UserEmail = () => {
               placeholder="email"
               className={classes.input}
               data-testId="emailInput"
+              value={newEmail}
+              onChange={e => { setNewEmail(e.target.value) }}
             />
-            <Typography data-testId="addEmail">Add</Typography>
+            <Button>
+              <Typography data-testId="addEmail" onClick={handler}>Add</Typography>
+            </Button>
           </Box>
         </Box>
         <Box className={classes.email}>
@@ -85,13 +107,13 @@ const UserEmail = () => {
           </Typography>
           <FormControl data-testId="backupEmail">
             <Select
-              value={backupEmail}
+              value={prevEmail}
               onChange={handleChangeBackupEmail}
               input={<OutlinedInput style={{ height: 40, width: 250 }} />}
               displayEmpty
               inputProps={{ "aria-label": "Without label" }}
             >
-              {data.backupEmailOptions.map(email => (
+              {backupEmail?.map(email => (
                 <MenuItem value={email} data-testId="backupEmailItem">
                   {email}
                 </MenuItem>
