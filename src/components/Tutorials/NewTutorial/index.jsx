@@ -43,6 +43,8 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [handleValidateError, setHandleValidateError] = useState(false);
+  const [handleValidateErrorMessage, setHandleValidateErrorMessage] = useState("");
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
@@ -96,6 +98,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }) => displayName
   );
 
+  const tutorials = useSelector(
+    ({
+      tutorials: {
+        data: { org }
+      }
+    }) => org
+  );
   //This name should be replaced by displayName when implementing backend
   const sampleName = "User Name Here";
   const allowOrgs = organizations && organizations.length > 0;
@@ -114,11 +123,18 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       : null;
 
   useEffect(() => {
+    setHandleValidateError(false);
     setVisible(viewModal);
   }, [viewModal]);
 
   const onSubmit = formData => {
-    formData.preventDefault();
+    formData.preventDefault(); 
+    const isTitlePresent = tutorials[0].tutorials.some(tutorial => tutorial.title === formValue.title);  
+    if(isTitlePresent){
+      setHandleValidateError(true);
+      setHandleValidateErrorMessage("Title already exists");
+      return;
+    }
     const tutorialData = {
       ...formValue,
       created_by: userHandle,
@@ -136,7 +152,12 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   };
 
+  // useEffect(() => {
+  //   setHandleValidateError(false);
+  // },[])
+
   const handleChange = e => {
+    setHandleValidateError(false);
     const { name, value } = e.target;
 
     setformValue(prev => ({
@@ -200,7 +221,11 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             prefix={
               <AppstoreAddOutlined style={{ color: "rgba(0,0,0,.25)" }} />
             }
+            error={handleValidateError}
             placeholder="Title of the Tutorial"
+            helperText={
+              handleValidateError ? handleValidateErrorMessage : null
+            }
             autoComplete="title"
             name="title"
             variant="outlined"
