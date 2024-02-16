@@ -20,7 +20,6 @@ import MovieIcon from "@mui/icons-material/Movie";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -107,14 +106,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const orgList =
     allowOrgs > 0
       ? organizations
-        .map((org, i) => {
-          if (org.permissions.includes(3) || org.permissions.includes(2)) {
-            return org;
-          } else {
-            return null;
-          }
-        })
-        .filter(Boolean)
+          .map((org, i) => {
+            if (org.permissions.includes(3) || org.permissions.includes(2)) {
+              return org;
+            } else {
+              return null;
+            }
+          })
+          .filter(Boolean)
       : null;
 
   const tutorials = useSelector(
@@ -126,13 +125,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   );
 
   useEffect(() => {
-    console.log(tutorials)
+    console.log(tutorials);
     setHandleValidateError(false);
     setVisible(viewModal);
   }, [viewModal]);
 
   const onSubmit = formData => {
-    console.log(tutorials)
+    console.log(tutorials);
     formData.preventDefault();
     const isTitlePresent = tutorials[0].tutorials.some(
       tutorial => tutorial.title === formValue.title

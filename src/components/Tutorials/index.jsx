@@ -124,9 +124,9 @@ const ViewTutorial = () => {
     }) => data
   );
 
-  useEffect(()=>{
-    console.log(currentTutorialData)
-  })
+  useEffect(() => {
+    console.log(currentTutorialData);
+  });
   useEffect(() => {
     if (currentTutorialData) {
       const { steps } = currentTutorialData;
