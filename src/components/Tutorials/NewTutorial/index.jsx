@@ -20,6 +20,7 @@ import MovieIcon from "@mui/icons-material/Movie";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
 
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -44,7 +45,8 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [handleValidateError, setHandleValidateError] = useState(false);
-  const [handleValidateErrorMessage, setHandleValidateErrorMessage] = useState("");
+  const [handleValidateErrorMessage, setHandleValidateErrorMessage] =
+    useState("");
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
@@ -98,13 +100,6 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }) => displayName
   );
 
-  const tutorials = useSelector(
-    ({
-      tutorials: {
-        data: { org }
-      }
-    }) => org
-  );
   //This name should be replaced by displayName when implementing backend
   const sampleName = "User Name Here";
   const allowOrgs = organizations && organizations.length > 0;
@@ -112,27 +107,39 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const orgList =
     allowOrgs > 0
       ? organizations
-          .map((org, i) => {
-            if (org.permissions.includes(3) || org.permissions.includes(2)) {
-              return org;
-            } else {
-              return null;
-            }
-          })
-          .filter(Boolean)
+        .map((org, i) => {
+          if (org.permissions.includes(3) || org.permissions.includes(2)) {
+            return org;
+          } else {
+            return null;
+          }
+        })
+        .filter(Boolean)
       : null;
 
+  const tutorials = useSelector(
+    ({
+      tutorials: {
+        data: { user }
+      }
+    }) => user
+  );
+
   useEffect(() => {
+    console.log(tutorials)
     setHandleValidateError(false);
     setVisible(viewModal);
   }, [viewModal]);
 
   const onSubmit = formData => {
-    formData.preventDefault(); 
-    const isTitlePresent = tutorials[0].tutorials.some(tutorial => tutorial.title === formValue.title);  
-    if(isTitlePresent){
+    console.log(tutorials)
+    formData.preventDefault();
+    const isTitlePresent = tutorials[0].tutorials.some(
+      tutorial => tutorial.title === formValue.title
+    );
+    if (isTitlePresent) {
       setHandleValidateError(true);
-      setHandleValidateErrorMessage("Title already exists");
+      setHandleValidateErrorMessage("Tutorial with this title already exists");
       return;
     }
     const tutorialData = {
@@ -151,10 +158,6 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       owner: value
     }));
   };
-
-  // useEffect(() => {
-  //   setHandleValidateError(false);
-  // },[])
 
   const handleChange = e => {
     setHandleValidateError(false);
@@ -223,9 +226,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             }
             error={handleValidateError}
             placeholder="Title of the Tutorial"
-            helperText={
-              handleValidateError ? handleValidateErrorMessage : null
-            }
+            helperText={handleValidateError ? handleValidateErrorMessage : null}
             autoComplete="title"
             name="title"
             variant="outlined"
