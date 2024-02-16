@@ -43,6 +43,9 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [handleValidateError, setHandleValidateError] = useState(false);
+  const [handleValidateErrorMessage, setHandleValidateErrorMessage] =
+    useState("");
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
@@ -113,12 +116,31 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           .filter(Boolean)
       : null;
 
+  const tutorials = useSelector(
+    ({
+      tutorials: {
+        data: { user }
+      }
+    }) => user
+  );
+
   useEffect(() => {
+    console.log(tutorials);
+    setHandleValidateError(false);
     setVisible(viewModal);
   }, [viewModal]);
 
   const onSubmit = formData => {
+    console.log(tutorials);
     formData.preventDefault();
+    const isTitlePresent = tutorials[0].tutorials.some(
+      tutorial => tutorial.title === formValue.title
+    );
+    if (isTitlePresent) {
+      setHandleValidateError(true);
+      setHandleValidateErrorMessage("Tutorial with this title already exists");
+      return;
+    }
     const tutorialData = {
       ...formValue,
       created_by: userHandle,
@@ -137,6 +159,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   };
 
   const handleChange = e => {
+    setHandleValidateError(false);
     const { name, value } = e.target;
 
     setformValue(prev => ({
@@ -200,7 +223,9 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             prefix={
               <AppstoreAddOutlined style={{ color: "rgba(0,0,0,.25)" }} />
             }
+            error={handleValidateError}
             placeholder="Title of the Tutorial"
+            helperText={handleValidateError ? handleValidateErrorMessage : null}
             autoComplete="title"
             name="title"
             variant="outlined"

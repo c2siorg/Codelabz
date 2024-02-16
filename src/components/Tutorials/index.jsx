@@ -105,6 +105,7 @@ const ViewTutorial = () => {
   const classes = useStyles();
 
   useEffect(() => {
+    console.log("called", owner, tutorial_id);
     getCurrentTutorialData(owner, tutorial_id)(firebase, firestore, dispatch);
   }, [owner, tutorial_id, firebase, firestore, dispatch]);
 
@@ -124,6 +125,9 @@ const ViewTutorial = () => {
     }) => data
   );
 
+  // useEffect(() => {
+  //   console.log(currentTutorialData);
+  // });
   useEffect(() => {
     if (currentTutorialData) {
       const { steps } = currentTutorialData;

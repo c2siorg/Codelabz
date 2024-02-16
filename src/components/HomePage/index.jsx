@@ -37,6 +37,10 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import {
+  getUserTutorialsBasicData,
+  getOrgTutorialsBasicData
+} from "../../store/actions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -183,6 +187,28 @@ function HomePage({ background = "white", textColor = "black" }) {
       }
     }) => homepageFeedArray
   );
+  const userHandle = useSelector(
+    ({
+      firebase: {
+        profile: { handle }
+      }
+    }) => handle
+  );
+  const organizations = useSelector(
+    ({
+      profile: {
+        data: { organizations }
+      }
+    }) => organizations
+  );
+
+  useEffect(() => {
+    getUserTutorialsBasicData(userHandle)(firestore, dispatch);
+  }, [userHandle, firestore, dispatch]);
+
+  useEffect(() => {
+    getOrgTutorialsBasicData(organizations)(firestore, dispatch);
+  }, [organizations, firestore, dispatch]);
 
   const notification = () => {};
   const handleChange = (event, newValue) => {
