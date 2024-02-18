@@ -6,6 +6,8 @@ import Comment from "./Comment";
 import { addComment } from "../../../../store/actions/tutorialPageActions";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
+import { getTutorialData,getTutorialSteps } from "../../../../store/actions/tutorialPageActions";
+
 const useStyles = makeStyles(() => ({
   container: {
     margin: "10px 0",
@@ -35,22 +37,33 @@ const CommentBox = ({ commentsArray, tutorialId }) => {
   const dispatch = useDispatch();
   const [comments, setComments] = useState([]);
   const [currCommentCount, setCurrCommentCount] = useState(3);
-  const handleSubmit = comment => {
+
+  const handleSubmit =async (comment) => {
+    const user = firebase.auth().currentUser;
     const commentData = {
       content: comment,
       replyTo: tutorialId,
       tutorial_id: tutorialId,
       createdAt: firestore.FieldValue.serverTimestamp(),
-      userId: "codelabzuser"
+      userId:user.uid,
     };
-    addComment(commentData)(firebase, firestore, dispatch);
+    const tutorialData = await addComment("comment",commentData)(firebase, firestore, dispatch);
+    console.log(tutorialData);
   };
+
+  const tutorial = useSelector(
+    ({
+      tutorialPage: {
+        post: { data }
+      }
+    }) => data
+  );
 
   useEffect(() => {
     setComments(commentsArray?.slice(0, currCommentCount));
   }, [currCommentCount, commentsArray]);
 
-  console.log(commentsArray, comments, currCommentCount);
+  // console.log(commentsArray, comments, currCommentCount);
 
   const increaseCommentCount = () => {
     setCurrCommentCount(state => state + 3);

@@ -38,6 +38,7 @@ export {
   createOrganization,
   getProfileData,
   getUserProfileData,
+  getUserProfileDataByUid,
   updateUserProfile,
   uploadProfileImage,
   addUserFollower,

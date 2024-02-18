@@ -45,7 +45,7 @@ const PostDetails = ({ details }) => {
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
-  const [alignment, setAlignment] = React.useState("left");
+  const [alignment, setAlignment] = useState("left");
   const [count, setCount] = useState(details.upVote - details.downVote || 0);
   const { id } = useParams();
 
@@ -67,14 +67,19 @@ const PostDetails = ({ details }) => {
 
   const handleIncrement = () => {
     setCount(count + 1);
+    setAlignment("right");
   };
 
   const handleDecrement = () => {
     setCount(count - 1);
+    setAlignment("left");
   };
 
   const handleAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
+    const align=alignment === "right" ? "left" : "right";
+    setAlignment(align)
+    
   };
   const classes = useStyles();
   return (
@@ -119,6 +124,7 @@ const PostDetails = ({ details }) => {
                       <ToggleButton
                         className={classes.small}
                         onClick={handleIncrement}
+                        disabled={alignment === "right"}
                         value="left"
                         aria-label="left aligned"
                       >
@@ -128,8 +134,9 @@ const PostDetails = ({ details }) => {
                       <ToggleButton
                         className={classes.small}
                         onClick={handleDecrement}
-                        value="center"
-                        aria-label="centered"
+                        disabled={alignment === "left"}
+                        value="right"
+                        aria-label="right aligned"
                       >
                         <KeyboardArrowDownIcon />
                       </ToggleButton>

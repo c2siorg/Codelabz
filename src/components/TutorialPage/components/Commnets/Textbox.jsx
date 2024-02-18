@@ -22,9 +22,10 @@ const Textbox = ({ type, handleSubmit }) => {
       sx={{
         display: "flex",
         alignItems: "flex-end",
-        width: "100%",
+        width: type === "reply" ? "90%" : "100%", // 85% for reply and 100% for comment
         gap: 1,
-        margin: "10px 0 24px"
+        margin: "10px 0 24px",
+        marginLeft: type === "reply" ? "auto" : "0"
       }}
     >
       <AccountCircle
@@ -70,7 +71,7 @@ const Textbox = ({ type, handleSubmit }) => {
       <Button
         variant="contained"
         disableElevation
-        onClick={() => handleSubmit(commentText)}
+        onClick={() => {setCommentText(""); handleSubmit(commentText)}}
       >
         <Send />
       </Button>
