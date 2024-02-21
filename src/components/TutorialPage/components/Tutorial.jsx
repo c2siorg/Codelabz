@@ -12,22 +12,33 @@ const useStyles = makeStyles(() => ({
 
 const Tutorial = ({ steps }) => {
   const classes = useStyles();
+  console.log(steps)
   return (
     <>
-      <Card className={classes.container}>
-        {steps?.map((step, i) => {
-          return (
-            <Box id={step.id} key={step.id} data-testId="tutorialpageSteps">
-              <Typography sx={{ fontWeight: "600" }}>
-                {i + 1 + ". " + step.title}
-              </Typography>
-              <Typography className="content">
-                <HtmlTextRenderer html={step.content} />
-              </Typography>
-            </Box>
-          );
-        })}
-      </Card>
+    <Card className={classes.container}>
+      {steps?.map((step, i) => {
+        const formatTime = (time) => {
+          if (time >= 60) {
+            const hours = Math.floor(time / 60);
+            const minutes = time % 60;
+            return `${hours} hours ${minutes} min`;
+          } else {
+            return `${time} min`;
+          }
+        };
+
+        return (
+          <Box id={step.id} key={step.id} data-testId="tutorialpageSteps">
+            <Typography sx={{ fontWeight: "600" }}>
+              {i + 1 + ". " + step.title} {step.time && `(${formatTime(step.time)})`}
+            </Typography>
+            <Typography className="content">
+              <HtmlTextRenderer html={step.content} />
+            </Typography>
+          </Box>
+        );
+      })}
+    </Card>
     </>
   );
 };

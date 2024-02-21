@@ -84,6 +84,7 @@ const AddNewStepModal = ({
       tutorial_id,
       owner
     };
+
     addNewTutorialStep(set_data)(firebase, firestore, dispatch);
   };
 
@@ -135,7 +136,7 @@ const AddNewStepModal = ({
             placeholder="Time (minutes)"
             style={{ width: "100%" }}
             data-testid={"newStepTimeInput"}
-            inputProps={{ min: 0 }}
+            inputProps={{ min: 0 ,max:300 }}
             required="true"
           />
           <Button
