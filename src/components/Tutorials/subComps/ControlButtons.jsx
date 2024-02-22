@@ -61,9 +61,8 @@ const ControlButtons = ({
     if (currentTutorialData) {
       const { steps } = currentTutorialData;
       setStepData(steps);
-    }  
-  })
-
+    }
+  });
 
   if (!hide && stepsData) {
     return (

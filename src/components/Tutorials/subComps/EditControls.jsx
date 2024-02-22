@@ -22,7 +22,7 @@ import { useDispatch } from "react-redux";
 import RemoveStepModal from "./RemoveStepModal";
 import ColorPickerModal from "./ColorPickerModal";
 import { Box, Stack } from "@mui/system";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 import { removeStep } from "../../../store/actions";
 
 const EditControls = ({
@@ -56,8 +56,6 @@ const EditControls = ({
     const handleClose = () => {
       setAnchorEl(null);
     };
-
-
 
     return (
       <>
@@ -125,14 +123,14 @@ const EditControls = ({
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!"
-    }).then(async (result) => {
+    }).then(async result => {
       if (result.isConfirmed) {
         removeStep(
           owner,
           tutorial_id,
           noteID,
           currentStep
-        )(firebase, firestore, dispatch)
+        )(firebase, firestore, dispatch);
         Swal.fire({
           title: "Deleted!",
           text: "Step has been deleted.",
@@ -140,7 +138,7 @@ const EditControls = ({
         });
       }
     });
-  }
+  };
 
   return (
     <>
@@ -172,11 +170,7 @@ const EditControls = ({
           Add images
         </Button>
 
-        <Button
-          danger
-          onClick={handleStepDelete}
-          disabled={step_length === 1}
-        >
+        <Button danger onClick={handleStepDelete} disabled={step_length === 1}>
           <DeleteIcon /> Remove step
         </Button>
         <Box

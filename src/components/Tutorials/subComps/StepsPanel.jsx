@@ -32,13 +32,12 @@ const StepsPanel = ({
   setCurrentStep,
   setStepData
 }) => {
+  const dispatch = useDispatch();
 
-  const dispatch=useDispatch()
-
-  const handleChangeStepNo=async(index)=>{
-    console.log("called")
-    await dispatch(setCurrentStepNo(index))
-  }
+  const handleChangeStepNo = async index => {
+    console.log("called");
+    await dispatch(setCurrentStepNo(index));
+  };
 
   const classes = useStyles();
   return (
@@ -82,7 +81,7 @@ const StepsPanel = ({
                   className={classes.stepButtonStyle}
                   onClick={() => {
                     setCurrentStep(index);
-                    handleChangeStepNo(index)
+                    handleChangeStepNo(index);
                   }}
                 >
                   {step.title}
