@@ -18,6 +18,7 @@ import ToggleButton from "@mui/lab/ToggleButton";
 import ToggleButtonGroup from "@mui/lab/ToggleButtonGroup";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ShareTutorial from "../Tutorials/ShareTutorial";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { getUserProfileData } from "../../store/actions";
@@ -65,8 +66,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function CardWithoutPicture({ tutorial }) {
+export default function CardWithoutPicture({ tutorial,setOpenShare,openShare,onSidebarClick, }) {
   const classes = useStyles();
+  console.log(tutorial)
   const [alignment, setAlignment] = React.useState("left");
   const [count, setCount] = useState(1);
   const dispatch = useDispatch();
@@ -83,6 +85,10 @@ export default function CardWithoutPicture({ tutorial }) {
   const handleAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
   };
+
+  const handleShare = () => {
+    setOpenShare(!openShare);
+  }
 
   useEffect(() => {
     getUserProfileData(tutorial?.created_by)(firebase, firestore, dispatch);
@@ -102,6 +108,14 @@ export default function CardWithoutPicture({ tutorial }) {
 
   return (
     <Card className={classes.root} data-testId="codelabz">
+      
+      <ShareTutorial
+            viewModal={openShare}
+            openShare={openShare}
+            setOpenShare={setOpenShare}
+            onSidebarClick={onSidebarClick}
+            tutorial={tutorial}
+          />
       <CardHeader
         avatar={
           <Avatar className={classes.avatar}>
@@ -207,10 +221,11 @@ export default function CardWithoutPicture({ tutorial }) {
         <IconButton aria-label="share" data-testId="CommentIcon">
           <ChatOutlinedIcon />
         </IconButton>
-        <IconButton aria-label="add to favorites" data-testId="ShareIcon">
+        <IconButton aria-label="add to favorites" data-testId="ShareIcon" onClick={handleShare}>
           <ShareOutlinedIcon />
         </IconButton>
-        <IconButton aria-label="share" data-testId="NotifIcon">
+        <IconButton aria-label="share" data-testId="NotifIcon" >
+          
           <TurnedInNotOutlinedIcon />
         </IconButton>
         <IconButton aria-label="share" data-testId="MoreIcon">
