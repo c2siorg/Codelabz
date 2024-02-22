@@ -22,6 +22,8 @@ import { useDispatch } from "react-redux";
 import RemoveStepModal from "./RemoveStepModal";
 import ColorPickerModal from "./ColorPickerModal";
 import { Box, Stack } from "@mui/system";
+import Swal from 'sweetalert2'
+import { removeStep } from "../../../store/actions";
 
 const EditControls = ({
   isPublished,
@@ -54,6 +56,8 @@ const EditControls = ({
     const handleClose = () => {
       setAnchorEl(null);
     };
+
+
 
     return (
       <>
@@ -112,6 +116,31 @@ const EditControls = ({
     );
     setPublishLoad(false);
   };
+  const handleStepDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        removeStep(
+          owner,
+          tutorial_id,
+          noteID,
+          currentStep
+        )(firebase, firestore, dispatch)
+        Swal.fire({
+          title: "Deleted!",
+          text: "Step has been deleted.",
+          icon: "success"
+        });
+      }
+    });
+  }
 
   return (
     <>
@@ -145,20 +174,10 @@ const EditControls = ({
 
         <Button
           danger
-          onClick={() => {
-            setViewRemoveStepModal(!viewRemoveStepModal);
-          }}
+          onClick={handleStepDelete}
           disabled={step_length === 1}
         >
           <DeleteIcon /> Remove step
-          <RemoveStepModal
-            owner={owner}
-            tutorial_id={tutorial_id}
-            step_id={noteID}
-            viewModal={viewRemoveStepModal}
-            currentStep={currentStep}
-            step_length={step_length}
-          />
         </Button>
         <Box
           sx={{

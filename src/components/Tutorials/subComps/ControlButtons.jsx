@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import Grid from "@mui/material/Grid";
 import { makeStyles } from "@mui/styles";
 import { Box } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -39,6 +40,31 @@ const ControlButtons = ({
   setStepData
 }) => {
   const classes = useStyles();
+
+  const currentStepNo = useSelector(
+    ({
+      tutorials: {
+        editor: { current_step_no }
+      }
+    }) => current_step_no
+  );
+
+  const currentTutorialData = useSelector(
+    ({
+      tutorials: {
+        current: { data }
+      }
+    }) => data
+  );
+
+  useEffect(() => {
+    if (currentTutorialData) {
+      const { steps } = currentTutorialData;
+      setStepData(steps);
+    }  
+  })
+
+
   if (!hide && stepsData) {
     return (
       <Grid>

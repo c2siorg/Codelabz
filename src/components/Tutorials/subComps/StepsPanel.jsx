@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Stepper from "@mui/material/Stepper";
 import Button from "@mui/material/Button";
 import Step from "@mui/material/Step";
@@ -9,6 +9,8 @@ import { Box, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { grey } from "@mui/material/colors";
 import ControlButtons from "./ControlButtons";
+import { setCurrentStepNo } from "../../../store/actions";
+import { useDispatch, useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   stepperContainer: {
@@ -30,6 +32,14 @@ const StepsPanel = ({
   setCurrentStep,
   setStepData
 }) => {
+
+  const dispatch=useDispatch()
+
+  const handleChangeStepNo=async(index)=>{
+    console.log("called")
+    await dispatch(setCurrentStepNo(index))
+  }
+
   const classes = useStyles();
   return (
     <Box className="tutorial-steps-sider" sx={theme => ({ p: 1 })}>
@@ -72,6 +82,7 @@ const StepsPanel = ({
                   className={classes.stepButtonStyle}
                   onClick={() => {
                     setCurrentStep(index);
+                    handleChangeStepNo(index)
                   }}
                 >
                   {step.title}

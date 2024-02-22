@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { useMediaQuery } from "react-responsive";
@@ -129,8 +130,8 @@ const ViewTutorial = () => {
       const { steps } = currentTutorialData;
       setStepData(steps);
       setTutorialData(currentTutorialData);
-    }
-  }, [currentTutorialData]);
+    }  
+  },[currentTutorialData]);
 
   const editorStepData = useSelector(
     ({
