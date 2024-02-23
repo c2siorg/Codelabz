@@ -80,9 +80,7 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
   }, [userProps]);
 
   const onFinish = async () => {
-    const handleExists = await checkUserHandleExists(handle)(
-      firebase
-    );
+    const handleExists = await checkUserHandleExists(handle)(firebase);
 
     if (handle.length < 1) {
       setHandleValidateError(true);
@@ -128,8 +126,8 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
         id="Search"
         autoComplete="off"
         onChange={(event, value) => {
-          console.log("Value",value)
-          setHandle(value.value)
+          console.log("Value", value);
+          setHandle(value.value);
         }}
         helperText={handleValidateError ? handleValidateErrorMessage : null}
         options={users}

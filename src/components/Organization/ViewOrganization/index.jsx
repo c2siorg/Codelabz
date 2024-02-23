@@ -124,7 +124,7 @@ const ViewOrganization = () => {
       });
   }, [db, profileData.uid]);
 
-  const [currentOrgData, setCurrentOrgData]=useState(CurrentOrg)
+  const [currentOrgData, setCurrentOrgData] = useState(CurrentOrg);
 
   const handleOrgSubscription = async () => {
     if (!currentOrgData.userSubscription)
