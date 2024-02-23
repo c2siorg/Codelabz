@@ -39,10 +39,16 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
 
   useEffect(() => {
     setUsers([]);
-    firebase.ref(`cl_user_handle/`).on("value", snapshot => {
-      snapshot.forEach(snap => {
-        setUsers(prev => [...prev, { title: snap.key, value: snap.key }]);
+    const db = firebase.firestore();
+    db.collection("cl_user").onSnapshot(snapshot => {
+      const uniqueHandles = new Set();
+      snapshot.forEach(doc => {
+        const handle = doc.data().handle;
+        const userId = doc.id;
+        uniqueHandles.add({ title: handle, value: userId });
       });
+      const uniqueUsers = Array.from(uniqueHandles);
+      setUsers(uniqueUsers);
     });
   }, [firebase]);
 
@@ -75,8 +81,7 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
 
   const onFinish = async () => {
     const handleExists = await checkUserHandleExists(handle)(
-      firebase,
-      dispatch
+      firebase
     );
 
     if (handle.length < 1) {
@@ -107,7 +112,7 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
         org_handle: currentOrgHandle,
         permissions: parseInt(selected.split("_")[1]),
         handle: handle
-      })(firestore, dispatch);
+      })(firestore, firebase, dispatch);
     }
   };
 
@@ -122,7 +127,10 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
         variant="outlined"
         id="Search"
         autoComplete="off"
-        onChange={e => setHandle(e.target.innerHTML)}
+        onChange={(event, value) => {
+          console.log("Value",value)
+          setHandle(value.value)
+        }}
         helperText={handleValidateError ? handleValidateErrorMessage : null}
         options={users}
         getOptionLabel={option => option.title}
@@ -138,7 +146,6 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
           />
         )}
       />
-      {console.log(users)}
       <Grid container justify="flex-end">
         <div style={{ padding: "10px" }}>
           <span style={{ paddingRight: "10px" }}>Select user role</span>

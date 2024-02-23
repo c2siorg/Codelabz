@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 import React from "react";
 import AddIcon from "@mui/icons-material/Add";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import OrgUsersCard from "../OrgUsersCard/orgUsersCard";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,8 +68,14 @@ function Orgusers({
   dataTestId
 }) {
   const classes = useStyles();
+  const [show, isShow] = React.useState(false);
+  const showAddUserModal = e => {
+    e.preventDefault();
+    isShow(true);
+  };
   return (
     <React.Fragment>
+      {show && <OrgUsersCard />}
       <Paper elevation={0} className={classes.root} data-testid={dataTestId}>
         <Grid container className={classes.gridPadding}>
           <Grid container direction="row">
@@ -96,6 +103,7 @@ function Orgusers({
                 style={{
                   display: AddUser ? "flex" : "none"
                 }}
+                onClick={showAddUserModal}
               >
                 <AddIcon />
                 Add New
