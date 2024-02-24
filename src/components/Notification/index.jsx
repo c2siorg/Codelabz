@@ -15,6 +15,7 @@ import CardWithoutPicture from "../Card/CardWithoutPicture";
 import { MoreVertOutlined } from "@mui/icons-material";
 import NotificationBox from "./NotificationBox";
 import { notifications } from "./notifications";
+import Footer from "../Footer";
 const Notification = ({ background = "white", textColor = "black" }) => {
   const classes = useStyles();
   const [openMenu, setOpen] = useState(false);
@@ -168,6 +169,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
           </Grid>
         </Grid>
       </section>
+      <Footer />
     </>
   );
 };
