@@ -131,7 +131,7 @@ const EditControls = ({
           }}
           onClick={() => toggleAddNewStep()}
         >
-          <AddIcon /> Add New Step 
+          <AddIcon /> Add New Step
         </Button>
         <Button
           className="ml-24"
