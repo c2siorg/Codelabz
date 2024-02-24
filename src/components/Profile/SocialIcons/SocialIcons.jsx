@@ -8,6 +8,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkIcon from "@mui/icons-material/Link";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,6 +33,10 @@ const useStyles = makeStyles(theme => ({
 
 export default function SocialIcons(props) {
   const classes = useStyles();
+  const currentProfileData = useSelector(
+    ({ firebase: { profile } }) => profile
+  );
+
   return (
     <Card className={classes.root}>
       <CardActions className={classes.icon} disableSpacing>
@@ -39,6 +44,8 @@ export default function SocialIcons(props) {
           color="primary"
           aria-label="share"
           data-testId="FacebookIcon"
+          href={`https://www.facebook.com/${currentProfileData.link_facebook}`}
+          target="_blank"
         >
           <FacebookIcon className={classes.facebookIcon} />
         </IconButton>
@@ -46,20 +53,34 @@ export default function SocialIcons(props) {
           color="primary"
           aria-label="share"
           data-testId="LinkedInIcon"
+          href={`https://www.linkedin.com/in/${currentProfileData.link_linkedin}`}
+          target="_blank"
         >
           <LinkedInIcon className={classes.linkedInIcon} />
         </IconButton>
-        <IconButton aria-label="share" data-testId="GithubIcon">
+        <IconButton
+          aria-label="share"
+          data-testId="GithubIcon"
+          href={`https://www.github.com/${currentProfileData.link_github}`}
+          target="_blank"
+        >
           <GitHubIcon className={classes.blackIcon} />
         </IconButton>
         <IconButton
           color="primary"
           aria-label="add to favorites"
           data-testId="TwitterIcon"
+          href={`https://www.twitter.com/${currentProfileData.link_twitter}`}
+          target="_blank"
         >
           <TwitterIcon className={classes.twitterIcon} />
         </IconButton>
-        <IconButton aria-label="share" data-testId="LinkIcon">
+        <IconButton
+          aria-label="share"
+          data-testId="LinkIcon"
+          href={currentProfileData.website}
+          target="_blank"
+        >
           <LinkIcon className={classes.blackIcon} />
         </IconButton>
       </CardActions>
