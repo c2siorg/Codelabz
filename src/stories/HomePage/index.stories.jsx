@@ -4,6 +4,7 @@ import ProviderWrapper from "../../helpers/providerWrapper";
 import Home from "../../components/HomePage/index";
 import { MemoryRouter } from "react-router-dom";
 import Footer from "../../components/Footer";
+import CodeLabzAppBar from "../../helpers/appBar";
 
 export default {
   title: "Home/HomePage",
@@ -21,6 +22,7 @@ export default {
 const Template = args => (
   <ProviderWrapper>
     <MemoryRouter>
+      <CodeLabzAppBar />
       <Home {...args} />
       <Footer />
     </MemoryRouter>

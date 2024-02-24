@@ -11,6 +11,7 @@ import {
 import OrgTutorialsComponent from "./OrgTutorials";
 import Header from "./Search";
 import Footer from "../../Footer";
+import { UserIsAllowedUserDashboard } from "../../../auth";
 
 const MyTutorials = () => {
   const [org_handles, setOrgHandles] = useState([]);
@@ -77,7 +78,11 @@ const MyTutorials = () => {
 
   return (
     <>
-      <div className="row-footer-below" data-testId="tutorialMainBody" style={{minHeight:"80vh"}}>
+      <div
+        className="row-footer-below"
+        data-testId="tutorialMainBody"
+        style={{ minHeight: "80vh" }}
+      >
         <Grid container>
           <Grid xs={12} className="mb-24">
             <Header />
@@ -97,4 +102,4 @@ const MyTutorials = () => {
   );
 };
 
-export default MyTutorials;
+export default UserIsAllowedUserDashboard(MyTutorials);

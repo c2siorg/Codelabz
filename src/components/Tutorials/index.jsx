@@ -26,6 +26,7 @@ import { Collapse, Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
 import Footer from "../Footer";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
@@ -328,4 +329,4 @@ const ViewTutorial = () => {
   }
 };
 
-export default ViewTutorial;
+export default UserIsAllowedUserDashboard(ViewTutorial);

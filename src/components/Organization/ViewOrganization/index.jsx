@@ -20,6 +20,7 @@ import Description from "../../UserDetails/Description";
 import Spinner from "../../../helpers/spinner";
 import ActivityList from "../../Topbar/Activity/ActivityList";
 import { BasicImage, NoImage } from "../../../helpers/images";
+import { UserIsAllowedUserDashboard } from "../../../auth";
 const useStyles = makeStyles(theme => ({
   acitvitylist: {
     padding: theme.spacing(1),
@@ -288,4 +289,4 @@ const ViewOrganization = () => {
   );
 };
 
-export default ViewOrganization;
+export default UserIsAllowedUserDashboard(ViewOrganization);

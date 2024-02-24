@@ -2,6 +2,7 @@ import React from "react";
 import ForgotPassword from "../../../components/AuthPage/ForgotPassword";
 import ProviderWrapper from "../../../helpers/providerWrapper";
 import { MemoryRouter } from "react-router-dom";
+import CodeLabzAppBar from "../../../helpers/appBar";
 
 export default {
   title: "AuthPage/Froget Password Page",
@@ -19,6 +20,7 @@ export default {
 const Template = args => (
   <ProviderWrapper>
     <MemoryRouter>
+      <CodeLabzAppBar />
       <ForgotPassword {...args} />{" "}
     </MemoryRouter>
   </ProviderWrapper>

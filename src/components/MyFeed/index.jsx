@@ -7,6 +7,7 @@ import Carousel from "./Carousel/index";
 import OrgsExplore from "./discoverOrgs/OrgExplore";
 import CodelabzExplore from "./DiscoverCodelabz/CodelabzExplore";
 import Footer from "../Footer";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 const MyFeed = () => {
   return (
@@ -20,4 +21,4 @@ const MyFeed = () => {
   );
 };
 
-export default MyFeed;
+export default UserIsAllowedUserDashboard(MyFeed);
