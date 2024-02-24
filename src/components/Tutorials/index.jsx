@@ -187,9 +187,12 @@ const ViewTutorial = () => {
                 mode={mode}
                 toggleImageDrawer={() => setImageDrawerVisible(true)}
                 tutorial_id={tutorialData.tutorial_id}
-                toggleAddNewStep={() =>
+                toggleAddNewStep={() => {
                   setAddNewStepModalVisible(!addNewStepModalVisible)
                 }
+                }
+                setAddNewStepModalVisible
+                addNewStepModalVisible
                 visibility={stepsData[currentStep].visibility}
                 owner={owner}
                 currentStep={currentStep}
@@ -307,8 +310,9 @@ const ViewTutorial = () => {
               )}
               <AddNewStepModal
                 viewModal={addNewStepModalVisible}
-                viewCallback={() =>
+                viewCallback={() => {
                   setAddNewStepModalVisible(!addNewStepModalVisible)
+                }
                 }
                 tutorial_id={tutorialData.tutorial_id}
                 steps_length={stepsData.length}
