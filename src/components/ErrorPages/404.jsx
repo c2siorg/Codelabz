@@ -12,12 +12,12 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     flexFlow: "column",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginTop:"17vh"
   },
   image: {
     height: "10rem",
     width: "20rem",
-
     alignItems: "center",
     [theme.breakpoints.down(750)]: {
       height: "10rem",
@@ -66,10 +66,8 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }));
-
 const NotFound = ({ background = "white", textColor = "black" }) => {
   const classes = useStyles();
-
   return (
     <Grid
       container
@@ -119,9 +117,7 @@ const NotFound = ({ background = "white", textColor = "black" }) => {
         </Button>
         </Link>
       </Grid>
-      
+
     </Grid>
   );
 };
-
-export default NotFound;

@@ -15,7 +15,7 @@ export default {
 const Template = args => (
   <ProviderWrapper>
     <MemoryRouter>
-    <CodeLabzAppBar />
+      <CodeLabzAppBar />
       <MyTutorials {...args} />
     </MemoryRouter>
   </ProviderWrapper>
