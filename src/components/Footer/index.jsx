@@ -23,7 +23,7 @@ const Footer = () => {
       justifyContent: "flex-start"
     }
   });
-  const classes = useStyles;
+  const classes = useStyles();
   return (
     <footer className="light-grey-bg pt-16 pb-16">
       <Grid container direction="row">
@@ -33,7 +33,7 @@ const Footer = () => {
               <BrandName />
             </Link>
           </h2>
-          <p className="mb-8">Live to learn, learn to live.</p>
+          <p className="mb-">Live to learn, learn to live.</p>
         </Grid>
 
         <Grid item xs={12} sm={12} md={3} className="col-pad-24">

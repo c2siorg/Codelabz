@@ -3,7 +3,6 @@ import React from "react";
 import ProviderWrapper from "../../helpers/providerWrapper";
 import Home from "../../components/HomePage/index";
 import { MemoryRouter } from "react-router-dom";
-import Footer from "../../components/Footer";
 
 export default {
   title: "Home/HomePage",
@@ -22,7 +21,6 @@ const Template = args => (
   <ProviderWrapper>
     <MemoryRouter>
       <Home {...args} />
-      <Footer />
     </MemoryRouter>
   </ProviderWrapper>
 );
