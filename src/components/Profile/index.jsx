@@ -2,6 +2,8 @@ import React from "react";
 import UserProfile from "../User/UserProfile/UserProfile";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useDispatch, useSelector } from "react-redux";
+import Footer from "../Footer";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 const Profile = () => {
   const firebase = useFirebase();
@@ -14,8 +16,9 @@ const Profile = () => {
   return (
     <React.Fragment>
       <UserProfile profileData={profileData} />
+      <Footer />
     </React.Fragment>
   );
 };
 
-export default Profile;
+export default UserIsAllowedUserDashboard(Profile);
