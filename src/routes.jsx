@@ -27,6 +27,7 @@ import MainNavbar from "./components/NavBar/new/MainNavbar";
 import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
+import Footer from "./components/Footer";
 
 const AuthIsLoaded = ({ children }) => {
   const profile = useSelector(({ firebase: { profile } }) => profile);
@@ -90,7 +91,16 @@ const Routes = () => {
         <CodeLabzAppBar />
         {/* <Navbar /> */}
         <Switch>
-          <Route exact path={"/"} component={HomePage} />
+          <Route
+            exact
+            path={"/"}
+            render={props => (
+              <>
+                <HomePage {...props} type={"Home"} />
+                <Footer />
+              </>
+            )}
+          />
           <Route
             exact
             path={"/login"}
