@@ -10,6 +10,7 @@ import {
 // import UserTutorialsComponent from "./UserTutorials";
 import OrgTutorialsComponent from "./OrgTutorials";
 import Header from "./Search";
+import Footer from "../../Footer";
 
 const MyTutorials = () => {
   const [org_handles, setOrgHandles] = useState([]);
@@ -75,21 +76,24 @@ const MyTutorials = () => {
   };
 
   return (
-    <div className="row-footer-below" data-testId="tutorialMainBody">
-      <Grid container>
-        <Grid xs={12} className="mb-24">
-          <Header />
-        </Grid>
-        {organizations && organizations.length > 0 && (
-          <Grid xs={12} className="m-24">
-            <OrgTutorialsComponent
-              organizations={organizations}
-              user={userDetails}
-            />
+    <>
+      <div className="row-footer-below" data-testId="tutorialMainBody">
+        <Grid container>
+          <Grid xs={12} className="mb-24">
+            <Header />
           </Grid>
-        )}
-      </Grid>
-    </div>
+          {organizations && organizations.length > 0 && (
+            <Grid xs={12} className="m-24">
+              <OrgTutorialsComponent
+                organizations={organizations}
+                user={userDetails}
+              />
+            </Grid>
+          )}
+        </Grid>
+      </div>
+      <Footer />
+    </>
   );
 };
 
