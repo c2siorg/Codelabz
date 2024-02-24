@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 import ResetPassword from "./ResetPassword";
 import VerifyEmail from "./VerifyEmail";
+import { AllowManageUser } from "../../auth/manageUserAuth";
 
 const ManageUsers = () => {
   const location = useLocation();
@@ -19,4 +20,4 @@ const ManageUsers = () => {
   );
 };
 
-export default ManageUsers;
+export default AllowManageUser(ManageUsers);

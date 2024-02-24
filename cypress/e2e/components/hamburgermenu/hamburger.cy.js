@@ -13,7 +13,7 @@ describe("Hamburger Menu Test | CodeLabz", () => {
 
   it("Check hamburger menu appears on smaller screens", function () {
     indexedDB.deleteDatabase("firebaseLocalStorageDb");
-    cy.visit(`${this.base_url}dashboard`);
+    cy.visit(`${this.base_url}`);
 
     cy.viewport(850, 640).get("[data-testid=MenuIcon]").should("exist");
     cy.get("[data-testid=MenuIcon]").click();

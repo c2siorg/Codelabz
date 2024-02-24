@@ -25,6 +25,8 @@ import HtmlTextRenderer from "./subComps/HtmlTextRenderer";
 import { Collapse, Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
+import Footer from "../Footer";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
@@ -174,154 +176,157 @@ const ViewTutorial = () => {
   if (tutorialData) {
     window.scrollTo(0, 0);
     return (
-      <Grid className="row-footer-below">
-        {allowEdit && (
+      <>
+        <Grid className="row-footer-below">
+          {allowEdit && (
+            <Grid>
+              <Grid xs={24} sm={24} md={24}>
+                <EditControls
+                  isPublished={tutorialData.isPublished}
+                  stepPanelVisible={stepPanelVisible}
+                  isDesktop={isDesktop}
+                  noteID={stepsData[currentStep].id}
+                  setMode={mode => setMode(mode)}
+                  mode={mode}
+                  toggleImageDrawer={() => setImageDrawerVisible(true)}
+                  tutorial_id={tutorialData.tutorial_id}
+                  toggleAddNewStep={() =>
+                    setAddNewStepModalVisible(!addNewStepModalVisible)
+                  }
+                  visibility={stepsData[currentStep].visibility}
+                  owner={owner}
+                  currentStep={currentStep}
+                  step_length={stepsData.length}
+                />
+              </Grid>
+            </Grid>
+          )}
+
           <Grid>
             <Grid xs={24} sm={24} md={24}>
-              <EditControls
-                isPublished={tutorialData.isPublished}
+              <TutorialHeading
                 stepPanelVisible={stepPanelVisible}
                 isDesktop={isDesktop}
-                noteID={stepsData[currentStep].id}
-                setMode={mode => setMode(mode)}
-                mode={mode}
-                toggleImageDrawer={() => setImageDrawerVisible(true)}
-                tutorial_id={tutorialData.tutorial_id}
-                toggleAddNewStep={() =>
-                  setAddNewStepModalVisible(!addNewStepModalVisible)
-                }
-                visibility={stepsData[currentStep].visibility}
-                owner={owner}
-                currentStep={currentStep}
-                step_length={stepsData.length}
+                setStepPanelVisible={setStepPanelVisible}
+                tutorialData={tutorialData}
+                timeRemaining={timeRemaining}
               />
             </Grid>
           </Grid>
-        )}
-
-        <Grid>
-          <Grid xs={24} sm={24} md={24}>
-            <TutorialHeading
-              stepPanelVisible={stepPanelVisible}
-              isDesktop={isDesktop}
-              setStepPanelVisible={setStepPanelVisible}
-              tutorialData={tutorialData}
-              timeRemaining={timeRemaining}
-            />
-          </Grid>
-        </Grid>
-        <Grid className={classes.flexRow}>
-          <ExpandMore
-            data-testid="tutorial-collapse-button"
-            expand={expand}
-            onClick={() => {
-              setExpand(prev => !prev);
-              setStepPanelVisible(prev => !prev);
-            }}
-            aria-expanded={expand}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon className={classes.ExpandIcon} />
-          </ExpandMore>
-
-          <Grid
-            width={stepPanelVisible ? (isDesktop ? "55%" : "100%") : "0"}
-            padding={stepPanelVisible ? "0 2rem" : "0"}
-            className={classes.widthTransition}
-          >
-            <Collapse
-              data-testid="tutorial-steps-list"
-              in={expand}
-              timeout="auto"
-              unmountOnExit
-              orientation="horizontal"
-              className={classes.collapseContainer}
+          <Grid className={classes.flexRow}>
+            <ExpandMore
+              data-testid="tutorial-collapse-button"
+              expand={expand}
+              onClick={() => {
+                setExpand(prev => !prev);
+                setStepPanelVisible(prev => !prev);
+              }}
+              aria-expanded={expand}
+              aria-label="show more"
             >
-              <StepsPanel
-                currentStep={currentStep}
-                onChange={onChange}
-                stepsData={stepsData}
-                onClick={() => setStepPanelVisible(false)}
-                hideButton={isDesktop}
-                setCurrentStep={setCurrentStep}
-                setStepData={setStepData}
-              />
-            </Collapse>
-          </Grid>
+              <ExpandMoreIcon className={classes.ExpandIcon} />
+            </ExpandMore>
 
-          <Grid className={classes.editorContainer}>
-            <Grid className="tutorial-content" justify="center" container>
-              <Grid
-                xs={24}
-                sm={24}
-                md={20}
-                lg={18}
-                className="col-pad-24-s mt-24-od tutorial-paper"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px"
-                }}
+            <Grid
+              width={stepPanelVisible ? (isDesktop ? "55%" : "100%") : "0"}
+              padding={stepPanelVisible ? "0 2rem" : "0"}
+              className={classes.widthTransition}
+            >
+              <Collapse
+                data-testid="tutorial-steps-list"
+                in={expand}
+                timeout="auto"
+                unmountOnExit
+                orientation="horizontal"
+                className={classes.collapseContainer}
               >
-                {!isDesktop && stepPanelVisible ? null : (
-                  <>
-                    {mode === "view" && (
-                      <div data-testId="tutorial-content">
-                        <HtmlTextRenderer html={currentStepContent} />
-                      </div>
-                    )}
-                    {mode === "edit" && (
-                      <>
-                        <StepsTitle
-                          currentStepNo={currentStepNo}
-                          owner={tutorialData.owner}
-                          tutorial_id={tutorialData.tutorial_id}
-                          step_id={stepsData[currentStep].id}
-                          step_title={stepsData[currentStep].title}
-                          step_time={stepsData[currentStep].time}
-                        />
-
-                        <QuillEditor
-                          data={stepsData[currentStep].content}
-                          tutorial_id={tutorialData.tutorial_id}
-                          id={stepsData[currentStep].id}
-                          key={
-                            stepsData[currentStep].title +
-                            stepsData[currentStep].id
-                          }
-                          mode={mode}
-                        />
-                      </>
-                    )}
-                  </>
-                )}
-              </Grid>
-              {imageDrawerVisible && (
-                <ImageDrawer
-                  visible={imageDrawerVisible}
-                  onClose={() => setImageDrawerVisible(false)}
-                  owner={tutorialData.owner}
-                  tutorial_id={tutorialData.tutorial_id}
-                  imageURLs={tutorialData.imageURLs}
+                <StepsPanel
+                  currentStep={currentStep}
+                  onChange={onChange}
+                  stepsData={stepsData}
+                  onClick={() => setStepPanelVisible(false)}
+                  hideButton={isDesktop}
+                  setCurrentStep={setCurrentStep}
+                  setStepData={setStepData}
                 />
-              )}
-              <AddNewStepModal
-                viewModal={addNewStepModalVisible}
-                viewCallback={() =>
-                  setAddNewStepModalVisible(!addNewStepModalVisible)
-                }
-                tutorial_id={tutorialData.tutorial_id}
-                steps_length={stepsData.length}
-                owner={tutorialData.owner}
-              />
+              </Collapse>
+            </Grid>
+
+            <Grid className={classes.editorContainer}>
+              <Grid className="tutorial-content" justify="center" container>
+                <Grid
+                  xs={24}
+                  sm={24}
+                  md={20}
+                  lg={18}
+                  className="col-pad-24-s mt-24-od tutorial-paper"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px"
+                  }}
+                >
+                  {!isDesktop && stepPanelVisible ? null : (
+                    <>
+                      {mode === "view" && (
+                        <div data-testId="tutorial-content">
+                          <HtmlTextRenderer html={currentStepContent} />
+                        </div>
+                      )}
+                      {mode === "edit" && (
+                        <>
+                          <StepsTitle
+                            currentStepNo={currentStepNo}
+                            owner={tutorialData.owner}
+                            tutorial_id={tutorialData.tutorial_id}
+                            step_id={stepsData[currentStep].id}
+                            step_title={stepsData[currentStep].title}
+                            step_time={stepsData[currentStep].time}
+                          />
+
+                          <QuillEditor
+                            data={stepsData[currentStep].content}
+                            tutorial_id={tutorialData.tutorial_id}
+                            id={stepsData[currentStep].id}
+                            key={
+                              stepsData[currentStep].title +
+                              stepsData[currentStep].id
+                            }
+                            mode={mode}
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                </Grid>
+                {imageDrawerVisible && (
+                  <ImageDrawer
+                    visible={imageDrawerVisible}
+                    onClose={() => setImageDrawerVisible(false)}
+                    owner={tutorialData.owner}
+                    tutorial_id={tutorialData.tutorial_id}
+                    imageURLs={tutorialData.imageURLs}
+                  />
+                )}
+                <AddNewStepModal
+                  viewModal={addNewStepModalVisible}
+                  viewCallback={() =>
+                    setAddNewStepModalVisible(!addNewStepModalVisible)
+                  }
+                  tutorial_id={tutorialData.tutorial_id}
+                  steps_length={stepsData.length}
+                  owner={tutorialData.owner}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+        <Footer />
+      </>
     );
   } else {
     return <Spinner half />;
   }
 };
 
-export default ViewTutorial;
+export default UserIsAllowedUserDashboard(ViewTutorial);

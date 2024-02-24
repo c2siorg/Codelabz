@@ -3,6 +3,8 @@ import errorImg from "../../assets/images/404.png";
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -10,12 +12,12 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     flexFlow: "column",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginTop: "17vh"
   },
   image: {
     height: "10rem",
     width: "20rem",
-
     alignItems: "center",
     [theme.breakpoints.down(750)]: {
       height: "10rem",
@@ -64,10 +66,8 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }));
-
 const NotFound = ({ background = "white", textColor = "black" }) => {
   const classes = useStyles();
-
   return (
     <Grid
       container
@@ -75,6 +75,7 @@ const NotFound = ({ background = "white", textColor = "black" }) => {
       style={{ background: background }}
       data-testId="errorPage"
     >
+      <p>test</p>
       <Grid
         item
         style={{ padding: "0", marginTop: "-5rem", marginLeft: "2rem" }}
@@ -108,6 +109,11 @@ const NotFound = ({ background = "white", textColor = "black" }) => {
         <Typography variant="body" style={{ color: textColor }}>
           We can't seem to find the page you are looking for
         </Typography>
+      </Grid>
+      <Grid item style={{ marginTop: "10px" }}>
+        <Link to={"/"}>
+          <Button>Back to Home</Button>
+        </Link>
       </Grid>
     </Grid>
   );

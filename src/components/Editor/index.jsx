@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Grid from "@mui/material/Grid";
 import { Prompt } from "react-router-dom";
 import { setCurrentStep } from "../../store/actions";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 const Editor = ({ id, data, tutorial_id }) => {
   const [allSaved, setAllSaved] = useState(true);
@@ -100,4 +101,4 @@ const Editor = ({ id, data, tutorial_id }) => {
   );
 };
 
-export default Editor;
+export default UserIsAllowedUserDashboard(Editor);
