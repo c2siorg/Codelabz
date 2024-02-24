@@ -5,6 +5,7 @@ import BaseTutorial from "../../../components/Tutorials/MyTutorials/BaseTutorial
 import OrgTutorials from "../../../components/Tutorials/MyTutorials/OrgTutorials/index";
 import UserTutorials from "../../../components/Tutorials/MyTutorials/UserTutorials/index";
 import ProviderWrapper from "../../../helpers/providerWrapper";
+import CodeLabzAppBar from "../../../helpers/appBar";
 
 export default {
   title: "Tutorials/MyTutorials",
@@ -14,6 +15,7 @@ export default {
 const Template = args => (
   <ProviderWrapper>
     <MemoryRouter>
+    <CodeLabzAppBar />
       <MyTutorials {...args} />
     </MemoryRouter>
   </ProviderWrapper>

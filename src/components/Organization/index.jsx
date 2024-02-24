@@ -24,6 +24,8 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import { unPublishOrganization } from "../../store/actions";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import { useParams } from "react-router-dom";
+import Footer from "../Footer";
+import { UserIsAllowOrgManager } from "../../auth";
 
 const Organizations = () => {
   //Set All the organisations for this user
@@ -93,119 +95,122 @@ const Organizations = () => {
   const orgsOfUser = profileData.organizations;
 
   return (
-    <Container maxWidth="xl">
-      <Grid container className={classes.root} direction="column">
-        <Grid item>
-          <SwitchAccount
-            Heading="Switch Account"
-            name={currentOrgData.org_handle}
-            userOrgs={orgsOfUser}
-            avatar={{
-              value: currentOrgData.org_image
-            }}
-            buttonText={
-              currentOrgUpdate
-                ? "Loading.."
-                : currentOrgData.org_published
-                ? "Unpublish"
-                : "Publish"
-            }
-            buttonClick={unpublishOrganization}
-          />
-        </Grid>
-        <Grid item container direction="row">
-          {windowSize.width <= 750 ? (
-            <Grid item>
-              <IconButton onClick={handleClick}>
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                elevation={10}
-                open={open}
-                anchorEl={anchorEl}
-                keepMounted
-                onClose={handleClose}
-                style={{
-                  marginTop: "3rem",
-                  zIndex: 999999
-                }}
-              >
-                {[
-                  {
-                    id: 1,
-                    name: "General",
-                    datatestid: "general-menu-item"
-                  },
-                  {
-                    id: 2,
-                    name: "Users",
-                    datatestid: "users-menu-item"
-                  },
-                  {
-                    id: 3,
-                    name: "Passwords",
-                    datatestid: "passwords-menu-item"
-                  },
-                  {
-                    id: 4,
-                    name: "Social media",
-                    datatestid: "socialmedia-menu-item"
-                  }
-                ].map(item => {
-                  return (
-                    <MenuItem
-                      key={`menu-item-${item.id}`}
-                      onClick={() => setSettingsMenu(item.id)}
-                    >{`${item.name}`}</MenuItem>
-                  );
-                })}
-              </Menu>
-            </Grid>
-          ) : (
-            <Grid item container xs={2}>
-              <SideBar
-                toggleSlider={toggleSlider}
-                open={openMenu}
-                menuItems={[
-                  {
-                    id: 1,
-                    name: "General",
-                    datatestid: "general-menu-item"
-                  },
-                  {
-                    id: 2,
-                    name: "Users",
-                    datatestid: "users-menu-item"
-                  },
-                  {
-                    id: 3,
-                    name: "Passwords",
-                    datatestid: "passwords-menu-item"
-                  },
-                  {
-                    id: 4,
-                    name: "Social media",
-                    datatestid: "socialmedia-menu-item"
-                  }
-                ]}
-                value={SettingsMenu}
-                onStateChange={item => {
-                  setSettingsMenu(item.id);
-                }}
-              />
-            </Grid>
-          )}
+    <>
+      <Container maxWidth="xl" style={{ minHeight: "80vh" }}>
+        <Grid container className={classes.root} direction="column">
+          <Grid item>
+            <SwitchAccount
+              Heading="Switch Account"
+              name={currentOrgData.org_handle}
+              userOrgs={orgsOfUser}
+              avatar={{
+                value: currentOrgData.org_image
+              }}
+              buttonText={
+                currentOrgUpdate
+                  ? "Loading.."
+                  : currentOrgData.org_published
+                  ? "Unpublish"
+                  : "Publish"
+              }
+              buttonClick={unpublishOrganization}
+            />
+          </Grid>
+          <Grid item container direction="row">
+            {windowSize.width <= 750 ? (
+              <Grid item>
+                <IconButton onClick={handleClick}>
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  elevation={10}
+                  open={open}
+                  anchorEl={anchorEl}
+                  keepMounted
+                  onClose={handleClose}
+                  style={{
+                    marginTop: "3rem",
+                    zIndex: 999999
+                  }}
+                >
+                  {[
+                    {
+                      id: 1,
+                      name: "General",
+                      datatestid: "general-menu-item"
+                    },
+                    {
+                      id: 2,
+                      name: "Users",
+                      datatestid: "users-menu-item"
+                    },
+                    {
+                      id: 3,
+                      name: "Passwords",
+                      datatestid: "passwords-menu-item"
+                    },
+                    {
+                      id: 4,
+                      name: "Social media",
+                      datatestid: "socialmedia-menu-item"
+                    }
+                  ].map(item => {
+                    return (
+                      <MenuItem
+                        key={`menu-item-${item.id}`}
+                        onClick={() => setSettingsMenu(item.id)}
+                      >{`${item.name}`}</MenuItem>
+                    );
+                  })}
+                </Menu>
+              </Grid>
+            ) : (
+              <Grid item container xs={2}>
+                <SideBar
+                  toggleSlider={toggleSlider}
+                  open={openMenu}
+                  menuItems={[
+                    {
+                      id: 1,
+                      name: "General",
+                      datatestid: "general-menu-item"
+                    },
+                    {
+                      id: 2,
+                      name: "Users",
+                      datatestid: "users-menu-item"
+                    },
+                    {
+                      id: 3,
+                      name: "Passwords",
+                      datatestid: "passwords-menu-item"
+                    },
+                    {
+                      id: 4,
+                      name: "Social media",
+                      datatestid: "socialmedia-menu-item"
+                    }
+                  ]}
+                  value={SettingsMenu}
+                  onStateChange={item => {
+                    setSettingsMenu(item.id);
+                  }}
+                />
+              </Grid>
+            )}
 
-          <Grid item xs={windowSize.width <= 750 ? 12 : 10}>
-            {SettingsMenu === 1 && <General />}
-            {SettingsMenu === 2 && <Users />}
-            {SettingsMenu === 3 && <Passwords />}
-            {SettingsMenu === 4 && <Socialmedia />}
+            <Grid item xs={windowSize.width <= 750 ? 12 : 10}>
+              {SettingsMenu === 1 && <General />}
+              {SettingsMenu === 2 && <Users />}
+              {SettingsMenu === 3 && <Passwords />}
+              {SettingsMenu === 4 && <Socialmedia />}
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+      <Footer />
+    </>
   );
 };
 
-export default Organizations;
+export default UserIsAllowOrgManager(Organizations);

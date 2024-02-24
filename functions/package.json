@@ -10,7 +10,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "10"
+    "node": "16"
   },
   "dependencies": {
     "dotenv": "^16.0.1",
