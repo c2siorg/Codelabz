@@ -24,6 +24,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import LinkIcon from "@mui/icons-material/Link";
 import FlagIcon from "@mui/icons-material/Flag";
 import Typography from "@mui/material/Typography";
+import { UserIsAllowedUserDashboard } from "../../../auth";
 
 const ProfileView = () => {
   const { handle } = useParams();
@@ -363,4 +364,4 @@ const ProfileView = () => {
   );
 };
 
-export default ProfileView;
+export default UserIsAllowedUserDashboard(ProfileView);

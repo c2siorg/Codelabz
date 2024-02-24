@@ -14,7 +14,6 @@ import { useFirebase } from "react-redux-firebase";
 import { Grid } from "@mui/material";
 
 const Orgsocial = props => {
-  console.log(props.toOpen);
   const classes = useStyles();
 
   const CurrentOrg = useSelector(

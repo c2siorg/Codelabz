@@ -42,6 +42,7 @@ import {
   validateOrgWebsite
 } from "../../helpers/validations";
 import PropTypes from "prop-types";
+import { UserIsNotAllowedUserDashboard } from "../../auth";
 
 const Dashboard = ({ background = "white", textColor = "black" }) => {
   const [loading, setLoading] = useState(false);
@@ -659,4 +660,4 @@ Dashboard.prototype = {
   background: PropTypes.string,
   textColor: PropTypes.string
 };
-export default Dashboard;
+export default UserIsNotAllowedUserDashboard(Dashboard);
