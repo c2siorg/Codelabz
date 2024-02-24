@@ -88,8 +88,6 @@ const Routes = () => {
   return (
     <Router>
       <AuthIsLoaded>
-        
-        {/* <Navbar /> */}
         <Switch>
           <Route
             exact
@@ -120,67 +118,132 @@ const Routes = () => {
           <Route
             exact
             path={"/manageusers"}
-            render={props =><><CodeLabzAppBar /><ManageUsers {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <ManageUsers {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/dashboard"}
-            render={props =><><CodeLabzAppBar /><Dashboard {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <Dashboard {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/dashboard/my_feed"}
-            render={props => <><CodeLabzAppBar /><MyFeed {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <MyFeed {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/profile"}
-            render={props =><><CodeLabzAppBar /><Profile {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <Profile {...props} />
+              </>
+            )}
           />
 
           <Route
             exact
             path={"/org/settings/:handle"}
-            render={props =><><CodeLabzAppBar /><Organization {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <Organization {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorials"}
-            render={props =><><CodeLabzAppBar /><MyTutorials {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <MyTutorials {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorials/:owner/:tutorial_id"}
-            render={props =><><CodeLabzAppBar /><ViewTutorial {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <ViewTutorial {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/user/:handle"}
-            render={props =><><CodeLabzAppBar /><ProfileView {...props} /></>}            
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <ProfileView {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/org/:handle"}
-            render={props =><><CodeLabzAppBar /><ViewOrganization {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <ViewOrganization {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorial/:id"}
-            render={props =><><CodeLabzAppBar /><TutorialPage {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <TutorialPage {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/editor"}
-            render={props =><><CodeLabzAppBar /><Editor {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <Editor {...props} />
+              </>
+            )}
           />
           <Route
             path={"/user-dashboard/:page"}
-            render={props =><><CodeLabzAppBar /><UserDashboard {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <UserDashboard {...props} />
+              </>
+            )}
           />
           <Route
             exact
             path={"/notification"}
-            render={props =><><CodeLabzAppBar /><Notification {...props} /></>}
+            render={props => (
+              <>
+                <CodeLabzAppBar />
+                <Notification {...props} />
+              </>
+            )}
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>

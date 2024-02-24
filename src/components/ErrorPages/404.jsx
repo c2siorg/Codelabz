@@ -114,12 +114,9 @@ const NotFound = ({ background = "white", textColor = "black" }) => {
       </Grid>
       <Grid item style={{ marginTop: "10px" }}>
         <Link to={"/"}>
-        <Button >
-          Back to Home
-        </Button>
+          <Button>Back to Home</Button>
         </Link>
       </Grid>
-      
     </Grid>
   );
 };
