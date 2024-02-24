@@ -88,6 +88,7 @@ const Routes = () => {
   return (
     <Router>
       <AuthIsLoaded>
+        {/* <Navbar /> */}
         <Switch>
           <Route
             exact
