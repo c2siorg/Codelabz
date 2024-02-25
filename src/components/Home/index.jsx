@@ -90,6 +90,7 @@ const Home = () => {
         justify="center"
         className="home-row mobile-top-padding mb-24"
         direction="row-reverse"
+        data-testId="home"
       >
         <Grid item xs={12} sm={12} md={6} lg={6} className="home-left-col">
           <Fade right={isDesktop}>
