@@ -104,4 +104,4 @@ Follow this link to fix this issue.
 3. If you want to work on a new issue, first try to discuss it in the gitter channel with the mentors and then raise the issue.
 <hr/>
 
-### ❓ Got more questions, ask it in our [gitter channel](https://matrix.to/#/#scorelab_CodeLabz:gitter.im) and we will love ❤ to answer them.
+### ❓ Got more questions, ask it in our [gitter channel](https://join.slack.com/t/c2si-org/shared_invite/zt-2cy99c1gx-H~80Vss28MvIhbxIAV6Q6w) and we will love ❤ to answer them.
