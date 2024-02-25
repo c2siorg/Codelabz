@@ -17,7 +17,7 @@ describe("Home Page Test | CodeLabz", () => {
 
   it("check not logged in user can access homepage", function () {
     cy.visit(this.base_url);
-    cy.get("[data-testId=homepage");
+    cy.get("[data-testId=home");
   });
 
   it("login", function () {

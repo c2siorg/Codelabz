@@ -37,6 +37,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import Home from "../Home";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -165,6 +166,11 @@ function HomePage({ background = "white", textColor = "black" }) {
   ]);
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
+  if(profileData.isEmpty){
+    return (
+      <Home />
+    )
+  }
   useEffect(() => {
     const getFeed = async () => {
       const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
