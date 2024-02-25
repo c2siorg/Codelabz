@@ -3,6 +3,8 @@ import errorImg from "../../assets/images/404.png";
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -75,6 +77,7 @@ const NotFound = ({ background = "white", textColor = "black" }) => {
       style={{ background: background }}
       data-testId="errorPage"
     >
+      <p>test</p>
       <Grid
         item
         style={{ padding: "0", marginTop: "-5rem", marginLeft: "2rem" }}
@@ -108,6 +111,11 @@ const NotFound = ({ background = "white", textColor = "black" }) => {
         <Typography variant="body" style={{ color: textColor }}>
           We can't seem to find the page you are looking for
         </Typography>
+      </Grid>
+      <Grid item style={{ marginTop: "10px" }}>
+        <Link to={"/"}>
+          <Button>Back to Home</Button>
+        </Link>
       </Grid>
     </Grid>
   );

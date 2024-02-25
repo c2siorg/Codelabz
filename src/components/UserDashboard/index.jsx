@@ -25,6 +25,8 @@ import { Link, Route, Switch, useParams } from "react-router-dom";
 import { Avatar, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
+import Footer from "../Footer";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 function UserDashboard() {
   const classes = useStyles();
@@ -88,123 +90,136 @@ function UserDashboard() {
   const profileData = useSelector(({ firebase: { profile } }) => profile);
   const [name, setName] = useState(getData(profileData.displayName));
   return (
-    <Box className={classes.root}>
-      <Box style={{ xs: { padding: 0 }, md: { padding: "0 30px" } }}>
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
-          <Box style={{ display: "flex", alignItems: "center" }}>
-            {windowSize.width <= 960 && (
-              <IconButton>
-                <MenuIcon
-                  onClick={() => {
-                    toggleSlider();
-                  }}
-                ></MenuIcon>
-              </IconButton>
-            )}
-            <Avatar
-              aria-label="recipe"
-              className={classes.avatar}
-              data-testId="UserAvatar"
+    <>
+      <section style={{ minHeight: "90vh" }}>
+        <Box className={classes.root}>
+          <Box style={{ xs: { padding: 0 }, md: { padding: "0 30px" } }}>
+            <Box
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
             >
-              {name.charAt(0).toUpperCase()}
-            </Avatar>
-            <Box marginLeft={1} data-testId="switchAccount">
-              <Typography className={classes.name}>{name}</Typography>
               <Box style={{ display: "flex", alignItems: "center" }}>
-                <Typography className={classes.account}>
-                  Personal account
-                </Typography>
-                <img src={SwitchImg} className={classes.image} alt="profile" />
-                <Typography
-                  className={classes.account}
-                  data-testId="switchAccount_switch"
+                {windowSize.width <= 960 && (
+                  <IconButton>
+                    <MenuIcon
+                      onClick={() => {
+                        toggleSlider();
+                      }}
+                    ></MenuIcon>
+                  </IconButton>
+                )}
+                <Avatar
+                  aria-label="recipe"
+                  className={classes.avatar}
+                  data-testId="UserAvatar"
                 >
-                  Switch
-                </Typography>
+                  {name.charAt(0).toUpperCase()}
+                </Avatar>
+                <Box marginLeft={1} data-testId="switchAccount">
+                  <Typography className={classes.name}>{name}</Typography>
+                  <Box style={{ display: "flex", alignItems: "center" }}>
+                    <Typography className={classes.account}>
+                      Personal account
+                    </Typography>
+                    <img
+                      src={SwitchImg}
+                      className={classes.image}
+                      alt="profile"
+                    />
+                    <Typography
+                      className={classes.account}
+                      data-testId="switchAccount_switch"
+                    >
+                      Switch
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
+              <Link to="/profile">
+                <Button className={classes.button}>Go to profile</Button>
+              </Link>
             </Box>
           </Box>
-          <Link to="/profile">
-            <Button className={classes.button}>Go to profile</Button>
-          </Link>
-        </Box>
-      </Box>
-      <Grid
-        container
-        data-testId="homepage"
-        spacing={2}
-        sx={{
-          p: 2
-        }}
-      >
-        {windowSize.width <= 960 && (
-          <div data-testId="homepageSidebarSmall">
-            <SideBar
-              open={openMenu}
-              menuItems={navLinks}
-              toggleSlider={toggleSlider}
-              notification={notification}
-              drawWidth={960}
-            />
-          </div>
-        )}
-        <Grid item className={classes.sidebar}>
-          <SideBar
-            open={openMenu}
-            toggleSlider={toggleSlider}
-            menuItems={navLinks}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={9}
-          style={{ xs: { padding: 0 }, md: { padding: "0 20px" } }}
-        >
-          <Typography className={classes.heading}>
-            {params.page.charAt(0).toUpperCase() + params.page.substr(1)}
-          </Typography>
-          {/* 
+          <Grid
+            container
+            data-testId="homepage"
+            spacing={2}
+            sx={{
+              p: 2
+            }}
+          >
+            {windowSize.width <= 960 && (
+              <div data-testId="homepageSidebarSmall">
+                <SideBar
+                  open={openMenu}
+                  menuItems={navLinks}
+                  toggleSlider={toggleSlider}
+                  notification={notification}
+                  drawWidth={960}
+                />
+              </div>
+            )}
+            <Grid item className={classes.sidebar}>
+              <SideBar
+                open={openMenu}
+                toggleSlider={toggleSlider}
+                menuItems={navLinks}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={9}
+              style={{ xs: { padding: 0 }, md: { padding: "0 20px" } }}
+            >
+              <Typography className={classes.heading}>
+                {params.page.charAt(0).toUpperCase() + params.page.substr(1)}
+              </Typography>
+              {/* 
 				 	Router for the user dashboard 
 				  */}
-          <Switch>
-            <Route
-              exact
-              path={"/user-dashboard/profile"}
-              component={UserForm}
-            />
-            <Route
-              exact
-              path={"/user-dashboard/settings"}
-              component={UserAccount}
-            />
-            <Route
-              exact
-              path={"/user-dashboard/socials"}
-              component={ConnectSocials}
-            />
-            <Route exact path={"/user-dashboard/email"} component={UserEmail} />
-            <Route
-              exact
-              path={"/user-dashboard/password"}
-              component={UserPassword}
-            />
-            <Route
-              exact
-              path={"/user-dashboard/organizations"}
-              component={Organizations}
-            />
-          </Switch>
-        </Grid>
-      </Grid>
-    </Box>
+              <Switch>
+                <Route
+                  exact
+                  path={"/user-dashboard/profile"}
+                  component={UserForm}
+                />
+                <Route
+                  exact
+                  path={"/user-dashboard/settings"}
+                  component={UserAccount}
+                />
+                <Route
+                  exact
+                  path={"/user-dashboard/socials"}
+                  component={ConnectSocials}
+                />
+                <Route
+                  exact
+                  path={"/user-dashboard/email"}
+                  component={UserEmail}
+                />
+                <Route
+                  exact
+                  path={"/user-dashboard/password"}
+                  component={UserPassword}
+                />
+                <Route
+                  exact
+                  path={"/user-dashboard/organizations"}
+                  component={Organizations}
+                />
+              </Switch>
+            </Grid>
+          </Grid>
+        </Box>
+      </section>
+      <Footer />
+    </>
   );
 }
 
-export default UserDashboard;
+export default UserIsAllowedUserDashboard(UserDashboard);

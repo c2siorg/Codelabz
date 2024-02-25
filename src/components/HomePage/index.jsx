@@ -37,6 +37,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import Home from "../Home";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -194,6 +195,9 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
+  if (profileData.isEmpty) {
+    return <Home />;
+  }
   return (
     <Card
       className={classes.wrapper}
