@@ -27,6 +27,7 @@ import MainNavbar from "./components/NavBar/new/MainNavbar";
 import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
+import Footer from "./components/Footer";
 
 const AuthIsLoaded = ({ children }) => {
   const profile = useSelector(({ firebase: { profile } }) => profile);
@@ -87,10 +88,8 @@ const Routes = () => {
   return (
     <Router>
       <AuthIsLoaded>
-        <CodeLabzAppBar />
-        {/* <Navbar /> */}
         <Switch>
-          <Route exact path={"/"} component={HomePage} />
+          <Route exact path={"/"} component={HomePage} render={props => <><CodeLabzAppBar /><HomePage {...props} /><Footer /></>} />
           <Route
             exact
             path={"/login"}
@@ -109,7 +108,7 @@ const Routes = () => {
           <Route
             exact
             path={"/manageusers"}
-            component={AllowManageUser(ManageUsers)}
+            render={props => <><CodeLabzAppBar /><ManageUsers {...props} /><Footer /></>}
           />
           <Route
             exact
@@ -119,57 +118,57 @@ const Routes = () => {
           <Route
             exact
             path={"/dashboard/my_feed"}
-            component={UserIsAllowedUserDashboard(MyFeed)}
+            render={props => <><CodeLabzAppBar /><MyFeed {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/profile"}
-            component={UserIsAllowedUserDashboard(Profile)}
+            render={props => <><CodeLabzAppBar /><Profile {...props} /><Footer /></>}
           />
 
           <Route
             exact
             path={"/org/settings/:handle"}
-            component={UserIsAllowOrgManager(Organization)}
+            render={props => <><CodeLabzAppBar /><Organization {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/tutorials"}
-            component={UserIsAllowedUserDashboard(MyTutorials)}
+            render={props => <><CodeLabzAppBar /><MyTutorials {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/tutorials/:owner/:tutorial_id"}
-            component={UserIsAllowedUserDashboard(ViewTutorial)}
+            render={props => <><CodeLabzAppBar /><ViewTutorial {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/user/:handle"}
-            component={UserIsAllowedUserDashboard(ProfileView)}
+            render={props => <><CodeLabzAppBar /><ProfileView {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/org/:handle"}
-            component={UserIsAllowedUserDashboard(ViewOrganization)}
+            render={props => <><CodeLabzAppBar /><ViewOrganization {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/tutorial/:id"}
-            component={UserIsAllowedUserDashboard(TutorialPage)}
+            render={props => <><CodeLabzAppBar /><TutorialPage {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/editor"}
-            component={UserIsAllowedUserDashboard(Editor)}
+            render={props => <><CodeLabzAppBar /><Editor {...props} /><Footer /></>}
           />
           <Route
             path={"/user-dashboard/:page"}
-            component={UserIsAllowedUserDashboard(UserDashboard)}
+            render={props => <><CodeLabzAppBar /><UserDashboard {...props} /><Footer /></>}
           />
           <Route
             exact
             path={"/notification"}
-            component={UserIsAllowedUserDashboard(Notification)}
+            render={props => <><CodeLabzAppBar /><Notification {...props} /><Footer /></>}
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>
