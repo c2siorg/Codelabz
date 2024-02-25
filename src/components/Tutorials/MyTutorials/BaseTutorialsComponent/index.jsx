@@ -43,8 +43,9 @@ const BaseTutorialsComponent = ({ owner = "", ownerName = "", users = [] }) => {
               md={3}
               lg={2}
               xl={2}
-              className="mb-8 mr-8 mt-8 ml-8"
-            >
+              // className="mb-8 mr-8 mt-8 ml-8"
+              style={{ marginRight: "100px" }}
+              >
               <TutorialCard
                 key={index}
                 tutorialData={tutorial}
