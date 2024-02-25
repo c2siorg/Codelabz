@@ -91,7 +91,16 @@ const Routes = () => {
         <CodeLabzAppBar />
         {/* <Navbar /> */}
         <Switch>
-          <Route exact path={"/"} render={props => <><HomePage {...props} /><Footer /></>} />
+          <Route
+            exact
+            path={"/"}
+            render={props => (
+              <>
+                <HomePage {...props} />
+                <Footer />
+              </>
+            )}
+          />
           <Route
             exact
             path={"/login"}
@@ -110,7 +119,12 @@ const Routes = () => {
           <Route
             exact
             path={"/manageusers"}
-            render={props => <><ManageUsers {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <ManageUsers {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
@@ -120,57 +134,112 @@ const Routes = () => {
           <Route
             exact
             path={"/dashboard/my_feed"}
-            render={props => <><MyFeed {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <MyFeed {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/profile"}
-            render={props => <><Profile {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <Profile {...props} />
+                <Footer />
+              </>
+            )}
           />
 
           <Route
             exact
             path={"/org/settings/:handle"}
-            render={props => <><Organization {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <Organization {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorials"}
-            render={props => <><MyTutorials {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <MyTutorials {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorials/:owner/:tutorial_id"}
-            render={props => <><ViewTutorial {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <ViewTutorial {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/user/:handle"}
-            render={props => <><ProfileView {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <ProfileView {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/org/:handle"}
-            render={props => <><ViewOrganization {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <ViewOrganization {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorial/:id"}
-            render={props => <><TutorialPage {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <TutorialPage {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/editor"}
-            render={props => <><Editor {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <Editor {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             path={"/user-dashboard/:page"}
-            render={props => <><UserDashboard {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <UserDashboard {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/notification"}
-            render={props => <><Notification {...props} /><Footer /></>}
+            render={props => (
+              <>
+                <Notification {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>
