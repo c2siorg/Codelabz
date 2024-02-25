@@ -24,6 +24,7 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import { unPublishOrganization } from "../../store/actions";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import { useParams } from "react-router-dom";
+import { UserIsAllowOrgManager } from "../../auth";
 
 const Organizations = () => {
   //Set All the organisations for this user
@@ -208,4 +209,4 @@ const Organizations = () => {
   );
 };
 
-export default Organizations;
+export default UserIsAllowOrgManager(Organizations);

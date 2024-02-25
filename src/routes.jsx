@@ -27,6 +27,7 @@ import MainNavbar from "./components/NavBar/new/MainNavbar";
 import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
+import Footer from "./components/Footer";
 
 const AuthIsLoaded = ({ children }) => {
   const profile = useSelector(({ firebase: { profile } }) => profile);
@@ -90,7 +91,16 @@ const Routes = () => {
         <CodeLabzAppBar />
         {/* <Navbar /> */}
         <Switch>
-          <Route exact path={"/"} component={HomePage} />
+          <Route
+            exact
+            path={"/"}
+            render={props => (
+              <>
+                <HomePage {...props} />
+                <Footer />
+              </>
+            )}
+          />
           <Route
             exact
             path={"/login"}
@@ -109,7 +119,12 @@ const Routes = () => {
           <Route
             exact
             path={"/manageusers"}
-            component={AllowManageUser(ManageUsers)}
+            render={props => (
+              <>
+                <ManageUsers {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
@@ -119,57 +134,112 @@ const Routes = () => {
           <Route
             exact
             path={"/dashboard/my_feed"}
-            component={UserIsAllowedUserDashboard(MyFeed)}
+            render={props => (
+              <>
+                <MyFeed {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/profile"}
-            component={UserIsAllowedUserDashboard(Profile)}
+            render={props => (
+              <>
+                <Profile {...props} />
+                <Footer />
+              </>
+            )}
           />
 
           <Route
             exact
             path={"/org/settings/:handle"}
-            component={UserIsAllowOrgManager(Organization)}
+            render={props => (
+              <>
+                <Organization {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorials"}
-            component={UserIsAllowedUserDashboard(MyTutorials)}
+            render={props => (
+              <>
+                <MyTutorials {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorials/:owner/:tutorial_id"}
-            component={UserIsAllowedUserDashboard(ViewTutorial)}
+            render={props => (
+              <>
+                <ViewTutorial {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/user/:handle"}
-            component={UserIsAllowedUserDashboard(ProfileView)}
+            render={props => (
+              <>
+                <ProfileView {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/org/:handle"}
-            component={UserIsAllowedUserDashboard(ViewOrganization)}
+            render={props => (
+              <>
+                <ViewOrganization {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/tutorial/:id"}
-            component={UserIsAllowedUserDashboard(TutorialPage)}
+            render={props => (
+              <>
+                <TutorialPage {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/editor"}
-            component={UserIsAllowedUserDashboard(Editor)}
+            render={props => (
+              <>
+                <Editor {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             path={"/user-dashboard/:page"}
-            component={UserIsAllowedUserDashboard(UserDashboard)}
+            render={props => (
+              <>
+                <UserDashboard {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route
             exact
             path={"/notification"}
-            component={UserIsAllowedUserDashboard(Notification)}
+            render={props => (
+              <>
+                <Notification {...props} />
+                <Footer />
+              </>
+            )}
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>
