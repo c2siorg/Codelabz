@@ -166,11 +166,6 @@ function HomePage({ background = "white", textColor = "black" }) {
   ]);
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
-  if(profileData.isEmpty){
-    return (
-      <Home />
-    )
-  }
   useEffect(() => {
     const getFeed = async () => {
       const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
@@ -200,6 +195,11 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
+  if(profileData.isEmpty){
+    return (
+      <Home />
+    )
+  }
   return (
     <Card
       className={classes.wrapper}
