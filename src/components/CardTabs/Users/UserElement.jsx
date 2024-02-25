@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import AddUser from "../../../assets/images/add-user.svg";
 import CheckUser from "../../../assets/images/square-check-regular.svg";
+import OrgUser from "../../../assets/images/org-user.svg";
 
 const UserElement = ({ user, index, useStyles }) => {
   const classes = useStyles();
@@ -26,7 +27,7 @@ const UserElement = ({ user, index, useStyles }) => {
         }}
       >
         <img
-          src={user.img[0]}
+          src={user?.img || OrgUser}
           className={classes.userImg}
           data-testId={index == 0 ? "UsersCardImg" : ""}
         />
@@ -35,13 +36,13 @@ const UserElement = ({ user, index, useStyles }) => {
             sx={{ fontWeight: 600, fontSize: "1rem" }}
             data-testId={index == 0 ? "UserName" : ""}
           >
-            {user.name}
+            {user?.name}
           </Box>
           <Box
             sx={{ fontWeight: 400, fontSize: "0.8rem" }}
             data-testId={index == 0 ? "UserDesg" : ""}
           >
-            {user.desg}
+            {user?.desg}
           </Box>
         </Box>
       </Box>
