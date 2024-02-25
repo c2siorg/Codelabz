@@ -25,6 +25,7 @@ import HtmlTextRenderer from "./subComps/HtmlTextRenderer";
 import { Collapse, Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
@@ -324,4 +325,4 @@ const ViewTutorial = () => {
   }
 };
 
-export default ViewTutorial;
+export default UserIsAllowedUserDashboard(ViewTutorial);

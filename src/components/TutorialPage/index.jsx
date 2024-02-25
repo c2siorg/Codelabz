@@ -17,6 +17,7 @@ import { getUserProfileData } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useParams, useHistory } from "react-router-dom";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 function TutorialPage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -128,4 +129,4 @@ function TutorialPage({ background = "white", textColor = "black" }) {
   );
 }
 
-export default TutorialPage;
+export default UserIsAllowedUserDashboard(TutorialPage);

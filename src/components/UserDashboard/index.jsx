@@ -25,6 +25,7 @@ import { Link, Route, Switch, useParams } from "react-router-dom";
 import { Avatar, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
+import { UserIsAllowedUserDashboard } from "../../auth";
 
 function UserDashboard() {
   const classes = useStyles();
@@ -207,4 +208,4 @@ function UserDashboard() {
   );
 }
 
-export default UserDashboard;
+export default UserIsAllowedUserDashboard(UserDashboard);

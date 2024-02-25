@@ -10,6 +10,7 @@ import {
 // import UserTutorialsComponent from "./UserTutorials";
 import OrgTutorialsComponent from "./OrgTutorials";
 import Header from "./Search";
+import { UserIsAllowedUserDashboard } from "../../../auth";
 
 const MyTutorials = () => {
   const [org_handles, setOrgHandles] = useState([]);
@@ -93,4 +94,4 @@ const MyTutorials = () => {
   );
 };
 
-export default MyTutorials;
+export default UserIsAllowedUserDashboard(MyTutorials);
