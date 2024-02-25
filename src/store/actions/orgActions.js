@@ -425,3 +425,27 @@ export const deleteOrganization =
       console.log(e);
     }
   };
+
+export const getAllOrgOwners = () => async firestore => {
+  try {
+    const orgUsersSnap = await firestore.collection("org_users").get();
+    const allUserIds = orgUsersSnap.docs.map(doc => doc.id.split("_")[1]);
+    const allUsersDataPromises = allUserIds.map(async userId => {
+      const userDocRef = firestore.collection("cl_user").doc(userId);
+      const userDoc = await userDocRef.get();
+      if (userDoc.exists) {
+        return {
+          uid: userId,
+          name: userDoc.get("displayName"),
+          handle: userDoc.get("handle"),
+          img: userDoc.get("photoURL")
+        };
+      }
+    });
+
+    const allUsersData = await Promise.all(allUsersDataPromises);
+    return allUsersData;
+  } catch (e) {
+    console.log(e);
+  }
+};
