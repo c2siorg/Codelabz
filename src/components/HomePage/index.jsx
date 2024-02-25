@@ -195,10 +195,8 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
-  if(profileData.isEmpty){
-    return (
-      <Home />
-    )
+  if (profileData.isEmpty) {
+    return <Home />;
   }
   return (
     <Card

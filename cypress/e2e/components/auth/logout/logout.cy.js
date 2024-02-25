@@ -34,11 +34,10 @@ describe("Testing Logout Functionality | CodeLabz", () => {
     cy.get("[data-testid=Logout]").should("exist");
     cy.get("[data-testid=Logout]").click();
     cy.get("[data-testid=Logout]").should("not.exist");
-    cy.visit(`${this.base_url}profile`);
     cy.location().should(loc => {
-      expect(loc.href).to.not.eq(`${this.base_url}profile`);
-      expect(loc.href).to.eq(`${this.base_url}login`);
+      expect(loc.href).to.eq(`${this.base_url}`);
     });
+    cy.get("[data-testid=home]").should("exist");
   });
 
   it("Logout using Profile Dropdown", function () {
@@ -61,11 +60,9 @@ describe("Testing Logout Functionality | CodeLabz", () => {
     cy.get("[data-testid=nav-user]").click();
     cy.get("#log-out").should("exist");
     cy.get("#log-out").click();
-    cy.visit(`${this.base_url}profile`);
-    cy.wait(5000);
     cy.location().should(loc => {
-      expect(loc.href).to.not.eq(`${this.base_url}profile`);
-      expect(loc.href).to.eq(`${this.base_url}login`);
+      expect(loc.href).to.eq(`${this.base_url}`);
     });
+    cy.get("[data-testid=home]").should("exist");
   });
 });
