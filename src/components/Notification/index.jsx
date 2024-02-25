@@ -15,6 +15,7 @@ import CardWithoutPicture from "../Card/CardWithoutPicture";
 import { MoreVertOutlined } from "@mui/icons-material";
 import NotificationBox from "./NotificationBox";
 import { notifications } from "./notifications";
+import useGetSuggestedUsers from "../../helpers/customHooks/useGetSuggestedUsers";
 const Notification = ({ background = "white", textColor = "black" }) => {
   const classes = useStyles();
   const [openMenu, setOpen] = useState(false);
@@ -22,6 +23,10 @@ const Notification = ({ background = "white", textColor = "black" }) => {
     setOpen(!openMenu);
   };
   const windowSize = useWindowSize();
+
+  const { isLoading, suggestedUsers } = useGetSuggestedUsers();
+  console.log(suggestedUsers);
+
   const [upcomingEvents, setUpEvents] = useState([
     {
       name: "Google Summer of Code",
@@ -45,32 +50,32 @@ const Notification = ({ background = "white", textColor = "black" }) => {
     }
   ]);
 
-  const [usersToFollow, setUsersToFollow] = useState([
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    }
-  ]);
+  //  const [usersToFollow, setUsersToFollow] = useState([
+  //  {
+  //    name: "Janvi Thakkar",
+  //    img: [OrgUser],
+  //    desg: "Software Engineer",
+  //    onClick: {}
+  //  },
+  //  {
+  //    name: "Janvi Thakkar",
+  //    img: [OrgUser],
+  //    desg: "Software Engineer",
+  //    onClick: {}
+  //  },
+  //  {
+  //    name: "Janvi Thakkar",
+  //    img: [OrgUser],
+  //    desg: "Software Engineer",
+  //    onClick: {}
+  //  },
+  //  {
+  //    name: "Janvi Thakkar",
+  //    img: [OrgUser],
+  //    desg: "Software Engineer",
+  //    onClick: {}
+  //  }
+  //]);
 
   return (
     <>
@@ -148,7 +153,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
               data-testId="homepageUsersToFollow"
             >
               <Grid item style={{ minWidth: "100%" }}>
-                <UserCard title={"Who to Follow"} users={usersToFollow} />
+                <UserCard title={"Who to Follow"} users={suggestedUsers} />
               </Grid>
             </Grid>
 

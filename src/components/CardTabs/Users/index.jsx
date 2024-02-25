@@ -47,7 +47,8 @@ const UserCard = props => {
           >
             {props.title}
           </Typography>
-          {props.users.map(function (user, index) {
+
+          {props.users?.map(function (user, index) {
             return (
               <UserElement
                 key={index}
