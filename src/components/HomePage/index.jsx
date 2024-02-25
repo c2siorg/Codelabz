@@ -37,6 +37,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import { getOrgUserData } from "../../store/actions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -137,32 +138,37 @@ function HomePage({ background = "white", textColor = "black" }) {
     }
   ]);
 
-  const [contributors, setContributors] = useState([
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    }
-  ]);
+  const [contributors, setContributors] = useState([]);
+  const data = useSelector(
+    ({
+      org: {
+        user: { data }
+      }
+    }) => data
+  );
+  const currentOrgHandle = useSelector(
+    ({
+      org: {
+        general: { current }
+      }
+    }) => current
+  );
+  useEffect(() => {
+    getOrgUserData(currentOrgHandle)(firestore, dispatch);
+  }, [currentOrgHandle, firestore, dispatch]);
+
+  useEffect(() => {
+    setContributors(data);
+    console.log("Data:", data);
+  }, [data]);
+  // const [contributors, setContributors] = useState([
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  // ]);
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
   useEffect(() => {
