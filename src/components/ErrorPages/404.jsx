@@ -10,7 +10,8 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     alignItems: "center",
     flexFlow: "column",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginTop: "17vh"
   },
   image: {
     height: "10rem",
