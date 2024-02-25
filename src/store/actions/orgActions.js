@@ -426,7 +426,7 @@ export const deleteOrganization =
     }
   };
 
-export const getAllOrgOwners = () => async (firestore) => {
+export const getAllOrgOwners = () => async firestore => {
   try {
     const orgUsersSnap = await firestore.collection("org_users").get();
     const allUserIds = orgUsersSnap.docs.map(doc => doc.id.split("_")[1]);
@@ -438,7 +438,7 @@ export const getAllOrgOwners = () => async (firestore) => {
           uid: userId,
           name: userDoc.get("displayName"),
           handle: userDoc.get("handle"),
-          img: userDoc.get("photoURL"),
+          img: userDoc.get("photoURL")
         };
       }
     });
