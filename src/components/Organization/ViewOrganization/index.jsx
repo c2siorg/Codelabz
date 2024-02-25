@@ -125,7 +125,7 @@ const ViewOrganization = () => {
   }, [db, profileData.uid]);
 
   const handleOrgSubscription = async () => {
-    if (!currentOrgData.userSubscription)
+    if (!CurrentOrg.userSubscription)
       await subscribeOrg(handle)(firebase, firestore, dispatch);
     else await unSubscribeOrg(handle)(firebase, firestore, dispatch);
   };
@@ -138,13 +138,6 @@ const ViewOrganization = () => {
     }) => loading
   );
 
-  const currentOrgData = useSelector(
-    ({
-      org: {
-        data: { data }
-      }
-    }) => data
-  );
 
   const organizations = useSelector(
     ({
@@ -174,27 +167,27 @@ const ViewOrganization = () => {
         minHeight: "100vh"
       }}
     >
-      {loading || !currentOrgData ? (
+      {loading || !CurrentOrg ? (
         <React.Fragment>
           <Spinner />
         </React.Fragment>
       ) : (
         <div>
-          {currentOrgData && (
+          {CurrentOrg && (
             <React.Fragment>
               <Banner
                 bannerImage="https://i.postimg.cc/zXvv1vwL/Org-Banner-Demo.png"
-                contributors={currentOrgData.contributorsCount}
-                feed={currentOrgData.feedCount}
-                followers={currentOrgData.followerCount}
-                name={currentOrgData.org_name}
+                contributors={CurrentOrg.contributorsCount}
+                feed={CurrentOrg.feedCount}
+                followers={CurrentOrg.followerCount}
+                name={CurrentOrg.org_name}
                 profileImage={
-                  currentOrgData.org_image ? currentOrgData.org_image : NoImage
+                  CurrentOrg.org_image ? CurrentOrg.org_image : NoImage
                 }
                 story="Think Different"
                 handle={handle}
                 isOrgBelongsToUser={organizations.includes(handle)}
-                isUserSubscribed={currentOrgData.userSubscription}
+                isUserSubscribed={CurrentOrg.userSubscription}
                 handleOrgSubscription={handleOrgSubscription}
               />
               <Container
@@ -254,13 +247,13 @@ const ViewOrganization = () => {
                       <Grid item>
                         <Description
                           Heading={"Description"}
-                          Content={currentOrgData.org_description}
+                          Content={CurrentOrg.org_description}
                         />
                       </Grid>
                       <Grid item>
                         <Description
                           Heading={"CodeLabz you may like"}
-                          Content={currentOrgData.org_description}
+                          Content={CurrentOrg.org_description}
                         />
                       </Grid>
                       <Grid item>
@@ -283,7 +276,7 @@ const ViewOrganization = () => {
           )}
         </div>
       )}
-      {currentOrgData === false && "No organization with the provided handle"}
+      {CurrentOrg === false && "No organization with the provided handle"}
     </div>
   );
 };
