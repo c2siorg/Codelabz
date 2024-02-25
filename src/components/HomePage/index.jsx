@@ -37,6 +37,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import { getAllOrgOwners } from "../../store/actions/orgActions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -110,32 +111,42 @@ function HomePage({ background = "white", textColor = "black" }) {
     "React"
   ]);
 
-  const [usersToFollow, setUsersToFollow] = useState([
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    }
-  ]);
+  // const [usersToFollow, setUsersToFollow] = useState([
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   },
+  //   {
+  //     name: "Janvi Thakkar",
+  //     img: [OrgUser],
+  //     desg: "Software Engineer",
+  //     onClick: {}
+  //   }
+  // ]);
+
+  const [usersToFollow, setUsersToFollow] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getAllOrgOwners()(firestore, dispatch);
+      console.log("Data", data);
+      setUsersToFollow(data);
+    };
+    fetchData();
+  }, []);
 
   const [contributors, setContributors] = useState([
     {
