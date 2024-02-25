@@ -74,8 +74,6 @@ const CodelabzCarousel = ({ sortBy }) => {
     return () => {};
   }, [firestore, dispatch]);
 
-  console.log(tutorials);
-
   const getTitle = () => {
     switch (sortBy) {
       case "trending":
