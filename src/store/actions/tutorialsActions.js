@@ -122,11 +122,11 @@ export const createTutorial =
   tutorialData => async (firebase, firestore, dispatch, history) => {
     try {
       dispatch({ type: actions.CREATE_TUTORIAL_START });
-      const { title, summary, owner, created_by, is_org } = tutorialData;
+      const { title, summary, owner, created_by,tags ,is_org } = tutorialData;
 
       const setData = async () => {
         const document = firestore.collection("tutorials").doc();
-
+        console.log(tags);
         const documentID = document.id;
         const step_id = `${documentID}_${new Date().getTime()}`;
 
@@ -141,6 +141,7 @@ export const createTutorial =
           featured_image: "",
           icon: "",
           url: "",
+          tags:tags,
           background_color: "#ffffff",
           text_color: "#000000",
           createdAt: firestore.FieldValue.serverTimestamp(),
