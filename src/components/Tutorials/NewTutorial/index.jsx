@@ -5,7 +5,7 @@ import { createTutorial } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
-import { Alert, Box } from "@mui/material";
+import { Alert, Box,Chip } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
 import { IconButton } from "@mui/material";
@@ -32,6 +32,48 @@ const useStyles = makeStyles(theme => ({
   purple: {
     color: deepPurple[700],
     backgroundColor: deepPurple[500]
+  },
+  tagsInput: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    minHeight: 48,
+    width: 480,
+    border: '1px solid rgb(214, 216, 218)',
+    borderRadius: 6,
+    // outline: '1px solid #673ab7',
+    '& input': {
+      flex: 1,
+      border: 'none',
+      height: 46,
+      fontSize: 14,
+      padding: '4px 0 0 0',
+      '&:focus': {
+        outline: 'none',
+      },
+    },
+  },
+  tagsContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    padding: 0,
+    margin: '8px 0 0 0',
+  },
+  tag: {
+    margin: '0 8px 8px 0',
+  },
+  tagInput:{
+    border: 'none',
+    width: "100%",
+    height:"100%",
+    textAlign:"center",
+    // height: 46,
+    // border:"1px solid white"  , 
+    fontSize: 14,
+    outline:"none",
+    '&:focus': {
+      outline: 'none',
+    },
+  
   }
 }));
 
@@ -43,6 +85,9 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [tagsInput, setTagsInput] = useState('');
+  const [tagsInputClicked, setTagsInputClicked] = useState(false);
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
@@ -103,14 +148,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const orgList =
     allowOrgs > 0
       ? organizations
-          .map((org, i) => {
-            if (org.permissions.includes(3) || org.permissions.includes(2)) {
-              return org;
-            } else {
-              return null;
-            }
-          })
-          .filter(Boolean)
+        .map((org, i) => {
+          if (org.permissions.includes(3) || org.permissions.includes(2)) {
+            return org;
+          } else {
+            return null;
+          }
+        })
+        .filter(Boolean)
       : null;
 
   useEffect(() => {
@@ -122,6 +167,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     const tutorialData = {
       ...formValue,
       created_by: userHandle,
+      tags: tags,
       is_org: userHandle !== formValue.owner,
       completed: false
     };
@@ -146,6 +192,22 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   };
 
   const classes = useStyles();
+
+
+  const removeTags = (indexToRemove) => {
+    setTags(tags.filter((_, index) => index !== indexToRemove));
+  };
+
+  const addTags = (event) => {
+    if (event.target.value !== '') {
+      setTags([...tags, event.target.value]);
+      event.target.value = '';
+      setTagsInput('');
+      console.log(tagsInput)
+    }
+    
+  };
+
   return (
     <Modal
       open={visible}
@@ -154,6 +216,8 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       aria-describedby="simple-modal-description"
       style={{
         display: "flex",
+        maxWidth: "50%",
+        marginLeft: "25%",
         alignItems: "center",
         justifyContent: "center"
       }}
@@ -200,6 +264,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             prefix={
               <AppstoreAddOutlined style={{ color: "rgba(0,0,0,.25)" }} />
             }
+            onClick={()=>setTagsInputClicked(false)}
             placeholder="Title of the Tutorial"
             autoComplete="title"
             name="title"
@@ -215,6 +280,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             prefix={
               <AppstoreAddOutlined style={{ color: "rgba(0,0,0,.25)" }} />
             }
+            onClick={()=>setTagsInputClicked(false)}
             fullWidth
             variant="outlined"
             name="summary"
@@ -225,6 +291,32 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             onChange={e => handleChange(e)}
             style={{ marginBottom: "2rem" }}
           />
+
+          <div className={classes.tagsInput} style={{outline: tagsInputClicked ? '1px solid #673ab7 ' : ''}} onClick={()=>setTagsInputClicked(true)} >
+            <div className={classes.tagsContainer}>
+              {tags.map((tag, index) => (
+                <Chip
+                  key={index}
+                  label={tag}
+                  onDelete={() => removeTags(index)}
+                  className={classes.tag}
+                />
+              ))}
+            </div>
+            <TextField
+              type="text"
+              variant="standard"
+              className={classes.tagInput}
+              value={tagsInput}
+              onChange={(event) => setTagsInput(event.target.value)}
+              InputProps={{
+                disableUnderline: true,
+                inputProps: { style: { marginLeft: '14px',border:"none !important",outline:"none !important" } },
+              }}
+              onKeyUp={(event) => (event.key === 'ArrowUp' ?  addTags(event) : null)}
+              placeholder="Press ArrowUp key to add tags"
+            />
+          </div>
 
           <IconButton>
             <ImageIcon />

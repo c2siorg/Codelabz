@@ -55,6 +55,7 @@ const useStyles = makeStyles(theme => ({
     padding: "5px"
   },
   time: {
+    marginLeft:"2%",
     lineHeight: "1"
   },
   small: {
@@ -99,6 +100,8 @@ export default function CardWithoutPicture({ tutorial }) {
   const getTime = timestamp => {
     return timestamp.toDate().toDateString();
   };
+
+  
 
   return (
     <Card className={classes.root} data-testId="codelabz">
@@ -161,14 +164,16 @@ export default function CardWithoutPicture({ tutorial }) {
         </CardContent>
       </Link>
       <CardActions className={classes.settings} disableSpacing>
+      {tutorial?.tags.map((tag, index) => (
         <Chip
-          label="HTML"
+          key={index}
+          label={tag}
           component="a"
-          href="#chip"
+          href={`#${tag}`} 
           clickable
           variant="outlined"
-          className={classes.margin}
         />
+      ))}
         <Typography
           variant="overline"
           display="block"

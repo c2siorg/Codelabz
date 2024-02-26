@@ -183,6 +183,7 @@ function HomePage({ background = "white", textColor = "black" }) {
       }
     }) => homepageFeedArray
   );
+  // console.log(tutorials, "tutorials")
 
   const notification = () => {};
   const handleChange = (event, newValue) => {
