@@ -26,6 +26,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
         name: userDoc.get("displayName"),
         handle: userDoc.get("handle"),
         image: userDoc.get("photoURL"),
+        uid:userDoc.get("uid"),
         permission_level: user.permissions
       };
     });
@@ -81,36 +82,45 @@ export const addOrgUser =
     }
   };
 
-// removes all permissions of a user from an organization
-export const removeOrgUser =
-  ({ org_handle, handle }) =>
-  async (firestore, dispatch) => {
+export const updateUserPermissions =
+  ({ org_handle, userId, permissions }) =>
+  async (firestore,dispatch) => {
     try {
-      dispatch({ type: actions.ADD_ORG_USER_START });
-      const userDoc = await firestore
-        .collection("cl_user")
-        .where("handle", "==", handle)
-        .get();
-      if (userDoc.docs.length === 1) {
-        const uid = userDoc.docs[0].get("uid");
+      const userDoc = await firestore.collection("cl_user").doc(userId).get();
+      if (userDoc.exists) {
         await firestore
           .collection("org_users")
-          .doc(`${org_handle}_${uid}`)
-          .delete();
-
+          .doc(`${org_handle}_${userId}`)
+          .update({
+            permissions: [permissions]
+          });
         await getOrgUserData(org_handle)(firestore, dispatch);
-        dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
-      } else {
-        dispatch({
-          type: actions.ADD_ORG_USER_FAIL,
-          payload: `User [${handle}] is not registered with CodeLabz`
-        });
       }
     } catch (e) {
-      console.log(e);
-      dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
+      console.error("Error updating org user permissions:", e);
     }
   };
+
+// removes all permissions of a user from an organization
+export const removeOrgUser = ({ org_handle, handle }) => async (firestore, dispatch) => {
+  try {
+    dispatch({ type: actions.ADD_ORG_USER_START });
+    const userDoc = await firestore.collection("cl_user").doc(handle).get();
+    if (userDoc.exists) {
+      await firestore.collection("org_users").doc(`${org_handle}_${handle}`).delete();
+      await getOrgUserData(org_handle)(firestore, dispatch);
+      dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
+    } else {
+      dispatch({
+        type: actions.ADD_ORG_USER_FAIL,
+        payload: `User [${handle}] is not registered with CodeLabz`
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
+  }
+};
 
 export const getOrgBasicData = org_handle => async firebase => {
   try {
