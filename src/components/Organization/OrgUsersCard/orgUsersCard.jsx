@@ -195,7 +195,7 @@ const OrgUsersCard = () => {
     { name: "Delete", icon: <DeleteIcon />, value: "remove_user" }
   ];
 
-  const handlePermissionChange =async (key, permission_level, handle) => {
+  const handlePermissionChange = async (key, permission_level, handle) => {
     console.log(handle);
     if (key === "remove_user") {
       await removeOrgUser({
@@ -204,10 +204,10 @@ const OrgUsersCard = () => {
       })(firestore, dispatch);
     } else if (parseInt(key.split("_")[1]) !== permission_level[0]) {
       await updateUserPermissions({
-        org_handle:currentOrgHandle,
-        userId : handle,
+        org_handle: currentOrgHandle,
+        userId: handle,
         permissions: parseInt(key.split("_")[1])
-      })(firestore,dispatch);
+      })(firestore, dispatch);
     }
     setAnchorEl(null);
   };

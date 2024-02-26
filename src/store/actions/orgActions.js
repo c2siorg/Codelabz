@@ -26,7 +26,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
         name: userDoc.get("displayName"),
         handle: userDoc.get("handle"),
         image: userDoc.get("photoURL"),
-        uid:userDoc.get("uid"),
+        uid: userDoc.get("uid"),
         permission_level: user.permissions
       };
     });
@@ -84,7 +84,7 @@ export const addOrgUser =
 
 export const updateUserPermissions =
   ({ org_handle, userId, permissions }) =>
-  async (firestore,dispatch) => {
+  async (firestore, dispatch) => {
     try {
       const userDoc = await firestore.collection("cl_user").doc(userId).get();
       if (userDoc.exists) {
@@ -102,25 +102,30 @@ export const updateUserPermissions =
   };
 
 // removes all permissions of a user from an organization
-export const removeOrgUser = ({ org_handle, handle }) => async (firestore, dispatch) => {
-  try {
-    dispatch({ type: actions.ADD_ORG_USER_START });
-    const userDoc = await firestore.collection("cl_user").doc(handle).get();
-    if (userDoc.exists) {
-      await firestore.collection("org_users").doc(`${org_handle}_${handle}`).delete();
-      await getOrgUserData(org_handle)(firestore, dispatch);
-      dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
-    } else {
-      dispatch({
-        type: actions.ADD_ORG_USER_FAIL,
-        payload: `User [${handle}] is not registered with CodeLabz`
-      });
+export const removeOrgUser =
+  ({ org_handle, handle }) =>
+  async (firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.ADD_ORG_USER_START });
+      const userDoc = await firestore.collection("cl_user").doc(handle).get();
+      if (userDoc.exists) {
+        await firestore
+          .collection("org_users")
+          .doc(`${org_handle}_${handle}`)
+          .delete();
+        await getOrgUserData(org_handle)(firestore, dispatch);
+        dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
+      } else {
+        dispatch({
+          type: actions.ADD_ORG_USER_FAIL,
+          payload: `User [${handle}] is not registered with CodeLabz`
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
     }
-  } catch (e) {
-    console.error(e);
-    dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
-  }
-};
+  };
 
 export const getOrgBasicData = org_handle => async firebase => {
   try {
