@@ -84,6 +84,15 @@ describe("Authenticated Route Access Test | CodeLabz", () => {
     });
   });
 
+  it("Visit Bookmarks Page - Passing", function () {
+    cy.visit(`${this.base_url}bookmarks`);
+    cy.wait(5000);
+
+    cy.location().should(loc => {
+      expect(loc.href).to.eq(`${this.base_url}bookmarks`);
+    });
+  });
+
   it("Visit Organization Page - Passing", function () {
     cy.visit(`${this.base_url}org/codelabzorg`);
     cy.wait(5000);
