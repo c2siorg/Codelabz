@@ -27,6 +27,7 @@ import MainNavbar from "./components/NavBar/new/MainNavbar";
 import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
+import BookmarkPage from "./components/BookmarksPage";
 
 const AuthIsLoaded = ({ children }) => {
   const profile = useSelector(({ firebase: { profile } }) => profile);
@@ -105,6 +106,15 @@ const Routes = () => {
             exact
             path={"/forgotpassword"}
             render={props => <AuthPage {...props} type={"forgotpassword"} />}
+          />
+          <Route
+            exact
+            path={"/bookmarks"}
+            render={props => (
+              <>
+                <BookmarkPage {...props} />
+              </>
+            )}
           />
           <Route
             exact
