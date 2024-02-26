@@ -47,7 +47,7 @@ function BookmarkPage({ background = "white", textColor = "black" }) {
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
   const currentUser = firebase.auth().currentUser;
-  const [idList,setIdList]=useState([])
+  const [idList, setIdList] = useState([]);
   const [footerContent, setFooterContent] = useState([
     { name: "Help", link: "https://dev.codelabz.io/" },
     { name: "About", link: "https://dev.codelabz.io/" },
@@ -177,7 +177,7 @@ function BookmarkPage({ background = "white", textColor = "black" }) {
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
     getFeed();
-    setIdList(profileData.bookmarks)
+    setIdList(profileData.bookmarks);
   }, []);
   const tutorials = useSelector(
     ({
@@ -241,8 +241,11 @@ function BookmarkPage({ background = "white", textColor = "black" }) {
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />
           </Box>
-          {tutorials.map(tutorial => {
-            
+          {tutorials.map((tutorial,i) => {
+            let obj = idList.find(o => o.id === tutorial.tutorial_id)
+            if(obj==false && idList[i].isSave==false){
+                return <></>
+            } 
             return !tutorial?.featured_image ? (
               <CardWithoutPicture tutorial={tutorial} />
             ) : (

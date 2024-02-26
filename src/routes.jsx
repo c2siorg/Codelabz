@@ -110,7 +110,11 @@ const Routes = () => {
           <Route
             exact
             path={"/bookmarks"}
-            render={props => <><BookmarkPage {...props} /></>}
+            render={props => (
+              <>
+                <BookmarkPage {...props} />
+              </>
+            )}
           />
           <Route
             exact

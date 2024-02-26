@@ -7,7 +7,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { makeStyles } from "@mui/styles";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import {useLocation} from "react-router-dom"
+import { useLocation } from "react-router-dom";
 const useStyles = makeStyles(theme => ({
   root: {
     display: "flex",
@@ -45,7 +45,9 @@ function Activity() {
       <Grid container data-testId="activityCard">
         <div className={classes.root}>
           <Grid item>
-            <Typography variant="h6">{location=="/"?"Activity":"Bookmarks"}</Typography>
+            <Typography variant="h6">
+              {location == "/" ? "Activity" : "Bookmarks"}
+            </Typography>
           </Grid>
           <Grid item>
             <ActivityList
