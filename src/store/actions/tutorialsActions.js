@@ -531,46 +531,42 @@ export const setTutorialTheme =
     }
   };
 
-export const editTutorialSummary = (tutorial_id, owner, summary) => async (firebase, firestore, dispatch) => {
-  try {
-    console.log(summary,tutorial_id,owner)
+export const editTutorialSummary =
+  (tutorial_id, owner, summary) => async (firebase, firestore, dispatch) => {
+    try {
+      console.log(summary, tutorial_id, owner);
 
-    await firestore
-    .collection("tutorials")
-    .doc(tutorial_id)
-    .update({
-      summary: summary,
-      updatedAt: firestore.FieldValue.serverTimestamp()
-    });
+      await firestore.collection("tutorials").doc(tutorial_id).update({
+        summary: summary,
+        updatedAt: firestore.FieldValue.serverTimestamp()
+      });
 
-    await getCurrentTutorialData(owner, tutorial_id)(
-      firebase,
-      firestore,
-      dispatch
-    );
-  } catch (e) {
-    console.log(e.message);
-  }
-}
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
-export const editTutorialTitle = (tutorial_id, owner, title) => async (firebase, firestore, dispatch) => {
-  try {
-    console.log(title,tutorial_id,owner)
+export const editTutorialTitle =
+  (tutorial_id, owner, title) => async (firebase, firestore, dispatch) => {
+    try {
+      console.log(title, tutorial_id, owner);
 
-    await firestore
-    .collection("tutorials")
-    .doc(tutorial_id)
-    .update({
-      title: title,
-      updatedAt: firestore.FieldValue.serverTimestamp()
-    });
+      await firestore.collection("tutorials").doc(tutorial_id).update({
+        title: title,
+        updatedAt: firestore.FieldValue.serverTimestamp()
+      });
 
-    await getCurrentTutorialData(owner, tutorial_id)(
-      firebase,
-      firestore,
-      dispatch
-    );
-  } catch (e) {
-    console.log(e.message);
-  }
-}
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+  };

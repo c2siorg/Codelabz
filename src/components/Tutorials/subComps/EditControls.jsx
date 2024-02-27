@@ -15,7 +15,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
 import FormatPaintIcon from "@mui/icons-material/FormatPaint";
-import TitleIcon from '@mui/icons-material/Title';
+import TitleIcon from "@mui/icons-material/Title";
 import UserList from "../../Editor/UserList";
 import { publishUnpublishTutorial } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
@@ -23,9 +23,8 @@ import { useDispatch } from "react-redux";
 import RemoveStepModal from "./RemoveStepModal";
 import ColorPickerModal from "./ColorPickerModal";
 import { Box, Stack } from "@mui/system";
-import Swal from 'sweetalert2'
-import { editTutorialSummary,editTutorialTitle } from "../../../store/actions";
-
+import Swal from "sweetalert2";
+import { editTutorialSummary, editTutorialTitle } from "../../../store/actions";
 
 const EditControls = ({
   isPublished,
@@ -60,55 +59,55 @@ const EditControls = ({
     };
 
     const editSummary = () => {
+      setAnchorEl(null);
       Swal.fire({
-        title: 'Edit Summary',
-        input: 'textarea',
-        inputLabel: 'Summary',
-        inputPlaceholder: 'Enter Summary',
+        title: "Edit Summary",
+        input: "textarea",
+        inputLabel: "Summary",
+        inputPlaceholder: "Enter Summary",
         showCancelButton: true,
-        inputValidator: (value) => {
+        inputValidator: value => {
           if (!value) {
-            return 'You need to write something!'
+            return "You need to write something!";
           }
         }
-      }).then(async (result) => {
+      }).then(async result => {
         if (result.isConfirmed) {
-          console.log(result.value)
-          await editTutorialSummary(tutorial_id, owner, result.value)(firebase, firestore, dispatch)
-          Swal.fire(
-            'Saved!',
-            'Summary has been updated.',
-            'success'
-          )
+          console.log(result.value);
+          await editTutorialSummary(tutorial_id, owner, result.value)(
+            firebase,
+            firestore,
+            dispatch
+          );
+          Swal.fire("Saved!", "Summary has been updated.", "success");
         }
-      })
-    }
+      });
+    };
     const editTitle = () => {
+      setAnchorEl(null);
       Swal.fire({
-        title: 'Edit Title',
-        input: 'text',
-        inputLabel: 'Title',
-        inputPlaceholder: 'Enter Title',
+        title: "Edit Title",
+        input: "text",
+        inputLabel: "Title",
+        inputPlaceholder: "Enter Title",
         showCancelButton: true,
-        inputValidator: (value) => {
+        inputValidator: value => {
           if (!value) {
-            return 'You need to write something!'
+            return "You need to write something!";
           }
         }
-      }).then(async (result) => {
+      }).then(async result => {
         if (result.isConfirmed) {
-          console.log(result.value)
-          await editTutorialTitle(tutorial_id, owner, result.value)(firebase, firestore, dispatch)
-          Swal.fire(
-            'Saved!',
-            'Title has been updated.',
-            'success'
-          )
+          console.log(result.value);
+          await editTutorialTitle(tutorial_id, owner, result.value)(
+            firebase,
+            firestore,
+            dispatch
+          );
+          Swal.fire("Saved!", "Title has been updated.", "success");
         }
-      })
-    }
-
-
+      });
+    };
 
     return (
       <>
@@ -138,13 +137,13 @@ const EditControls = ({
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          <MenuItem key="edit_description" onClick={editSummary} >
+          <MenuItem key="edit_description" onClick={editSummary}>
             <FormatAlignLeftIcon /> Edit Summary
           </MenuItem>
-          <MenuItem key="edit_title" onClick={editTitle} >
+          <MenuItem key="edit_title" onClick={editTitle}>
             <TitleIcon /> Edit Title
           </MenuItem>
-          
+
           <MenuItem
             key="edit_codeLabz_theme"
             onClick={() => setViewColorPickerModal(true)}
