@@ -12,7 +12,7 @@ const BasicImage = (src, alt) => {
       style={{
         width: "100%",
         height: "auto",
-        borderRadius: "100%"
+        borderRadius: "8px"
       }}
       src={src}
       alt={alt}
