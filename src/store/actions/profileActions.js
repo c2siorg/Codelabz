@@ -186,6 +186,25 @@ export const getUserProfileData =
     }
   };
 
+ export const getFollowProfileData = id => async (firebase, firestore, dispatch) => {
+     try {
+
+        const docs = await firestore
+          .collection("cl_user")
+          .where("uid", "==", id)
+          .get();
+
+        const doc = docs.docs[0].data();
+        
+        console.log("getFollowProfileData",doc)
+        return doc;
+      } 
+      catch (e) {
+      console.log("Error: ",e.message)
+    }
+  };
+
+
 export const clearUserProfile = () => dispatch => {
   dispatch({ type: actions.CLEAR_USER_PROFILE_DATA_STATE });
 };
