@@ -186,8 +186,8 @@ export const getUserProfileData =
     }
   };
 
- export const getFollowProfileData = id => async (firebase, firestore, dispatch) => {
-     try {
+export const getFollowProfileData = id => async (firebase, firestore, dispatch) => {
+    try {
 
         const docs = await firestore
           .collection("cl_user")

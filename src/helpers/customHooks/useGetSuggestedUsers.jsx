@@ -24,14 +24,14 @@ const useGetSuggestedUsers = () => {
       setIsLoading(true);
       try {
         const usersRef = fireStore.collection("cl_user");
-
+        
         const querySnapshot = await getDocs(usersRef);
         const users = [];
         querySnapshot.forEach(doc => {
           users.push({ ...doc.data(), id: doc.id });
         });
-        setSuggestedUsers(users);
 
+        setSuggestedUsers(users);
         console.log(users);
       } catch (error) {
         console.error("Error fetching suggested users:", error);
