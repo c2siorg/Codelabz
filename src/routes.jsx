@@ -18,7 +18,7 @@ import MyFeed from "./components/MyFeed";
 import Organization from "./components/Organization";
 import ViewOrganization from "./components/Organization/ViewOrganization";
 import Profile from "./components/Profile";
-import ProfileView from "./components/Profile/ViewProfile";
+import ViewProfile from "./components/Profile/ViewProfile";
 import ViewTutorial from "./components/Tutorials";
 import MyTutorials from "./components/Tutorials/MyTutorials";
 import Spinner from "./helpers/spinner";
@@ -144,8 +144,8 @@ const Routes = () => {
           />
           <Route
             exact
-            path={"/user/:handle"}
-            component={UserIsAllowedUserDashboard(ProfileView)}
+            path={"/profile/:id"}
+            component={UserIsAllowedUserDashboard(ViewProfile)}
           />
           <Route
             exact

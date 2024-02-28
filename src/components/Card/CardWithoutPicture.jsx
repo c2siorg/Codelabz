@@ -95,6 +95,7 @@ export default function CardWithoutPicture({ tutorial }) {
       }
     }) => data
   );
+  console.log("picture",user);
 
   const getTime = timestamp => {
     return timestamp.toDate().toDateString();
