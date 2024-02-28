@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import AddUser from "../../../assets/images/add-user.svg";
 import CheckUser from "../../../assets/images/square-check-regular.svg";
+import { Link } from "react-router-dom"
 
 const UserElement = ({ user, index, useStyles }) => {
   const classes = useStyles();
@@ -17,6 +18,7 @@ const UserElement = ({ user, index, useStyles }) => {
       }}
       gutterBottom
     >
+       <Link to={`/profile/${user.uid}`}>
       <Box
         sx={{
           display: "flex",
@@ -25,26 +27,30 @@ const UserElement = ({ user, index, useStyles }) => {
           cursor: "pointer"
         }}
       >
+        
         <img
-          src={user.img[0]}
+          src={user.photoURL || user.img || "https://i.pravatar.cc/300"}
           className={classes.userImg}
           data-testId={index == 0 ? "UsersCardImg" : ""}
         />
+        
         <Box sx={{ flexGrow: 1 }}>
           <Box
             sx={{ fontWeight: 600, fontSize: "1rem" }}
             data-testId={index == 0 ? "UserName" : ""}
           >
-            {user.name}
+            {user.displayName || user.name}
           </Box>
           <Box
             sx={{ fontWeight: 400, fontSize: "0.8rem" }}
             data-testId={index == 0 ? "UserDesg" : ""}
           >
-            {user.desg}
+            {user.handle || user.desg}
           </Box>
         </Box>
+        
       </Box>
+      </Link>
       <Box
         onClick={() => {
           setIcon(false);
