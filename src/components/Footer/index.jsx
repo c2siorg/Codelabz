@@ -20,7 +20,14 @@ const Footer = () => {
     item: {
       display: "flex",
       alignItems: "left",
-      justifyContent: "flex-start"
+      justifyContent: "flex-start",
+      marginBottom:'5px',
+    },
+    link: {
+      textDecoration: 'none',
+      color: '#000',
+      display: 'flex',
+      alignItems: 'center',
     }
   });
   const classes = useStyles();
@@ -37,52 +44,52 @@ const Footer = () => {
         </Grid>
 
         <Grid item xs={12} sm={12} md={3} className="col-pad-24">
-          <h3 className="mb-16">About</h3>
+          <h3 className="mb-16 ml-8">About</h3>
           <div className="mt-8 mb-8">
             <a
-              href="https://github.com/scorelab/Codelabz"
+              href="https://github.com/c2siorg/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <HelpOutlineOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
-                About CodeLabz
+                &nbsp; About CodeLabz
               </Grid>
             </a>
           </div>
           <div className="mt-8 mb-8">
             <a
-              href="https://github.com/scorelab/Codelabz"
+              href="https://github.com/c2siorg/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <CheckOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
-                Terms and conditions
+                &nbsp;Terms and conditions
               </Grid>
             </a>
           </div>
           <div className="mt-8 mb-8">
             <a
-              href="https://github.com/scorelab/Codelabz"
+              href="https://github.com/c2siorg/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <LockOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
-                Privacy and security
+                &nbsp;Privacy and security
               </Grid>
             </a>
           </div>
@@ -92,46 +99,46 @@ const Footer = () => {
           <h3 className="mb-16">Help</h3>
           <div className="mt-8 mb-8">
             <a
-              href="https://github.com/scorelab/Codelabz"
+              href="https://github.com/c2siorg/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
-              className=" footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <ListOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />
-                FAQ
+                &nbsp;FAQ
               </Grid>
             </a>
           </div>
           <div className="mt-8 mb-8">
             <a
-              href="https://github.com/scorelab/Codelabz"
+              href="https://github.com/c2siorg/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <GitHubIcon className="mr-8" style={{ color: "#455A64" }} />{" "}
-                GitHub
+                &nbsp;GitHub
               </Grid>
             </a>
           </div>
           <div className="mt-8 mb-8">
             <a
-              href="https://github.com/scorelab/Codelabz/issues"
+              href="https://github.com/c2siorg/Codelabz/issues"
               target="_blank"
               rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <BugReportOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
-                Report a bug
+                &nbsp;Report a bug
               </Grid>
             </a>
           </div>
@@ -140,25 +147,25 @@ const Footer = () => {
         <Grid item xs={12} sm={12} md={3} className="col-pad-24">
           <h3 className="mb-16">Contact</h3>
           <div className="mt-8 mb-8">
-            <a href="tel: +94712345678" className="mb-8 mt-8 footer-link">
+            <a href="tel: +94712345678" className={`mb-8 mt-8 footer-link ${classes.link}`}>
               <PhoneEnabledOutlinedIcon
                 className="mr-8"
                 style={{ color: "#455A64" }}
               />{" "}
-              +94 712 345 678
+              &nbsp;+94 712 345 678
             </a>
           </div>
           <div className="mt-8 mb-8">
             <a
               href="mailto: contact@codelabz.com"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <MailOutlineOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
-                contact@codelabz.io
+                &nbsp;contact@codelabz.io
               </Grid>
             </a>
           </div>
@@ -167,22 +174,22 @@ const Footer = () => {
               href="https://www.google.com/maps/place/Sri+Lanka/@7.8571778,78.4609778,7z/data=!3m1!4b1!4m5!3m4!1s0x3ae2593cf65a1e9d:0xe13da4b400e2d38c!8m2!3d7.873054!4d80.771797"
               target="_blank"
               rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
+              className={`mb-8 mt-8 footer-link ${classes.link}`}
             >
               <Grid className={classes.item}>
                 <HomeOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
-                64, Singh Labs, Kings Canyon
+                &nbsp;64, Singh Labs, Kings Canyon
               </Grid>
             </a>
           </div>
         </Grid>
       </Grid>
 
-      <Divider />
-      <Grid container className="pt-16 pb-0">
+      <Divider sx={{ borderBottomWidth: 2,bgcolor:'black',marginTop:'5px' }} />
+       <Grid container className="pt-16 pb-0 mt-4">
         <Grid
           item
           xs={12}
@@ -191,7 +198,8 @@ const Footer = () => {
             display: "flex",
             alignItems: "center",
             textAlign: "center",
-            justifyContent: "center"
+            justifyContent: "center",
+            marginTop:'10px'
           }}
         >
           <CopyrightOutlinedIcon /> {new Date().getFullYear()} CodeLabz
