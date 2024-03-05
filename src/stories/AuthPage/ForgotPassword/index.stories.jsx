@@ -4,7 +4,7 @@ import ProviderWrapper from "../../../helpers/providerWrapper";
 import { MemoryRouter } from "react-router-dom";
 
 export default {
-  title: "AuthPage/Froget Password Page",
+  title: "AuthPage/Forget Password Page",
   component: ForgotPassword,
   argTypes: {
     rootBackground: {
