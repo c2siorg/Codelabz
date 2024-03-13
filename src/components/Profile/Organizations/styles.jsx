@@ -45,8 +45,8 @@ const useStyles = makeStyles(theme => ({
       width: "100%"
     }
   },
-  tw: {
-    color: "#03A9F4",
+  x: {
+    color: "#212121",
     fontSize: 33,
     "&:hover": {
       transform: "scale(1.2)"

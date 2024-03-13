@@ -32,7 +32,7 @@ import {
   validateOrgWebsite
 } from "../../../helpers/validations";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
@@ -93,10 +93,9 @@ const UserForm = () => {
   const [facebookValidateError, setFacebookValidateError] = useState(false);
   const [facebookValidateErrorMessage, setFacebookValidateErrorMessage] =
     useState("");
-  const [twitter, setTwitter] = useState(getData(profileData.link_twitter));
-  const [twitterValidateError, setTwitterValidateError] = useState(false);
-  const [twitterValidateErrorMessage, setTwitterValidateErrorMessage] =
-    useState("");
+  const [x, setX] = useState(getData(profileData.link_x));
+  const [xValidateError, setXValidateError] = useState(false);
+  const [xValidateErrorMessage, setXValidateErrorMessage] = useState("");
   const [linkedin, setLinkedin] = useState(getData(profileData.link_linkedin));
   const [linkedinValidateError, setLinkedinValidateError] = useState(false);
   const [linkedinValidateErrorMessage, setLinkedinValidateErrorMessage] =
@@ -124,7 +123,7 @@ const UserForm = () => {
   const onChangeOrgWebsite = website => setWebsite(website);
   const onChangeDescription = description => setDescription(description);
   const onChangeFacebook = facebook => setFacebook(facebook);
-  const onChangeTwitter = twitter => setTwitter(twitter);
+  const onChangeX = x => setX(x);
   const onChangeLinkedin = linkedin => setLinkedin(linkedin);
   const onChangeGithub = github => setGithub(github);
 
@@ -164,7 +163,7 @@ const UserForm = () => {
         link_facebook: facebook,
         link_github: github,
         link_linkedin: linkedin,
-        link_twitter: twitter,
+        link_x: x,
         description,
         country
       })(firebase, firestore, dispatch);
@@ -324,23 +323,23 @@ const UserForm = () => {
         </Box>
         <Box style={{ marginTop: 15 }}>
           <TextField
-            label="Twitter"
+            label="X"
             variant="outlined"
-            value={twitter}
+            value={x}
             placeholder="username"
-            data-testId="editProfileTwitter"
-            onChange={event => onChangeTwitter(event.target.value)}
+            data-testId="editProfileX"
+            onChange={event => onChangeX(event.target.value)}
             fullWidth
             autoComplete="handle"
             style={{ marginBottom: "15px" }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <TwitterIcon className={classes.tw}>
-                    <span className="sm-text">Twitter</span>
-                  </TwitterIcon>
+                  <XIcon className={classes.x}>
+                    <span className="sm-text">X</span>
+                  </XIcon>
                   <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    twitter.com/
+                    x.com/
                   </p>
                 </InputAdornment>
               )

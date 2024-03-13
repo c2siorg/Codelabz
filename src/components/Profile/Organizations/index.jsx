@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, Box, Typography, Button } from "@mui/material";
 import GoogleImg from "../../../assets/orgs/google.png";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import useStyles from "./styles";
 import OrganizationData from "../../../temp_data/Organizations.json";
 
@@ -24,9 +24,9 @@ const Organizations = () => {
               <GitHubIcon className={classes.git}>
                 <span className="sm-text">Github</span>
               </GitHubIcon>
-              <TwitterIcon className={classes.tw}>
-                <span className="sm-text">Twitter</span>
-              </TwitterIcon>
+              <XIcon className={classes.x}>
+                <span className="sm-text">X</span>
+              </XIcon>
             </Box>
             <Box className={classes.organizations} style={{ margin: "1px 0" }}>
               {OrganizationData.map(el => (

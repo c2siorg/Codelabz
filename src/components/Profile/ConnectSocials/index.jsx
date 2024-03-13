@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import GoogleImg from "../../../assets/orgs/google.png";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import useStyles from "./styles";
@@ -101,18 +101,18 @@ const ConnectSocials = () => {
             data-testId="googleButton"
           />
           <SocialButton
-            isLinked={isProviderLinked("twitter")}
+            isLinked={isProviderLinked("x")}
             onClick={() =>
               linkWithProvider(new firebase.auth.TwitterAuthProvider())
             }
             Icon={
               <>
-                <TwitterIcon className={classes.tw}></TwitterIcon>
+                <XIcon className={classes.x}></XIcon>
 
-                <span className={classes.text}>Twitter</span>
+                <span className={classes.text}>X</span>
               </>
             }
-            data-testId="twitterButton"
+            data-testId="xButton"
           />
         </Box>
       </CardContent>

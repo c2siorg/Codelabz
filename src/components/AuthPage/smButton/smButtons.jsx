@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
 import GoogleImg from "../../../assets/orgs/google.png";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { signInWithGoogle, signInWithProviderID } from "../../../store/actions";
 import useStyles from "./styles";
@@ -50,9 +50,9 @@ const SmButtons = () => {
           onClick={() => signInWithProviderID("twitter")(firebase, dispatch)}
           className={classes.button}
         >
-          <TwitterIcon className={classes.tw}>
-            <span className="sm-text">Twitter</span>
-          </TwitterIcon>
+          <XIcon className={classes.x}>
+            <span className="sm-text">X</span>
+          </XIcon>
         </IconButton>
       </Grid>
       <Grid item>

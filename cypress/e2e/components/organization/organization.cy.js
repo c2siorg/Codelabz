@@ -90,6 +90,6 @@ describe("Organization Page | CodeLabz", () => {
     cy.get("[data-testId=facebookButton]").should("exist");
     cy.get("[data-testId=githubButton]").should("exist");
     cy.get("[data-testId=googleButton]").should("exist");
-    cy.get("[data-testId=twitterButton]").should("exist");
+    cy.get("[data-testId=xButton]").should("exist");
   });
 });

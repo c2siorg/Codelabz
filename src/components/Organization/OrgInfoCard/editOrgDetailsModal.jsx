@@ -11,7 +11,7 @@ import AppsIcon from "@mui/icons-material/Apps";
 import LanguageIcon from "@mui/icons-material/Language";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
 const EditOrgDetailsModal = ({ currentOrgData, modelCloseCallback }) => {
@@ -66,7 +66,7 @@ const EditOrgDetailsModal = ({ currentOrgData, modelCloseCallback }) => {
     org_link_facebook: currentOrgData.org_link_facebook,
     org_link_github: currentOrgData.org_link_github,
     org_link_linkedin: currentOrgData.org_link_linkedin,
-    org_link_twitter: currentOrgData.org_link_twitter,
+    org_link_x: currentOrgData.org_link_x,
     org_description: currentOrgData.org_description,
     org_country: currentOrgData.org_country
   });
@@ -168,20 +168,20 @@ const EditOrgDetailsModal = ({ currentOrgData, modelCloseCallback }) => {
           }}
           onChange={e => handleChange(e)}
         ></TextField>
-        <label className="form-label">Organization Twitter account</label>
+        <label className="form-label">Organization X account</label>
         <TextField
           variant="outlined"
-          placeholder="Twitter handle (without @)"
+          placeholder="X handle (without @)"
           autoComplete="none"
           fullWidth
           style={{ marginBottom: "1.5rem" }}
-          name="org_link_twitter"
-          defaultValue={formValue.org_link_twitter}
+          name="org_link_x"
+          defaultValue={formValue.org_link_x}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
                 <>
-                  <TwitterIcon className="twitter-color mr-4" /> twitter.com/
+                  <XIcon className="x-color mr-4" /> x.com/
                 </>
               </InputAdornment>
             )

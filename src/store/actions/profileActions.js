@@ -112,7 +112,7 @@ export const updateUserProfile =
     link_facebook,
     link_github,
     link_linkedin,
-    link_twitter,
+    link_x,
     description,
     country
   }) =>
@@ -126,7 +126,7 @@ export const updateUserProfile =
           link_facebook,
           link_github,
           link_linkedin,
-          link_twitter,
+          link_x,
           description,
           country,
           updatedAt: firestore.FieldValue.serverTimestamp()
