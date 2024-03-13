@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import LinkIcon from "@mui/icons-material/Link";
 
 const useStyles = makeStyles(theme => ({
@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   facebookIcon: {
     color: "#4267B2"
   },
-  twitterIcon: {
+  XIcon: {
     color: "#1DA1F2"
   },
   linkedInIcon: {
@@ -55,9 +55,9 @@ export default function SocialIcons(props) {
         <IconButton
           color="primary"
           aria-label="add to favorites"
-          data-testId="TwitterIcon"
+          data-testId="XIcon"
         >
-          <TwitterIcon className={classes.twitterIcon} />
+          <XIcon className={classes.blackIcon} />
         </IconButton>
         <IconButton aria-label="share" data-testId="LinkIcon">
           <LinkIcon className={classes.blackIcon} />

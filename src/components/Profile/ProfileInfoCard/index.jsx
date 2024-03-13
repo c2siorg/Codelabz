@@ -16,7 +16,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import LinearProgress from "@mui/material/LinearProgress";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import LinkIcon from "@mui/icons-material/Link";
@@ -47,7 +47,7 @@ const ProfileInfoCard = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [facebookURI] = useState("https://www.facebook.com/");
-  const [twitterURI] = useState("https://twitter.com/");
+  const [xURI] = useState("https://x.com/");
   const [githubURI] = useState("https://github.com/");
   const [linkedinURI] = useState("https://www.linkedin.com/in/");
   const [googleURI] = useState("https://www.google.com/search?q=");
@@ -365,10 +365,10 @@ const ProfileInfoCard = () => {
                   </a>
                 </p>
               )}
-              {checkAvailable(profileData.link_twitter) && (
+              {checkAvailable(profileData.link_x) && (
                 <p>
                   <a
-                    href={twitterURI.concat(profileData.link_twitter)}
+                    href={xURI.concat(profileData.link_x)}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -378,12 +378,12 @@ const ProfileInfoCard = () => {
                       }}
                     >
                       <Box mr={1}>
-                        <TwitterIcon
+                        <XIcon
                           fontSize="small"
-                          className="twitter-color"
+                          className="x-color"
                         />{" "}
                       </Box>
-                      {profileData.link_twitter}
+                      {profileData.link_x}
                     </div>
                   </a>
                 </p>

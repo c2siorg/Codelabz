@@ -59,8 +59,8 @@ const useStyles = makeStyles(theme => ({
       fontSize: 22
     }
   },
-  tw: {
-    color: "#03A9F4",
+  x: {
+    color: "#212121",
     fontSize: 30,
     marginLeft: 14,
     marginRight: 5,

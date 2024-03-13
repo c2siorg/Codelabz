@@ -11,7 +11,7 @@ import ReactCrop from "react-image-crop";
 import Divider from "@mui/material/Divider";
 import "react-image-crop/dist/ReactCrop.css";
 import { BasicImage, NoImage } from "../../../helpers/images";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -336,17 +336,17 @@ const OrgInfoCard = () => {
                   </a>
                 </p>
               )}
-              {checkAvailable(currentOrgData.org_link_twitter) && (
+              {checkAvailable(currentOrgData.org_link_x) && (
                 <p>
                   <a
                     href={
-                      "https://twitter.com/" + currentOrgData.org_link_twitter
+                      "https://x.com/" + currentOrgData.org_link_x
                     }
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <TwitterIcon className="twitter-color" />{" "}
-                    {currentOrgData.org_link_twitter}
+                    <XIcon className="x-color" />{" "}
+                    {currentOrgData.org_link_x}
                   </a>
                 </p>
               )}

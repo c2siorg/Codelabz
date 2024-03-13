@@ -18,7 +18,7 @@ import Box from "@mui/material/Box";
 import { ThemeProvider } from "@mui/material";
 import { basicTheme } from "../../../helpers/themes";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import LinkIcon from "@mui/icons-material/Link";
@@ -189,10 +189,10 @@ const ProfileView = () => {
                       </a>
                     </p>
                   )}
-                  {checkAvailable(profileData.link_twitter) && (
+                  {checkAvailable(profileData.link_x) && (
                     <p>
                       <a
-                        href={"https://twitter.com/" + profileData.link_twitter}
+                        href={"https://X.com/" + profileData.link_x}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -203,12 +203,12 @@ const ProfileView = () => {
                           }}
                         >
                           <Box mr={1}>
-                            <TwitterIcon
+                            <XIcon
                               fontSize="small"
-                              className="twitter-color"
+                              className="x-color"
                             />{" "}
                           </Box>
-                          {profileData.link_twitter}
+                          {profileData.link_x}
                         </div>
                       </a>
                     </p>

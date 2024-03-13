@@ -28,7 +28,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import PublicIcon from "@mui/icons-material/Public";
 import DescriptionIcon from "@mui/icons-material/Description";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
@@ -60,9 +60,9 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
   const [facebookValidateError, setFacebookValidateError] = useState(false);
   const [facebookValidateErrorMessage, setFacebookValidateErrorMessage] =
     useState("");
-  const [twitter, setTwitter] = useState(getData(profileData.link_twitter));
-  const [twitterValidateError, setTwitterValidateError] = useState(false);
-  const [twitterValidateErrorMessage, setTwitterValidateErrorMessage] =
+  const [x, setX] = useState(getData(profileData.link_X));
+  const [xValidateError, setXValidateError] = useState(false);
+  const [xValidateErrorMessage, setXValidateErrorMessage] =
     useState("");
   const [linkedin, setLinkedin] = useState(getData(profileData.link_linkedin));
   const [linkedinValidateError, setLinkedinValidateError] = useState(false);
@@ -142,11 +142,11 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
       setFacebookValidateErrorMessage,
       "Please enter a Facebook username"
     );
-    const twitterValid = validateIsEmpty(
-      twitter,
-      setTwitterValidateError,
-      setTwitterValidateErrorMessage,
-      "Please enter a Twitter username"
+    const xValid = validateIsEmpty(
+      x,
+      setXValidateError,
+      setXValidateErrorMessage,
+      "Please enter a X username"
     );
     const linkedinValid = validateIsEmpty(
       linkedin,
@@ -166,7 +166,7 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
       orgWebsiteValid &&
       descriptionValid &&
       facebookValid &&
-      twitterValid &&
+      xValid &&
       githubValid &&
       linkedinValid
     ) {
@@ -196,7 +196,7 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
   const onChangeOrgWebsite = website => setWebsite(website);
   const onChangeDescription = description => setDescription(description);
   const onChangeFacebook = facebook => setFacebook(facebook);
-  const onChangeTwitter = twitter => setTwitter(twitter);
+  const onChangeX = x => setX(x);
   const onChangeLinkedin = linkedin => setLinkedin(linkedin);
   const onChangeGithub = github => setGithub(github);
 
@@ -333,14 +333,14 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
 
       <Box m={2}>
         <TextField
-          error={twitterValidateError}
-          label="Twitter"
+          error={xValidateError}
+          label="X"
           variant="outlined"
-          value={twitter}
+          value={x}
           placeholder="username"
-          data-testId="editProfileTwitter"
-          onChange={event => onChangeTwitter(event.target.value)}
-          helperText={twitterValidateError ? twitterValidateErrorMessage : null}
+          data-testId="editProfileX"
+          onChange={event => onChangeX(event.target.value)}
+          helperText={xValidateError ? xValidateErrorMessage : null}
           fullWidth
           autoComplete="handle"
           required
@@ -348,9 +348,9 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <TwitterIcon style={{ color: "rgba(0,0,0,.25)" }} />
+                <XIcon style={{ color: "rgba(0,0,0,.25)" }} />
                 <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                  twitter.com/
+                  x.com/
                 </p>
               </InputAdornment>
             )
