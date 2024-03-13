@@ -53,9 +53,7 @@ const CardComponent = ({
                       className={classes.logoImg}
                     />
                     <img
-                      src={
-                        require(`../../../assets/images/${profilePic}`).default
-                      }
+                      src={require(`../../assets/images/${profilePic}`).default}
                       alt=""
                       height="20rem"
                       width="20rem"
@@ -65,7 +63,7 @@ const CardComponent = ({
                 </Grid>
               ) : (
                 <img
-                  src={require(`../../../assets/images/${profilePic}`).default}
+                  src={require(`../../assets/images/${profilePic}`).default}
                   alt=""
                   className={classes.avatar}
                 />
