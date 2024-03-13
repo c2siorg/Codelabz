@@ -62,8 +62,7 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
     useState("");
   const [x, setX] = useState(getData(profileData.link_X));
   const [xValidateError, setXValidateError] = useState(false);
-  const [xValidateErrorMessage, setXValidateErrorMessage] =
-    useState("");
+  const [xValidateErrorMessage, setXValidateErrorMessage] = useState("");
   const [linkedin, setLinkedin] = useState(getData(profileData.link_linkedin));
   const [linkedinValidateError, setLinkedinValidateError] = useState(false);
   const [linkedinValidateErrorMessage, setLinkedinValidateErrorMessage] =

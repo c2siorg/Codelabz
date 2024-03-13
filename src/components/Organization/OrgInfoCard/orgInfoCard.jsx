@@ -339,14 +339,11 @@ const OrgInfoCard = () => {
               {checkAvailable(currentOrgData.org_link_x) && (
                 <p>
                   <a
-                    href={
-                      "https://x.com/" + currentOrgData.org_link_x
-                    }
+                    href={"https://x.com/" + currentOrgData.org_link_x}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <XIcon className="x-color" />{" "}
-                    {currentOrgData.org_link_x}
+                    <XIcon className="x-color" /> {currentOrgData.org_link_x}
                   </a>
                 </p>
               )}

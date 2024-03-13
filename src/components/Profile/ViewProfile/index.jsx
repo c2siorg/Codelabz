@@ -203,10 +203,7 @@ const ProfileView = () => {
                           }}
                         >
                           <Box mr={1}>
-                            <XIcon
-                              fontSize="small"
-                              className="x-color"
-                            />{" "}
+                            <XIcon fontSize="small" className="x-color" />{" "}
                           </Box>
                           {profileData.link_x}
                         </div>

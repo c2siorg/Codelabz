@@ -49,10 +49,7 @@ describe("User Dashboard Test | CodeLabz", () => {
       .find("div > input")
       .clear()
       .type("facebook");
-    cy.get("[data-testId=editProfileX]")
-      .find("div > input")
-      .clear()
-      .type("x");
+    cy.get("[data-testId=editProfileX]").find("div > input").clear().type("x");
     cy.get("[data-testId=editProfileLinkedin]")
       .find("div > input")
       .clear()
