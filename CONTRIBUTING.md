@@ -87,6 +87,8 @@ This will setup your project along with firebase emulator in a docker environmen
 
 You should fill in these values in their relevant fields in the `.env` file.
 
+> 📝**NOTE**: You will find a sample env file named `.env.sample` use it to fill the env file.
+
 ### Firebase Emulator Setup
 
 1. Refer this site [https://firebase.google.com/docs/emulator-suite/install_and_configure]
@@ -155,6 +157,8 @@ make emulator-export
 
 To run the project
 `npm run dev`
+
+> 📝**NOTE**: The emulator must be working.
 
 If you failed to run the project do the following steps :
 
