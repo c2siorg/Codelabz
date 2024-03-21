@@ -20,18 +20,23 @@ const useStyles = makeStyles(theme => ({
     }
   },
   tagsContainer: {
-    [theme.breakpoints.down("sm")]: {
-      maxWidth: "90vw",
-      display: "flex",
-      whiteSpace: "nowrap",
-      overflow: "auto",
-      "&::-webkit-scrollbar": {
-        height: "5px"
-      }
-    }
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing(1),
+    maxHeight: '150px', // Set max height for responsiveness
+    overflowY: 'auto', // Add vertical scrollbar when needed
+    '&::-webkit-scrollbar': {
+      width: '5px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: '5px',
+    },
   },
   chip: {
-    margin: "0px 10px 10px 0px",
+    // margin: "0px 10px 10px 0px",
+    margin: theme.spacing(0.5),
     borderRadius: "5px",
     cursor: "pointer"
   }
