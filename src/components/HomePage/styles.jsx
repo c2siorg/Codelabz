@@ -21,7 +21,6 @@ const useStyles = makeStyles(theme => ({
     alignContent: "center",
     justifyContent: "center",
     width: "fit-content",
-    margin: "1rem 1rem 2rem 1rem",
     height: "100%",
     flexDirection: "column",
     [theme.breakpoints.down(960)]: {
@@ -77,7 +76,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     maxHeight: "35rem",
     margin: "0 0 2rem 0",
-    background: "white",
+    background: "red",
     boxShadow: ".5px 2px 5px gray"
   },
 
