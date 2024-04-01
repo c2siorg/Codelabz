@@ -31,6 +31,7 @@ import CardWithoutPicture from "../Card/CardWithoutPicture";
 import Activity from "../Topbar/Activity";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import NewTutorial from "../Tutorials/NewTutorial";
+import ShareTutorial from "../Tutorials/ShareTutorial";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import {
@@ -46,6 +47,7 @@ function HomePage({ background = "white", textColor = "black" }) {
   const [value, setValue] = useState(2);
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
+  const [openShare, setOpenShare] = useState(false);
   const [footerContent, setFooterContent] = useState([
     { name: "Help", link: "https://dev.codelabz.io/" },
     { name: "About", link: "https://dev.codelabz.io/" },
@@ -194,6 +196,10 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
+
+  const shareModel = () => {
+    setOpenShare(prev => !prev);
+  };
   return (
     <Card
       className={classes.wrapper}
@@ -233,6 +239,9 @@ function HomePage({ background = "white", textColor = "black" }) {
             viewModal={visibleModal}
             onSidebarClick={e => closeModal(e)}
           />
+
+        
+          
           <Card className={classes.card}>
             <Activity />
           </Card>
@@ -241,9 +250,9 @@ function HomePage({ background = "white", textColor = "black" }) {
           </Box>
           {tutorials.map(tutorial => {
             return !tutorial?.featured_image ? (
-              <CardWithoutPicture tutorial={tutorial} />
+              <CardWithoutPicture tutorial={tutorial} setOpenShare={setOpenShare} openShare={openShare} onSidebarClick={e=>(shareModel(e))} />
             ) : (
-              <CardWithPicture tutorial={tutorial} />
+              <CardWithPicture tutorial={tutorial} setOpenShare={setOpenShare} openShare={openShare}  onSidebarClick={e=>(shareModel(e))}/>
             );
           })}
           <Box
