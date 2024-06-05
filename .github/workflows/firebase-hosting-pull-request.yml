@@ -1,0 +1,47 @@
+name: Deploy to Firebase Hosting on PR
+
+on: pull_request
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  build_and_preview:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Create .env file with secrets
+        run: |
+          echo "VITE_APP_FIREBASE_API_KEY=${{ secrets.VITE_APP_FIREBASE_API_KEY }}" >> .env
+          echo "VITE_APP_FIREBASE_PROJECT_ID=${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}" >> .env
+          echo "VITE_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
+          echo "VITE_APP_FIREBASE_APP_ID=${{ secrets.VITE_APP_FIREBASE_APP_ID }}" >> .env
+          echo "VITE_APP_FIREBASE_MEASUREMENTID=${{ secrets.VITE_APP_FIREBASE_MEASUREMENTID }}" >> .env
+          echo "VITE_APP_FIREBASE_FCM_VAPID_KEY=${{ secrets.VITE_APP_FIREBASE_FCM_VAPID_KEY }}" >> .env
+          echo "VITE_APP_AUTH_DOMAIN=${{ secrets.VITE_APP_AUTH_DOMAIN }}" >> .env
+          echo "VITE_APP_DATABASE_URL=${{ secrets.VITE_APP_DATABASE_URL }}" >> .env
+          echo "VITE_APP_USE_EMULATOR=false" >> .env
+
+      - name: Install Dependencies
+        run: |
+          npm install --legacy-peer-deps
+          npm run build || exit 1
+
+      - name: Deploy to Firebase Hosting Preview Channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ_2CD64 }}
+          projectId: codelabz-2cd64
+          channelId: pr-${{ github.event.pull_request.number }}
+          expires: 7d

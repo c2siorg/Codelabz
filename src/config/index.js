@@ -13,9 +13,8 @@ import { onMessage } from "firebase/messaging";
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
-  databaseURL: `https://${
-    import.meta.env.VITE_APP_FIREBASE_PROJECT_ID
-  }.firebaseio.com`,
+  databaseURL: `https://${import.meta.env.VITE_APP_FIREBASE_PROJECT_ID
+    }.firebaseio.com`,
   projectId: import.meta.env.VITE_APP_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_APP_FIREBASE_PROJECT_ID}.appspot.com`,
   messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
@@ -31,7 +30,8 @@ export const onlineFirebaseApp = initializeApp(firebaseConfig, "secondary");
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(); // <- needed if using firestor
 
-if (import.meta.env.VITE_APP_USE_EMULATOR) {
+if (import.meta.env.VITE_APP_USE_EMULATOR === "true") {
+  console.log("Using emulator");
   firebase.firestore().useEmulator("localhost", 8080);
   firebase.auth().useEmulator("http://localhost:9099", {
     disableWarnings: true
