@@ -8,5 +8,7 @@ export default defineConfig({
     baseUrl: "http://localhost:5173",
     testIsolation: false
   },
-  projectId: process.env.CYPRESS_PROJECT_ID
+  projectId: process.env.CYPRESS_PROJECT_ID,
+  record: true, // Enable test recording
+  key: process.env.CYPRESS_RECORD_KEY // Cypress record key
 });
