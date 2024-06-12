@@ -13,52 +13,49 @@ jobs:
         with:
           comment_tag: pr_review_policy
           message: |
-            # Pull Request Approval Process
+            # Pull Request Approval Process 🎉
 
-            Welcome and thank you for your contribution! To ensure a smooth and efficient review process, please adhere to the following guidelines when submitting your Pull Request (PR):
+            Welcome and thank you for your contribution! Please ensure your PR adheres to the following guidelines to facilitate a smooth review process:
 
-            ## Testing Your Code
+            ## Testing Your Code ✅
 
-            Before submitting your PR, ensure that your code passes all tests. Our Continuous Integration (CI) system will verify:
+            Before submitting your PR, please make sure your code passes all tests. Our CI system will check for:
 
-            - **Code Coverage:** Ensure there is no reduction in overall code coverage below the target threshold.
-            - **File Coverage:** Ensure no individual file in the PR falls below the coverage threshold.
-            - **Merge Conflicts:** Resolve any merge conflicts before submission.
+            - **Code Coverage:** No reduction in overall code coverage below the target threshold.
+            - **File Coverage:** No individual file in the PR with code coverage below the threshold.
+            - **Merge Conflicts:** No merge conflicts.
 
-            ## Reviewers
+            ## Reviewers 👥
 
-            Please do not assign reviewers yourself. Our project maintainers will review your PR and assign appropriate reviewers. You can communicate with your assigned reviewers through:
+            Do not assign reviewers. Our project maintainers will review your PR and assign reviewers. You can communicate with your assigned reviewers through:
 
-            - **Comments:** Directly within this PR.
-            - **Slack:** Our project’s Slack channel for real-time communication.
+            - **Comments:** In this PR.
+            - **Slack:** Our Slack channel.
 
-            ## Reviewing Your Code
+            ## Reviewing Your Code 🔍
 
             Your assigned reviewers will:
 
-            - Conduct a thorough review of your code.
-            - Mediate any future discussions regarding the validity and necessity of your changes.
-            - Evaluate the quality and correctness of your work.
-            - Verify and ensure closure of related issues referenced in the PR.
-            - Provide guidance on any required test fixes.
+            - Review your code.
+            - Mediate future discussions about the validity of your changes.
+            - Evaluate the validity of your work.
+            - Verify related issues that should be closed.
+            - Provide guidance on fixing your tests.
 
-            ## CONTRIBUTING.md
+            ## CONTRIBUTING.md 📖
 
-            Please ensure you have read our [CONTRIBUTING.md](./CONTRIBUTING.md) file. Key points include:
+            Please read our [CONTRIBUTING.md](../../CONTRIBUTING.md) file. Important points include:
 
-            - **Issue Assignment:** PRs must reference assigned issues; PRs without assigned issues will be closed by the reviewer.
-            - **Issue References:** Ensure the first comment in the PR includes references to automatically close related issues upon merging.
+            - **Issue Assignment:** PRs without assigned issues will be closed by the reviewer.
+            - **Issue References:** Make sure the first comment in the PR includes references to automatically close related issues upon merging.
 
-            ## Other Guidelines
+            ## Other Guidelines 📌
 
-            - **Respect Volunteers' Time:** Be considerate of our volunteers’ time. Avoid directly contacting the person who assigned reviewers unless explicitly requested to do so.
-            - **Code of Conduct:** Adhere to the project’s [Code of Conduct](./code_of_conduct.md) in all interactions.
+            - **Respect Volunteers' Time:** Be considerate of our volunteers' time. Avoid contacting the person who assigned reviewers unless they request your input.
+            - **Code of Conduct:** Follow the project's [Code of Conduct](../../code_of_conduct.md) in all interactions.
 
-            ## Closing Your PR
+            ## Closing Your PR 🛑
 
-            If you need to close your PR, please provide a comment explaining the reason for closure. This helps us understand your decision and can provide insights for future contributions.
+            If you need to close your PR, please comment with the reason for closure. This helps us understand why you decided to close the PR.
 
-            ---
-
-            Thank you for your understanding and cooperation. Your adherence to these guidelines ensures a streamlined and effective review process, helping us maintain the quality and integrity of our project.
-            Happy coding!
+            Thank you for your understanding and cooperation. 🙏
