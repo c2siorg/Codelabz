@@ -57,7 +57,8 @@ function TutorialPage({ background = "white", textColor = "black" }) {
     upVote: tutorial?.upVotes,
     downVote: tutorial?.downVotes,
     published_on: tutorial?.createdAt,
-    tag: tutorial?.tut_tags
+    tag: tutorial?.tut_tags,
+    tutorial_id: tutorial?.tutorial_id
   };
 
   const steps = useSelector(
