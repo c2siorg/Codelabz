@@ -43,7 +43,10 @@ function HomePage({ background = "white", textColor = "black" }) {
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
-  const [value, setValue] = useState(2);
+  const tutorialFeedArray = useSelector(
+    ({ tutorialPage }) => tutorialPage.feed.homepageFeedArray
+  );
+  const [tutorials, setTutorials] = useState(tutorialFeedArray);
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
   const [footerContent, setFooterContent] = useState([
@@ -176,17 +179,35 @@ function HomePage({ background = "white", textColor = "black" }) {
     };
     getFeed();
   }, []);
-  const tutorials = useSelector(
-    ({
-      tutorialPage: {
-        feed: { homepageFeedArray }
-      }
-    }) => homepageFeedArray
-  );
 
   const notification = () => {};
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+
+  const convertToDate = timestamp => {
+    return new Date(timestamp.seconds * 1000);
+  };
+
+  const handleFeedChange = filterType => {
+    let filteredTutorials;
+
+    switch (filterType) {
+      // TODO
+      // case "Featured":
+      //   break;
+      case "New":
+        filteredTutorials = [...tutorials].sort(
+          (a, b) => convertToDate(b.createdAt) - convertToDate(a.createdAt)
+        );
+        break;
+      case "Top":
+        filteredTutorials = [...tutorials].sort(
+          (a, b) => b.upVotes - a.upVotes
+        );
+        break;
+      default:
+        filteredTutorials = tutorials;
+    }
+
+    setTutorials(filteredTutorials);
   };
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -234,7 +255,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             onSidebarClick={e => closeModal(e)}
           />
           <Card className={classes.card}>
-            <Activity />
+            <Activity handleFeedChange={handleFeedChange} />
           </Card>
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />
