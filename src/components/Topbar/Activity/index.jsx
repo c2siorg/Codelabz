@@ -18,11 +18,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Activity() {
+function Activity({ handleFeedChange }) {
   const classes = useStyles();
   const [List, setList] = useState(1);
 
-  const acitvitylist = [
+  const activityList = [
     {
       id: 1,
       icon: LocalOfferIcon,
@@ -52,8 +52,9 @@ function Activity() {
               value={List}
               toggle={item => {
                 setList(item.id);
+                handleFeedChange(activityList[item.id - 1].text);
               }}
-              acitvitylist={acitvitylist}
+              activityList={activityList}
             />
           </Grid>
         </div>
