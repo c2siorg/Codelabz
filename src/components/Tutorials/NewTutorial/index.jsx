@@ -138,6 +138,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       : null;
 
   useEffect(() => {
+    setTags([]);
+    setNewTag("");
+    setformValue({
+      title: "",
+      summary: "",
+      owner: "",
+      tags: []
+    });
     setVisible(viewModal);
   }, [viewModal]);
 
@@ -178,6 +186,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const handleDeleteTag = tagToDelete => {
     setTags(tags.filter(tag => tag !== tagToDelete));
+  };
+
+  const handleKeyDown = e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    }
   };
 
   const classes = useStyles();
@@ -267,6 +282,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             size="small"
             value={newTag}
             onChange={e => setNewTag(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <Button
             variant="contained"
@@ -303,7 +319,17 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             <div style={{ float: "right" }}>
               <Button
                 key="back"
-                onClick={onSidebarClick}
+                onClick={() => {
+                  onSidebarClick();
+                  setTags([]);
+                  setNewTag("");
+                  setformValue({
+                    title: "",
+                    summary: "",
+                    owner: "",
+                    tags: []
+                  });
+                }}
                 id="cancelAddTutorial"
               >
                 Cancel
