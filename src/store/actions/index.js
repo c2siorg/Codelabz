@@ -66,3 +66,6 @@ export {
   updateStepTitle,
   uploadTutorialImages
 } from "./tutorialsActions";
+export {
+  getRecommendedTutorials,
+} from "./tutorialPageActions";

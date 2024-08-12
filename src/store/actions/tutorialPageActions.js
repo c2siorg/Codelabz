@@ -221,3 +221,37 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
   }
 };
+
+export const getRecommendedTutorials = currentTutorialTags => async (firebase, firestore) => {
+  try {
+    const tutorialsRef = firestore.collection("tutorials");
+
+    // Fetch tutorials with matching tags
+    const querySnapshot = await tutorialsRef
+      .where("tut_tags", "array-contains-any", currentTutorialTags)
+      .get();
+
+    // Calculate relevance score based on matching tags
+    const recommendedTutorials = querySnapshot.docs
+      .map(doc => {
+        const tutorial = doc.data();
+
+        // Skip unpublished tutorials
+        if (!tutorial.isPublished) return null;
+
+        const matchingTags = tutorial.tut_tags.filter(tag => currentTutorialTags.includes(tag));
+        return {
+          ...tutorial,
+          relevanceScore: matchingTags.length
+        };
+      })
+      .filter(tutorial => tutorial !== null);  // Remove null values from the array
+
+    recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+    return recommendedTutorials;
+  } catch (error) {
+    console.error("Error fetching recommended tutorials:", error);
+    return [];
+  }
+};

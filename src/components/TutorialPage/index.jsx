@@ -51,13 +51,14 @@ function TutorialPage({ background = "white", textColor = "black" }) {
   );
 
   const postDetails = {
+    id: tutorial?.tutorial_id,
     title: tutorial?.title,
     org: tutorial?.owner,
     user: tutorial?.created_by,
     upVote: tutorial?.upVotes,
     downVote: tutorial?.downVotes,
     published_on: tutorial?.createdAt,
-    tag: tutorial?.tut_tags
+    tags: tutorial?.tut_tags
   };
 
   const steps = useSelector(
@@ -121,7 +122,7 @@ function TutorialPage({ background = "white", textColor = "black" }) {
           xs={3}
           data-testId="tutorialpageSideBar"
         >
-          <SideBar />
+          <SideBar currentTutorial={postDetails} />
         </Grid>
       </Grid>
     </Box>
