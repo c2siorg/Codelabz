@@ -161,7 +161,7 @@ export const getUserProfileData =
   handle => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_USER_DATA_START });
-      const isUserExists = await checkUserHandleExists(handle)(firestore);
+      const isUserExists = checkUserHandleExists(handle)(firestore);
       if (isUserExists) {
         const docs = await firestore
           .collection("cl_user")
