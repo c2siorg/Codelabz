@@ -1,10 +1,27 @@
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import TutorialCard from "../BaseTutorialsComponent/TutorialCard";
+import { searchFromTutorialsIndex } from "../../../../store/actions";
 
-const SearchResultsComponent = ({ results }) => {
+const SearchResultsComponent = ({ results: propResults }) => {
+  const [results, setResults] = useState([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search).get("query");
+    if (query) {
+      // Search using the query parameter
+      const searchResults = searchFromTutorialsIndex(query);
+      setResults(searchResults);
+    } else {
+      // Use results from props if no query parameter is present
+      setResults(propResults);
+    }
+  }, [location.search, propResults]);
+
   return (
     <div>
       <Grid container item justify="center">
