@@ -61,10 +61,21 @@ function MainNavbar() {
   const windowSize = useWindowSize();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openMenu, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const toggleSlider = () => {
     setOpen(!openMenu);
   };
   const notification = () => {};
+  const handleSearchChange = e => {
+    setSearchQuery(e.target.value);
+  };
+  const handleSearch = e => {
+    e.preventDefault();
+    if (searchQuery.length > 0) {
+      history.push(`/search?query=${searchQuery}`);
+    }
+  };
+
   return (
     <Headroom>
       <nav
@@ -105,17 +116,28 @@ function MainNavbar() {
             </Grid>
           </Grid>
           <Grid item xs={12} md={5}>
-            <Paper component={"form"} className={classes.root} elevation={0}>
+            <Paper
+              component={"form"}
+              className={classes.root}
+              elevation={0}
+              onSubmit={handleSearch}
+            >
               <IconButton
-                type="submit"
+                type="button"
                 aria-label="search"
                 disableRipple
                 className={classes.icon}
                 data-testid="navbarSearch"
+                onClick={handleSearch}
               >
                 <SearchIcon />
               </IconButton>
-              <InputBase className={classes.input} placeholder="Search..." />
+              <InputBase
+                className={classes.input}
+                value={searchQuery}
+                placeholder="Search..."
+                onChange={handleSearchChange}
+              />
             </Paper>
           </Grid>
           <Grid

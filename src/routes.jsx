@@ -27,6 +27,7 @@ import MainNavbar from "./components/NavBar/new/MainNavbar";
 import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
+import SearchResultsComponent from "./components/Tutorials/MyTutorials/Search/SearchResultsComponent";
 
 const AuthIsLoaded = ({ children }) => {
   const profile = useSelector(({ firebase: { profile } }) => profile);
@@ -157,6 +158,7 @@ const Routes = () => {
             path={"/tutorial/:id"}
             component={UserIsAllowedUserDashboard(TutorialPage)}
           />
+          <Route exact path={"/search"} component={SearchResultsComponent} />
           <Route
             exact
             path={"/editor"}
