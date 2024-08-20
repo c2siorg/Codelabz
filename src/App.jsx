@@ -3,7 +3,7 @@ import Routes from "./routes";
 import "./App.less";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { getProfileData } from "./store/actions";
+import { getProfileData, fetchAndIndexTutorials } from "./store/actions";
 
 const App = () => {
   const firebase = useFirebase();
@@ -19,6 +19,7 @@ const App = () => {
 
   useEffect(() => {
     getProfileData(organizations)(firebase, firestore, dispatch);
+    fetchAndIndexTutorials()(firebase, firestore, dispatch);
   }, [organizations, firebase, dispatch]);
   return <Routes />;
 };
