@@ -9,7 +9,7 @@ import LeftMenu from "./LeftMenu";
 import { useHistory } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-
+import { useSelector } from "react-redux";
 import SideBar from "../../../SideBar/index";
 import useWindowSize from "../../../../helpers/customHooks/useWindowSize";
 
@@ -64,7 +64,12 @@ function MainNavbar() {
   const toggleSlider = () => {
     setOpen(!openMenu);
   };
-  const notification = () => {};
+  const notifications = useSelector(
+    state => state.notifications.data.notifications
+  );
+  const notificationCount = notifications?.filter(
+    notification => !notification.isRead
+  ).length;
   return (
     <Headroom>
       <nav
@@ -137,7 +142,7 @@ function MainNavbar() {
           <SideBar
             open={openMenu}
             toggleSlider={toggleSlider}
-            notification={notification}
+            notificationCount={notificationCount}
             drawWidth={960}
           />
         )}
