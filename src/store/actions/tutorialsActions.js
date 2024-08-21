@@ -160,6 +160,8 @@ export const createTutorial =
         return documentID;
       };
 
+      await updateTagFrequencies(tags)(firebase, firestore);
+
       if (is_org) {
         const documentID = await setData("organization");
         history.push(`/tutorials/${owner}/${documentID}`);
@@ -173,6 +175,38 @@ export const createTutorial =
       dispatch({ type: actions.CREATE_TUTORIAL_FAIL, payload: e.message });
     }
   };
+
+export const updateTagFrequencies = (tags) => async (firebase, firestore) => {
+  const tagCollectionRef = firestore.collection('tag_frequencies')
+
+  for (const tag of tags) {
+    const tagDocRef = tagCollectionRef.doc(tag);
+    await firestore.runTransaction(async (transaction) => {
+      const tagDoc = await transaction.get(tagDocRef);
+      if (tagDoc.exists) {
+        const newCount = (tagDoc.data().count || 0) + 1;
+        transaction.update(tagDocRef, { count: newCount });
+      } else {
+        transaction.set(tagDocRef, { count: 1 });
+      }
+    });
+  }
+};
+
+export const getTutorialsByTopTags = (limit = 10) => async (firebase, firestore) => {
+  const tutorialCollectionRef = firestore.collection('tutorials');
+  const tagCollectionRef = firestore.collection('tag_frequencies');
+
+  const tagSnapshot = await tagCollectionRef.orderBy('count', 'desc').limit(limit).get();
+  const topTags = tagSnapshot.docs.map(doc => doc.id);
+  // console.log("topTags", topTags);
+
+  // Query tutorials that contain any of the top tags
+  const tutorialSnapshot = await tutorialCollectionRef.where('tut_tags', 'array-contains-any', topTags).get();
+  const tutorials = tutorialSnapshot.docs.map(doc => doc.data());
+
+  return tutorials;
+};
 
 const checkUserOrOrgHandle = handle => async firestore => {
   const userHandleExists = await checkUserHandleExists(handle)(firestore);
