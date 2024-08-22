@@ -255,6 +255,13 @@ export const setUpInitialData =
           }
         );
 
+        // Create organisation handle
+        await firestore.collection("org_users").doc(`${org_handle}_${userData.uid}`).set({
+          uid: userData.uid,
+          org_handle: org_handle,
+          permissions: [3]
+        });
+
         const timeOutID = setTimeout(() => {
           firebase
             .updateProfile(
