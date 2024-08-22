@@ -256,8 +256,8 @@ a.firepad-btn:active {
   background-color: #ffffff;
   border: 1px solid #ccc;
   /* border: 1px solid rgba(0, 0, 0, 0.2); */
-  *border-right-width: 2px;
-  *border-bottom-width: 2px;
+  /* border-right-width: 2px; */
+  /* border-bottom-width: 2px; */
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 2px;

@@ -31,7 +31,8 @@ export const onlineFirebaseApp = initializeApp(firebaseConfig, "secondary");
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore(); // <- needed if using firestor
 
-if (import.meta.env.VITE_APP_USE_EMULATOR) {
+if (import.meta.env.VITE_APP_USE_EMULATOR === "true") {
+  console.log("Using emulator");
   firebase.firestore().useEmulator("localhost", 8080);
   firebase.auth().useEmulator("http://localhost:9099", {
     disableWarnings: true
