@@ -88,8 +88,24 @@ export const signUp = userData => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SIGN_UP_START });
     const { email, password } = userData;
+
     await firebase.createUser({ email, password }, { email });
+    const currentUser = firebase.auth().currentUser;
+    if (!currentUser) {
+      throw new Error("User not found after signup");
+    }
+
+    try {
+      await currentUser.sendEmailVerification();
+      console.log("Email verification sent successfully.");
+    } catch (verificationError) {
+      console.error("Error sending email verification:", verificationError);
+      dispatch({ type: actions.SIGN_UP_FAIL, payload: verificationError });
+      throw verificationError;
+    }
+
     await firebase.logout();
+
     dispatch({ type: actions.SIGN_UP_SUCCESS });
   } catch (e) {
     dispatch({ type: actions.SIGN_UP_FAIL, payload: e });

@@ -16,7 +16,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import validator from "validator";
 import Divider from "../../../globalComponents/Divider";
 import { clearAuthError, signIn } from "../../../store/actions";
@@ -48,6 +48,13 @@ const Login = ({
   const errorProp = useSelector(({ auth }) => auth.profile.error);
   const loadingProp = useSelector(({ auth }) => auth.profile.loading);
   const dispatch = useDispatch();
+  const location = useLocation();
+  const [signupMessage, setSignupMessage] = useState("");
+
+  useEffect(() => {
+    // Update signupMessage when the location state changes
+    setSignupMessage(location.state?.successMessage || "");
+  }, [location.state]);
 
   useEffect(() => setError(errorProp), [errorProp]);
   useEffect(() => setLoading(loadingProp), [loadingProp]);
@@ -128,7 +135,11 @@ const Login = ({
         >
           {loginText}
         </Typography>
-        <ViewAlerts error={error} email={email} />
+        <ViewAlerts
+          error={error}
+          email={email}
+          successMessage={signupMessage}
+        />
         <div>
           <TextField
             error={emailValidateError}
