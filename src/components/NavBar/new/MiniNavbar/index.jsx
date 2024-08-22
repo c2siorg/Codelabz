@@ -18,6 +18,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import SideBar from "../../../SideBar";
 import useWindowSize from "../../../../helpers/customHooks/useWindowSize";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { searchFromTutorialsIndex } from "../../../../store/actions";
 
 const useStyles = makeStyles(theme => ({
   input: {
@@ -67,6 +69,7 @@ function MiniNavbar() {
   const classes = useStyles();
 
   const history = useHistory();
+  const dispatch = useDispatch();
   const notifications = useSelector(
     state => state.notifications.data.notifications
   );
@@ -99,6 +102,17 @@ function MiniNavbar() {
       dynamicWidth: window.innerWidth,
       dynamicHeight: window.innerHeight
     });
+  };
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearchChange = e => {
+    setSearchQuery(e.target.value);
+  };
+  const handleSearch = () => {
+    if (searchQuery.length > 0) {
+      dispatch(searchFromTutorialsIndex(searchQuery));
+      history.push(`/search?query=${searchQuery}`);
+    }
   };
 
   useEffect(() => {
@@ -151,11 +165,12 @@ function MiniNavbar() {
             <Grid style={{ display: "inline-block" }} item xs={12} md={4}>
               <Paper component={"form"} className={classes.root} elevation={0}>
                 <IconButton
-                  type="submit"
+                  type="button"
                   aria-label="search"
                   disableRipple
                   className={classes.icon}
                   data-testid="navbarSearch"
+                  onClick={handleSearch}
                 >
                   <SearchIcon />
                 </IconButton>
@@ -170,6 +185,8 @@ function MiniNavbar() {
                   }}
                   className={classes.input}
                   placeholder="Search..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                 />
               </Paper>
             </Grid>

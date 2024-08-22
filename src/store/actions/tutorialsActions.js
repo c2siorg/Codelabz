@@ -15,8 +15,26 @@ const tutorials_index = new Elasticlunr(
   "summary"
 );
 
+export const fetchAndIndexTutorials = () => async (firebase, firestore) => {
+  try {
+    const snapshot = await firestore.collection("tutorials").get();
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const tutorial = { id: doc.id, ...data };
+      // console.log("Adding tutorial to index:", tutorial);
+      tutorials_index.addDocToIndex(tutorial);
+    });
+
+    // console.log("All docs in index:", tutorials_index.getAllDocs());
+  } catch (error) {
+    console.error("Error fetching or indexing tutorials:", error);
+  }
+};
+
 export const searchFromTutorialsIndex = query => {
-  return tutorials_index.searchFromIndex(query);
+  const results = tutorials_index.searchFromIndex(query);
+  // console.log("searchFromIndex", query, results);
+  return results;
 };
 
 // Gets all the tutorials with this user having edit access
