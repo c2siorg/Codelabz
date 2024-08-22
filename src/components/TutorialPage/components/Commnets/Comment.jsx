@@ -56,7 +56,7 @@ const Comment = ({ id }) => {
   const firestore = useFirestore();
   const firebase = useFirebase();
   const dispatch = useDispatch();
-  useState(() => {
+  useEffect(() => {
     getCommentData(id)(firebase, firestore, dispatch);
   }, [id]);
 
@@ -124,7 +124,7 @@ const Comment = ({ id }) => {
           <div style={{ margin: "10px 0 0 10px" }}>
             <Textbox type="reply" handleSubmit={handleSubmit} />
             {replies?.replies.map((id, index) => {
-              return <Comment id={id} />;
+              return <Comment key={index} id={id} />;
             })}
           </div>
         )}

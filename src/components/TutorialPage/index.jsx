@@ -11,7 +11,8 @@ import StepsBar from "./StepBar";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import {
   getTutorialData,
-  getTutorialSteps
+  getTutorialSteps,
+  addComment
 } from "../../store/actions/tutorialPageActions";
 import { getUserProfileData } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +25,7 @@ function TutorialPage({ background = "white", textColor = "black" }) {
   const history = useHistory();
   const windowSize = useWindowSize();
   const [openMenu, setOpen] = useState(false);
+  const [commentsArray, setCommentsArray] = useState([]);
   const toggleSlider = () => {
     setOpen(!openMenu);
   };
@@ -42,6 +44,11 @@ function TutorialPage({ background = "white", textColor = "black" }) {
       }
     }) => data
   );
+
+  useEffect(() => {
+    setCommentsArray(tutorial?.comments);
+  }, [tutorial?.comments]);
+
   const loading = useSelector(
     ({
       tutorialPage: {
@@ -72,6 +79,27 @@ function TutorialPage({ background = "white", textColor = "black" }) {
     console.log(loading, tutorial);
     history.push("/not-found");
   }
+
+  const handleAddComment = async comment => {
+    const commentData = {
+      content: comment,
+      replyTo: id,
+      tutorial_id: id,
+      createdAt: firestore.FieldValue.serverTimestamp(),
+      userId: "codelabzuser"
+    };
+    const commentId = await addComment(commentData)(
+      firebase,
+      firestore,
+      dispatch
+    );
+
+    if (!commentsArray || commentsArray?.length === 0) {
+      setCommentsArray([commentId]);
+    } else {
+      setCommentsArray(prevComments => [commentId, ...prevComments]);
+    }
+  };
 
   return (
     <Box
@@ -113,7 +141,10 @@ function TutorialPage({ background = "white", textColor = "black" }) {
         >
           <PostDetails details={postDetails} />
           <Tutorial steps={steps} />
-          <CommentBox commentsArray={tutorial?.comments} tutorialId={id} />
+          <CommentBox
+            commentsArray={commentsArray}
+            onAddComment={handleAddComment}
+          />
         </Grid>
 
         <Grid

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   TextField,
@@ -40,6 +40,13 @@ const Textbox = ({ type, handleSubmit }) => {
         fullWidth
         value={commentText}
         onChange={e => setCommentText(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSubmit(commentText);
+            setCommentText("");
+          }
+        }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end" sx={{ position: "relative" }}>
@@ -70,7 +77,10 @@ const Textbox = ({ type, handleSubmit }) => {
       <Button
         variant="contained"
         disableElevation
-        onClick={() => handleSubmit(commentText)}
+        onClick={() => {
+          handleSubmit(commentText);
+          setCommentText("");
+        }}
       >
         <Send />
       </Button>
