@@ -17,6 +17,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import SideBar from "../../../SideBar";
 import useWindowSize from "../../../../helpers/customHooks/useWindowSize";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   input: {
@@ -66,7 +67,12 @@ function MiniNavbar() {
   const classes = useStyles();
 
   const history = useHistory();
-  const notification = () => {};
+  const notifications = useSelector(
+    state => state.notifications.data.notifications
+  );
+  const notificationCount = notifications?.filter(
+    notification => !notification.isRead
+  ).length;
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
@@ -261,7 +267,7 @@ function MiniNavbar() {
         <SideBar
           open={openMenu}
           toggleSlider={toggleSlider}
-          notification={notification}
+          notificationCount={notificationCount}
         >
           {window.innerWidth <= 960 && (
             <>

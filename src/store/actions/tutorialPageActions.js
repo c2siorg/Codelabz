@@ -199,16 +199,11 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
   try {
     dispatch({ type: actions.ADD_COMMENT_START });
 
-    const docref = await firestore
-      .collection("cl_comments")
-      .add(comment);
+    const docref = await firestore.collection("cl_comments").add(comment);
 
-    await firestore
-      .collection("cl_comments")
-      .doc(docref.id)
-      .update({
-        comment_id: docref.id
-      });
+    await firestore.collection("cl_comments").doc(docref.id).update({
+      comment_id: docref.id
+    });
 
     if (comment.replyTo === comment.tutorial_id) {
       await firestore

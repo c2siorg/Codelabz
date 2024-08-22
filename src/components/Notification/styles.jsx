@@ -50,7 +50,6 @@ const useStyles = makeStyles(theme => ({
     height: "10px",
     width: "10px",
     borderRadius: "50%",
-    backgroundColor: "#5AB1E3",
     top: "50%",
     transform: "translateY(-50%)",
     left: "5px"

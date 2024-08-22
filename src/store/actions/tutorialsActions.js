@@ -1,6 +1,10 @@
 import * as actions from "./actionTypes";
 import Elasticlunr from "../../helpers/elasticlunr";
-import { checkOrgHandleExists, checkUserHandleExists } from "./authActions";
+import {
+  checkOrgHandleExists,
+  checkUserHandleExists,
+  isUserSubscribed
+} from "./";
 import _ from "lodash";
 
 const tutorials_index = new Elasticlunr(
@@ -173,7 +177,7 @@ export const createTutorial =
     }
   };
 
-const checkUserOrOrgHandle = handle => async firestore => {
+export const checkUserOrOrgHandle = handle => async firestore => {
   const userHandleExists = await checkUserHandleExists(handle)(firestore);
   const orgHandleExists = await checkOrgHandleExists(handle)(firestore);
 
@@ -213,53 +217,59 @@ export const getCurrentTutorialData =
         ["id"],
         ["asc"]
       );
+
+      const tutorialData = {
+        ...tutorialDoc.data(),
+        steps: steps.filter(x => !x.deleted),
+        tutorial_id
+      };
+
       dispatch({
         type: actions.GET_CURRENT_TUTORIAL_SUCCESS,
-        payload: {
-          ...tutorialDoc.data(),
-          steps: steps.filter(x => !x.deleted),
-          tutorial_id
-        }
+        payload: tutorialData
       });
+
+      return tutorialData;
     } catch (e) {
       console.log("GET_CURRENT_TUTORIAL_FAIL", e);
       window.location.href = "/";
       dispatch({ type: actions.GET_CURRENT_TUTORIAL_FAIL, payload: e.message });
+      return null;
     }
   };
 
 export const addNewTutorialStep =
   ({ owner, tutorial_id, title, time, id }) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        dispatch({ type: actions.CREATE_TUTORIAL_STEP_START });
+  async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.CREATE_TUTORIAL_STEP_START });
 
-        await firestore
-          .collection("tutorials")
-          .doc(tutorial_id)
-          .collection("steps")
-          .doc(id)
-          .set({
-            content: `Switch to editor mode to begin <b>${title}</b> step`,
-            id,
-            time,
-            title,
-            visibility: true,
-            deleted: false
-          });
+      await firestore
+        .collection("tutorials")
+        .doc(tutorial_id)
+        .collection("steps")
+        .doc(id)
+        .set({
+          content: `Switch to editor mode to begin <b>${title}</b> step`,
+          id,
+          time,
+          title,
+          visibility: true,
+          deleted: false
+        });
 
-        await getCurrentTutorialData(owner, tutorial_id)(
-          firebase,
-          firestore,
-          dispatch
-        );
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
 
-        dispatch({ type: actions.CREATE_TUTORIAL_STEP_SUCCESS });
-      } catch (e) {
-        console.log("CREATE_TUTORIAL_STEP_FAIL", e.message);
-        dispatch({ type: actions.CREATE_TUTORIAL_STEP_FAIL, payload: e.message });
-      }
-    };
+      dispatch({ type: actions.CREATE_TUTORIAL_STEP_SUCCESS });
+    } catch (e) {
+      console.log("CREATE_TUTORIAL_STEP_FAIL", e.message);
+      dispatch({ type: actions.CREATE_TUTORIAL_STEP_FAIL, payload: e.message });
+    }
+  };
 
 export const clearCreateTutorials = () => dispatch =>
   dispatch({ type: actions.CLEAR_CREATE_TUTORIALS_STATE });
@@ -305,78 +315,91 @@ export const setCurrentStepContent =
 
 export const hideUnHideStep =
   (owner, tutorial_id, step_id, visibility) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        /* not being used */
-        // const type = await checkUserOrOrgHandle(owner)(firebase);
-        await firestore
-          .collection("tutorials")
-          .doc(tutorial_id)
-          .collection("steps")
-          .doc(step_id)
-          .update({
-            [`visibility`]: !visibility,
-            updatedAt: firestore.FieldValue.serverTimestamp()
-          });
+  async (firebase, firestore, dispatch) => {
+    try {
+      /* not being used */
+      // const type = await checkUserOrOrgHandle(owner)(firebase);
+      await firestore
+        .collection("tutorials")
+        .doc(tutorial_id)
+        .collection("steps")
+        .doc(step_id)
+        .update({
+          [`visibility`]: !visibility,
+          updatedAt: firestore.FieldValue.serverTimestamp()
+        });
 
-        await getCurrentTutorialData(owner, tutorial_id)(
-          firebase,
-          firestore,
-          dispatch
-        );
-      } catch (e) {
-        console.log(e.message);
-      }
-    };
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
 export const publishUnpublishTutorial =
   (owner, tutorial_id, isPublished) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        await firestore
-          .collection("tutorials")
-          .doc(tutorial_id)
-          .update({
-            ["isPublished"]: !isPublished
-          });
+  async (firebase, firestore, dispatch) => {
+    try {
+      await firestore
+        .collection("tutorials")
+        .doc(tutorial_id)
+        .update({
+          ["isPublished"]: !isPublished
+        });
 
-        getCurrentTutorialData(owner, tutorial_id)(firebase, firestore, dispatch);
-      } catch (e) {
-        console.log(e.message);
+      const { title, created_by } = await getCurrentTutorialData(
+        owner,
+        tutorial_id
+      )(firebase, firestore, dispatch);
+
+      if (!isPublished) {
+        console.log("!isPublished", !isPublished);
+        addNotification(
+          tutorial_id,
+          title,
+          created_by,
+          owner
+        )(firebase, firestore, dispatch);
       }
-    };
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
 export const removeStep =
   (owner, tutorial_id, step_id, current_step_no) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        await firestore
-          .collection("tutorials")
-          .doc(tutorial_id)
-          .collection("steps")
-          .doc(step_id)
-          .delete()
+  async (firebase, firestore, dispatch) => {
+    try {
+      await firestore
+        .collection("tutorials")
+        .doc(tutorial_id)
+        .collection("steps")
+        .doc(step_id)
+        .delete();
 
-        // const data = await firestore
-        //   .collection("tutorials")
-        //   .doc(tutorial_id)
-        //   .collection("steps")
-        //   .doc(step_id)
-        //   .get();
+      // const data = await firestore
+      //   .collection("tutorials")
+      //   .doc(tutorial_id)
+      //   .collection("steps")
+      //   .doc(step_id)
+      //   .get();
 
-        await setCurrentStepNo(
-          current_step_no > 0 ? current_step_no - 1 : current_step_no
-        )(dispatch);
+      await setCurrentStepNo(
+        current_step_no > 0 ? current_step_no - 1 : current_step_no
+      )(dispatch);
 
-        await getCurrentTutorialData(owner, tutorial_id)(
-          firebase,
-          firestore,
-          dispatch
-        );
-      } catch (e) {
-        console.log(e.message);
-      }
-    };
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
 export const setCurrentStep = data => async dispatch =>
   dispatch({ type: actions.SET_EDITOR_DATA, payload: data });
@@ -465,69 +488,150 @@ export const remoteTutorialImages =
 
 export const updateStepTitle =
   (owner, tutorial_id, step_id, step_title) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        const dbPath = `tutorials/${tutorial_id}/steps`;
-        await firestore
-          .collection(dbPath)
-          .doc(step_id)
-          .update({
-            [`title`]: step_title,
-            updatedAt: firestore.FieldValue.serverTimestamp()
-          });
-
-        await getCurrentTutorialData(owner, tutorial_id)(
-          firebase,
-          firestore,
-          dispatch
-        );
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-export const updateStepTime =
-  (owner, tutorial_id, step_id, step_time) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        const dbPath = `tutorials/${tutorial_id}/steps`;
-
-        await firestore
-          .collection(dbPath)
-          .doc(step_id)
-          .update({
-            [`time`]: step_time,
-            updatedAt: firestore.FieldValue.serverTimestamp()
-          });
-
-        await getCurrentTutorialData(owner, tutorial_id)(
-          firebase,
-          firestore,
-          dispatch
-        );
-      } catch (e) {
-        console.log(e.message);
-      }
-    };
-
-export const setTutorialTheme =
-  ({ tutorial_id, owner, bgColor, textColor }) =>
-    async (firebase, firestore, dispatch) => {
-      try {
-        const dbPath = `tutorials`;
-
-        await firestore.collection(dbPath).doc(tutorial_id).update({
-          text_color: textColor,
-          background_color: bgColor,
+  async (firebase, firestore, dispatch) => {
+    try {
+      const dbPath = `tutorials/${tutorial_id}/steps`;
+      await firestore
+        .collection(dbPath)
+        .doc(step_id)
+        .update({
+          [`title`]: step_title,
           updatedAt: firestore.FieldValue.serverTimestamp()
         });
 
-        await getCurrentTutorialData(owner, tutorial_id)(
-          firebase,
-          firestore,
-          dispatch
-        );
-      } catch (e) {
-        console.log(e.message);
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+export const updateStepTime =
+  (owner, tutorial_id, step_id, step_time) =>
+  async (firebase, firestore, dispatch) => {
+    try {
+      const dbPath = `tutorials/${tutorial_id}/steps`;
+
+      await firestore
+        .collection(dbPath)
+        .doc(step_id)
+        .update({
+          [`time`]: step_time,
+          updatedAt: firestore.FieldValue.serverTimestamp()
+        });
+
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+export const setTutorialTheme =
+  ({ tutorial_id, owner, bgColor, textColor }) =>
+  async (firebase, firestore, dispatch) => {
+    try {
+      const dbPath = `tutorials`;
+
+      await firestore.collection(dbPath).doc(tutorial_id).update({
+        text_color: textColor,
+        background_color: bgColor,
+        updatedAt: firestore.FieldValue.serverTimestamp()
+      });
+
+      await getCurrentTutorialData(owner, tutorial_id)(
+        firebase,
+        firestore,
+        dispatch
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+export const addNotification =
+  (tutorial_id, tutorialTitle, created_by, owner) =>
+  async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.ADD_NOTIFICATION_START });
+
+      const querySnapshot = await firestore
+        .collection("notifications")
+        .where("tutorial_id", "==", tutorial_id)
+        .get();
+
+      const isSubscribed = await isUserSubscribed(owner, firebase, firestore);
+
+      if (querySnapshot.empty && isSubscribed) {
+        const document = firestore.collection("notifications").doc();
+        const documentID = document.id;
+
+        const notification = {
+          notification_id: documentID,
+          content: `Posted new Tutorial ${tutorialTitle}. Learn the best practices followed in the industry in this tutorial.`,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          isRead: false,
+          username: created_by,
+          org: owner,
+          tutorial_id
+        };
+        await document.set(notification);
       }
-    };
+      dispatch({ type: actions.ADD_NOTIFICATION_SUCCESS });
+    } catch (e) {
+      console.error("ADD_NOTIFICATION_FAILED", e);
+      dispatch({ type: actions.ADD_NOTIFICATION_FAILED, payload: e.message });
+    }
+  };
+
+export const getNotificationData =
+  () => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.GET_NOTIFICATION_DATA_START });
+      const notificationsSnapshot = await firestore
+        .collection("notifications")
+        .orderBy("createdAt", "desc")
+        .get();
+
+      const notifications = notificationsSnapshot.docs.map(doc => doc.data());
+
+      dispatch({
+        type: actions.GET_NOTIFICATION_DATA_SUCCESS,
+        payload: notifications
+      });
+    } catch (e) {
+      console.log(e);
+      dispatch({
+        type: actions.GET_NOTIFICATION_DATA_FAIL,
+        payload: e.message
+      });
+    }
+  };
+
+export const readNotification =
+  notification_id => async (firebase, firestore, dispatch) => {
+    try {
+      await firestore.collection("notifications").doc(notification_id).update({
+        isRead: true
+      });
+      dispatch({ type: actions.READ_NOTIFICATION, payload: notification_id });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+export const deleteNotification =
+  notification_id => async (firebase, firestore, dispatch) => {
+    try {
+      await firestore.collection("notifications").doc(notification_id).delete();
+      dispatch({ type: actions.DELETE_NOTIFICATION, payload: notification_id });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };

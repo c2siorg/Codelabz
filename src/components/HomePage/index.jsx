@@ -165,6 +165,7 @@ function HomePage({ background = "white", textColor = "black" }) {
   ]);
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
+
   useEffect(() => {
     const getFeed = async () => {
       const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
@@ -184,7 +185,13 @@ function HomePage({ background = "white", textColor = "black" }) {
     }) => homepageFeedArray
   );
 
-  const notification = () => {};
+  const notifications = useSelector(
+    state => state.notifications.data.notifications
+  );
+  const notificationCount = notifications?.filter(
+    notification => !notification.isRead
+  ).length;
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -217,7 +224,11 @@ function HomePage({ background = "white", textColor = "black" }) {
               }}
             >
               <Grid item className={classes.outerSideBar}>
-                <SideBar open={openMenu} toggleSlider={toggleSlider} />
+                <SideBar
+                  open={openMenu}
+                  toggleSlider={toggleSlider}
+                  notificationCount={notificationCount}
+                />
               </Grid>
             </Grid>
           )}
