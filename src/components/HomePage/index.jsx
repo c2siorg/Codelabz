@@ -37,6 +37,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import { getTutorialsByTopTags } from "../../store/actions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -60,7 +61,7 @@ function HomePage({ background = "white", textColor = "black" }) {
       link: "https://dev.codelabz.io/"
     }
   ]);
-
+  let tutorialIdArray;
   const windowSize = useWindowSize();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
@@ -170,7 +171,7 @@ function HomePage({ background = "white", textColor = "black" }) {
   const profileData = useSelector(({ firebase: { profile } }) => profile);
   useEffect(() => {
     const getFeed = async () => {
-      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+      tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
         firebase,
         firestore,
         dispatch
@@ -186,20 +187,25 @@ function HomePage({ background = "white", textColor = "black" }) {
     return new Date(timestamp.seconds * 1000);
   };
 
-  const handleFeedChange = filterType => {
+  const handleFeedChange = async filterType => {
     let filteredTutorials;
-
     switch (filterType) {
-      // TODO
-      // case "Featured":
-      //   break;
+      case "Featured":
+        filteredTutorials = await getTutorialsByTopTags()(
+          firebase,
+          firestore,
+          dispatch
+        );
+        break;
       case "New":
-        filteredTutorials = [...tutorials].sort(
+        await fetchNewTutorials();
+        filteredTutorials = [...tutorialFeedArray].sort(
           (a, b) => convertToDate(b.createdAt) - convertToDate(a.createdAt)
         );
         break;
       case "Top":
-        filteredTutorials = [...tutorials].sort(
+        await fetchNewTutorials();
+        filteredTutorials = [...tutorialFeedArray].sort(
           (a, b) => b.upVotes - a.upVotes
         );
         break;
@@ -209,6 +215,11 @@ function HomePage({ background = "white", textColor = "black" }) {
 
     setTutorials(filteredTutorials);
   };
+
+  const fetchNewTutorials = async () => {
+    await getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+  };
+
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };

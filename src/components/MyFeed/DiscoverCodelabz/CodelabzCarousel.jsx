@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFirestore, useFirebase } from "react-redux-firebase";
 import Default from "../../../assets/images/logo.jpeg";
 import { Link } from "react-router-dom";
-import { clearOrgData, getLaunchedOrgsData } from "../../../store/actions";
+import { getTutorialsByTopTags } from "../../../store/actions";
 import {
   getTutorialFeedIdArray,
   getTutorialFeedData
@@ -82,7 +82,7 @@ const CodelabzCarousel = ({ sortBy }) => {
     return new Date(createdAt.seconds * 1000);
   };
 
-  const handleFeedChange = filterType => {
+  const handleFeedChange = async filterType => {
     let filteredTutorials;
     const oneMonthAgo = new Date().setMonth(new Date().getMonth() - 1);
     const twoWeeksAgo = new Date().setDate(new Date().getDate() - 14);
@@ -98,9 +98,13 @@ const CodelabzCarousel = ({ sortBy }) => {
           .filter(tutorial => convertToDate(tutorial.createdAt) > oneMonthAgo)
           .sort((a, b) => b.upVotes - a.upVotes);
         break;
-      // TODO : Add featured tutorials
-      // case "featured":
-      // break;
+      case "Featured":
+        filteredTutorials = await getTutorialsByTopTags()(
+          firebase,
+          firestore,
+          dispatch
+        );
+        break;
       default:
         filteredTutorials = tutorials;
     }
