@@ -47,8 +47,19 @@ export {
   removeUserFollower,
   setCurrentOrgUserPermissions,
   updateUserProfile,
-  uploadProfileImage
+  uploadProfileImage,
+  getUserFeedIdArray,
+  getUserFeedData,
 } from "./profileActions";
+export {
+  getTutorialFeedIdArray,
+  getTutorialFeedData,
+  getTutorialData,
+  getTutorialSteps,
+  getCommentData,
+  getCommentReply,
+  addComment
+} from "./tutorialPageActions"
 export {
   addNewTutorialStep,
   addNotification,

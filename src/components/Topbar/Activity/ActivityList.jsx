@@ -36,12 +36,13 @@ function ActivityList({ value, toggle, activityList, classname }) {
       <Grid container spacing={2} className={classname}>
         <Grid item xs={12}>
           <Stack spacing={2} direction={"row"}>
-            {activityList.map((item, index) => (
-              <Button
-                variant="outlined"
-                color="primary"
-                key={index}
-                className={`
+            {activityList &&
+              activityList.map((item, index) => (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  key={index}
+                  className={`
                     ${classes.defaultButton}
                     ${
                       value === item.id
@@ -49,21 +50,21 @@ function ActivityList({ value, toggle, activityList, classname }) {
                         : classes.inactiveButton
                     }
                 `}
-                disableRipple
-                disableElevation
-                onClick={() => toggle(item)}
-              >
-                {item.icon && (
-                  <item.icon
-                    fontSize="small"
-                    style={{
-                      marginRight: "6px"
-                    }}
-                  />
-                )}
-                <Typography variant="body1">{item.text}</Typography>
-              </Button>
-            ))}
+                  disableRipple
+                  disableElevation
+                  onClick={() => toggle(item)}
+                >
+                  {item.icon && (
+                    <item.icon
+                      fontSize="small"
+                      style={{
+                        marginRight: "6px"
+                      }}
+                    />
+                  )}
+                  <Typography variant="body1">{item.text}</Typography>
+                </Button>
+              ))}
           </Stack>
         </Grid>
       </Grid>

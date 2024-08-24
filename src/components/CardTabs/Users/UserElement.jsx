@@ -1,11 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import AddUser from "../../../assets/images/add-user.svg";
 import CheckUser from "../../../assets/images/square-check-regular.svg";
+import { useFirestore } from "react-redux-firebase";
+import { useSelector } from "react-redux";
+import {
+  isUserFollower,
+  addUserFollower,
+  removeUserFollower
+} from "../../../store/actions";
 
 const UserElement = ({ user, index, useStyles }) => {
   const classes = useStyles();
-  const [icon, setIcon] = useState(true);
+  const firestore = useFirestore();
+
+  const profileData = user;
+  const currentProfileData = useSelector(
+    ({ firebase: { profile } }) => profile
+  );
+  const followerId = currentProfileData.uid;
+  const followingId = profileData.uid;
+  const [followed, setFollowed] = useState(false);
+
+  const handleFollowToggle = async () => {
+    if (!followed) {
+      await addUserFollower(currentProfileData, profileData, firestore);
+    } else {
+      await removeUserFollower(currentProfileData, profileData, firestore);
+    }
+    setFollowed(!followed);
+  };
+
+  useEffect(() => {
+    const checkIfFollowing = async () => {
+      const isFollowing = await isUserFollower(
+        followerId,
+        followingId,
+        firestore
+      );
+      setFollowed(isFollowing);
+    };
+
+    checkIfFollowing();
+  }, [followerId, followingId, firestore]);
+
   return (
     <Box
       sx={{
@@ -46,17 +84,16 @@ const UserElement = ({ user, index, useStyles }) => {
         </Box>
       </Box>
       <Box
-        onClick={() => {
-          setIcon(false);
-        }}
+        onClick={handleFollowToggle}
         data-testId={index == 0 ? "UserAdd" : ""}
-        sx={
-          icon && {
-            cursor: "pointer"
-          }
-        }
+        sx={{
+          cursor: followed ? "default" : "pointer"
+        }}
       >
-        <img src={icon ? AddUser : CheckUser} />
+        <img
+          src={followed ? CheckUser : AddUser}
+          alt={followed ? "Following" : "Add User"}
+        />
       </Box>
     </Box>
   );
