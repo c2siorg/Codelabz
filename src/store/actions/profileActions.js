@@ -61,9 +61,8 @@ export const createOrganization =
       dispatch({ type: actions.PROFILE_EDIT_START });
       const userData = firebase.auth().currentUser;
       const { org_name, org_handle, org_country, org_website } = orgData;
-      const isOrgHandleExists = await checkOrgHandleExists(org_handle)(
-        firebase
-      );
+      const isOrgHandleExists =
+        await checkOrgHandleExists(org_handle)(firestore);
 
       if (isOrgHandleExists) {
         dispatch({
@@ -161,7 +160,7 @@ export const getUserProfileData =
   handle => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_USER_DATA_START });
-      const isUserExists = checkUserHandleExists(handle)(firestore);
+      const isUserExists = checkUserHandleExists(handle)(firebase);
       if (isUserExists) {
         const docs = await firestore
           .collection("cl_user")
