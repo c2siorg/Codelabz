@@ -25,7 +25,6 @@ export const validateName = (
 export const validateHandle = async (
   checkUserHandleExists,
   firebase,
-  dispatch,
   handle,
   setHandleValidateError,
   setHandleValidateErrorMessage,
@@ -34,7 +33,7 @@ export const validateHandle = async (
   lengthMsg,
   takenMsg
 ) => {
-  const handleExists = await checkUserHandleExists(handle)(firebase, dispatch);
+  const handleExists = await checkUserHandleExists(handle)(firebase);
   if (validator.isEmpty(handle)) {
     setHandleValidateError(true);
     setHandleValidateErrorMessage(emptyMsg);

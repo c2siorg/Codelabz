@@ -215,7 +215,6 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
     validateHandle(
       checkUserHandleExists,
       firebase,
-      dispatch,
       handle,
       setHandleValidateError,
       setHandleValidateErrorMessage,

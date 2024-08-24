@@ -203,10 +203,9 @@ export const checkUserHandleExists = userHandle => async firebase => {
   }
 };
 
-export const checkOrgHandleExists = orgHandle => async firebase => {
+export const checkOrgHandleExists = orgHandle => async firestore => {
   try {
-    const organizationHandle = await firebase
-      .firestore()
+    const organizationHandle = await firestore
       .collection("cl_org_general")
       .doc(orgHandle)
       .get();
@@ -245,9 +244,8 @@ export const setUpInitialData =
       }
 
       if (orgData) {
-        const isOrgHandleExists = await checkOrgHandleExists(org_handle)(
-          firebase
-        );
+        const isOrgHandleExists =
+          await checkOrgHandleExists(org_handle)(firestore);
 
         if (isOrgHandleExists) {
           dispatch({

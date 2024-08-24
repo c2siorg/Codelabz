@@ -230,8 +230,8 @@ export const getTutorialsByTopTags = (limit = 10) => async (firebase, firestore)
   return tutorials;
 };
 
-export const checkUserOrOrgHandle = handle => async firestore => {
-  const userHandleExists = await checkUserHandleExists(handle)(firestore);
+export const checkUserOrOrgHandle = handle => async (firebase, firestore) => {
+  const userHandleExists = await checkUserHandleExists(handle)(firebase);
   const orgHandleExists = await checkOrgHandleExists(handle)(firestore);
 
   if (userHandleExists && !orgHandleExists) {
@@ -464,8 +464,7 @@ export const uploadTutorialImages =
   (owner, tutorial_id, files) => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.TUTORIAL_IMAGE_UPLOAD_START });
-      const type = await checkUserOrOrgHandle(owner)(firestore);
-
+      const type = await checkUserOrOrgHandle(owner)(firebase, firestore);
       const storagePath = `tutorials/${type}/${owner}/${tutorial_id}`;
       const dbPath = `tutorials`;
       await firebase.uploadFiles(storagePath, files, dbPath, {
@@ -506,7 +505,7 @@ export const remoteTutorialImages =
       dispatch({
         type: actions.TUTORIAL_IMAGE_DELETE_START
       });
-      const type = await checkUserOrOrgHandle(owner)(firestore);
+      const type = await checkUserOrOrgHandle(owner)(firebase, firestore);
 
       const storagePath = `tutorials/${type}/${owner}/${tutorial_id}/${name}`;
       const dbPath = `tutorials`;
