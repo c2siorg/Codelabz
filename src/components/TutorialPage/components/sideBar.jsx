@@ -1,6 +1,9 @@
+import React, { useState, useEffect } from "react";
 import { Box, Grid, Typography, Button } from "@mui/material";
 import Thumbnails from "./Thumbnails";
 import { makeStyles } from "@mui/styles";
+import { getRecommendedTutorials } from "../../../store/actions";
+import { useFirebase, useFirestore } from "react-redux-firebase";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -19,14 +22,37 @@ const useStyles = makeStyles(() => ({
       "linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, #FFF 100%)"
   }
 }));
-const SideBar = () => {
+const SideBar = ({ currentTutorial }) => {
   const classes = useStyles();
+  const [tutorials, setTutorials] = useState([]);
+  const firebase = useFirebase();
+  const firestore = useFirestore();
+
+  useEffect(() => {
+    const fetchRecommendedTutorials = async () => {
+      try {
+        const recommendedTutorials = await getRecommendedTutorials(
+          currentTutorial?.tags
+        )(firebase, firestore);
+        setTutorials(
+          recommendedTutorials.filter(
+            tutorial => tutorial.tutorial_id !== currentTutorial?.id
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching recommended tutorials:", error);
+      }
+    };
+
+    fetchRecommendedTutorials();
+  }, [currentTutorial?.tags]);
+
   return (
     <>
       <Box className={classes.container}>
-        <div className={classes.load}>
+        {/* <div className={classes.load}>
           <Button sx={{ textTransform: "none" }}>Show More &darr;</Button>
-        </div>
+        </div> */}
         <Grid container direction="column">
           <Typography
             sx={{
@@ -38,13 +64,14 @@ const SideBar = () => {
           >
             More From Codelabz
           </Typography>
-          <Thumbnails />
-          <Thumbnails />
-          <Thumbnails />
+          {tutorials.length > 0 &&
+            tutorials.map((tutorial, index) => (
+              <Thumbnails key={index} tutorial={tutorial} />
+            ))}
         </Grid>
       </Box>
       <Box className={classes.container}>
-        <div className={classes.load}>
+        {/* <div className={classes.load}>
           <Button sx={{ textTransform: "none" }}>Show More &darr;</Button>
         </div>
         <Grid container direction="column">
@@ -61,7 +88,7 @@ const SideBar = () => {
           <Thumbnails />
           <Thumbnails />
           <Thumbnails />
-        </Grid>
+        </Grid> */}
       </Box>
     </>
   );

@@ -71,7 +71,7 @@ const PostDetails = ({ details }) => {
                 <Grid item>
                   <Typography sx={{ fontWeight: "700", fontSize: "1.2rem" }}>
                     {details?.title}
-                    {details?.tag?.map(tag => (
+                    {details?.tags?.map(tag => (
                       <Chip
                         label={tag}
                         variant="outlined"
