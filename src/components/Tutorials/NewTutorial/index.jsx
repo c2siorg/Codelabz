@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { createTutorial } from "../../../store/actions";
+import { createTutorial, getProfileData } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -79,6 +79,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       }
     }) => organizations
   );
+  // console.log("organizations", organizations);
+
+  useEffect(() => {
+    if (!organizations) {
+      getProfileData()(firebase, firestore, dispatch);
+    }
+  }, [firestore, firebase, dispatch, organizations]);
 
   const userHandle = useSelector(
     ({
