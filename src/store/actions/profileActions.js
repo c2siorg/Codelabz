@@ -281,7 +281,7 @@ export const removeUserFollower = async (
   }
 };
 
-const getAllOrgsOfCurrentUser = () => async (firebase, firestore) => {
+export const getAllOrgsOfCurrentUser = () => async (firebase, firestore) => {
   try {
     const auth = firebase.auth().currentUser;
     if (auth === null) return [];

@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 const SideBar = ({
   open,
   toggleSlider,
-  notification,
+  notificationCount,
   menuItems,
   drawWidth,
   value,
@@ -68,7 +68,8 @@ const SideBar = ({
     {
       name: "Notifications",
       img: Notification,
-      link: "/notification"
+      link: "/notification",
+      badgeContent: notificationCount
     },
     {
       name: "User Settings",
@@ -149,6 +150,7 @@ const SideBar = ({
               menuItems={menuItems || defaultMenu}
               value={value}
               onStateChange={onStateChange}
+              notificationCount={notificationCount}
             >
               {children}
             </SideList>
