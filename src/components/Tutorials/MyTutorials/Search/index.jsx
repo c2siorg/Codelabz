@@ -51,10 +51,7 @@ const Header = () => {
     if (result.length > 0) {
       let tempArray = [];
       result.forEach(item => {
-        tempArray = [
-          ...tempArray,
-          ..._.filter(indexData, ref => ref.tutorial_id === item.ref)
-        ];
+        tempArray = [...tempArray, item.ref];
       });
       setViewResults(true);
       return setResults(tempArray);
