@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Grid,
   Typography,
@@ -21,7 +21,8 @@ import { NoImage } from "../../../helpers/images";
 import {
   uploadOrgProfileImage,
   clearEditGeneral,
-  editGeneralData
+  editGeneralData,
+  getProfileData
 } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import ChangeProfile from "../../Profile/ChangeProfile/ChangeProfile";
@@ -216,6 +217,12 @@ function General() {
     firestore,
     CurrentOrg
   ]);
+
+  useEffect(() => {
+    if (!profileOrganizations) {
+      getProfileData()(firebase, firestore, dispatch);
+    }
+  }, [firestore, firebase, dispatch, profileOrganizations]);
 
   console.log(OrgData);
   return (

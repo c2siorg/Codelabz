@@ -16,6 +16,7 @@ export {
   verifyPasswordResetCode
 } from "./authActions";
 export {
+  getOrgBasicData,
   addOrgUser,
   clearEditGeneral,
   clearOrgData,
@@ -40,9 +41,21 @@ export {
   getUserProfileData,
   updateUserProfile,
   uploadProfileImage,
+  isUserFollower,
   addUserFollower,
-  removeUserFollower
+  removeUserFollower,
+  getUserFeedIdArray,
+  getUserFeedData,
 } from "./profileActions";
+export {
+  getTutorialFeedIdArray,
+  getTutorialFeedData,
+  getTutorialData,
+  getTutorialSteps,
+  getCommentData,
+  getCommentReply,
+  addComment
+} from "./tutorialPageActions"
 export {
   addNewTutorialStep,
   clearCreateTutorials,

@@ -110,60 +110,6 @@ function HomePage({ background = "white", textColor = "black" }) {
     "React"
   ]);
 
-  const [usersToFollow, setUsersToFollow] = useState([
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    }
-  ]);
-
-  const [contributors, setContributors] = useState([
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    },
-    {
-      name: "Janvi Thakkar",
-      img: [OrgUser],
-      desg: "Software Engineer",
-      onClick: {}
-    }
-  ]);
-
   const profileData = useSelector(({ firebase: { profile } }) => profile);
   useEffect(() => {
     const getFeed = async () => {
@@ -294,10 +240,10 @@ function HomePage({ background = "white", textColor = "black" }) {
                 <EventsCard title={"Popular Events"} events={upcomingEvents} />
               </TabPanel>
               <TabPanel value="3" style={{ padding: 0 }}>
-                <UserCard title={"Who to Follow"} users={usersToFollow} />
+                <UserCard title={"Who to Follow"} userId={profileData.uid} />
               </TabPanel>
               <TabPanel value="4" style={{ padding: 0 }}>
-                <UserCard title={"Contributors"} users={contributors} />
+                <UserCard title={"Contributors"} userId={profileData.uid} />
               </TabPanel>
             </TabContext>
           </Box>
@@ -341,7 +287,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             data-testId="homepageUsersToFollow"
           >
             <Grid item style={{ minWidth: "100%" }}>
-              <UserCard title={"Who to Follow"} users={usersToFollow} />
+              <UserCard title={"Who to Follow"} userId={profileData.uid} />
             </Grid>
           </Grid>
           <Grid
@@ -359,7 +305,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             data-testId="homepageContributors"
           >
             <Grid item style={{ minWidth: "100%" }}>
-              <UserCard title={"Contributors"} users={contributors} />
+              <UserCard title={"Contributors"} userId={profileData.uid} />
             </Grid>
           </Grid>
 
