@@ -88,10 +88,36 @@ export const signUp = userData => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SIGN_UP_START });
     const { email, password } = userData;
-    await firebase.createUser({ email, password }, { email });
+
+    // Create user with email and password
+    const createdUser = await firebase.createUser({ email, password }, { email });
+    // console.log("createdUser is ", createdUser);
+
+    // Get the current user
+    const currentUser = firebase.auth().currentUser;
+    // console.log("currentUser is ", currentUser);
+
+    if (!currentUser) {
+      throw new Error('User not found after signup');
+    }
+
+    // Send email verification
+    try {
+      await currentUser.sendEmailVerification();
+      console.log("Email verification sent successfully.");
+    } catch (verificationError) {
+      console.error("Error sending email verification:", verificationError);
+      dispatch({ type: actions.SIGN_UP_FAIL, payload: verificationError });
+      throw verificationError;
+    }
+
+    // Logout after successful signup and email verification
     await firebase.logout();
+
+    // Dispatch action indicating signup success
     dispatch({ type: actions.SIGN_UP_SUCCESS });
   } catch (e) {
+    // Dispatch action indicating signup failure with error payload
     dispatch({ type: actions.SIGN_UP_FAIL, payload: e });
   }
 };
@@ -135,15 +161,15 @@ export const verifyPasswordResetCode =
 
 export const confirmPasswordReset =
   ({ actionCode, password }) =>
-  async (firebase, dispatch) => {
-    try {
-      dispatch({ type: actions.PASSWORD_RECOVERY_START });
-      await firebase.confirmPasswordReset(actionCode, password);
-      dispatch({ type: actions.PASSWORD_RECOVERY_SUCCESS });
-    } catch (e) {
-      dispatch({ type: actions.PASSWORD_RECOVERY_FAIL, payload: e.message });
-    }
-  };
+    async (firebase, dispatch) => {
+      try {
+        dispatch({ type: actions.PASSWORD_RECOVERY_START });
+        await firebase.confirmPasswordReset(actionCode, password);
+        dispatch({ type: actions.PASSWORD_RECOVERY_SUCCESS });
+      } catch (e) {
+        dispatch({ type: actions.PASSWORD_RECOVERY_FAIL, payload: e.message });
+      }
+    };
 
 export const verifyEmail = actionCode => async (firebase, dispatch) => {
   try {
