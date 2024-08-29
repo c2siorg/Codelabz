@@ -37,13 +37,17 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import { getTutorialsByTopTags } from "../../store/actions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
-  const [value, setValue] = useState(2);
+  const tutorialFeedArray = useSelector(
+    ({ tutorialPage }) => tutorialPage.feed.homepageFeedArray
+  );
+  const [tutorials, setTutorials] = useState(tutorialFeedArray);
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
   const [footerContent, setFooterContent] = useState([
@@ -57,7 +61,7 @@ function HomePage({ background = "white", textColor = "black" }) {
       link: "https://dev.codelabz.io/"
     }
   ]);
-
+  let tutorialIdArray;
   const windowSize = useWindowSize();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
@@ -167,7 +171,7 @@ function HomePage({ background = "white", textColor = "black" }) {
   const profileData = useSelector(({ firebase: { profile } }) => profile);
   useEffect(() => {
     const getFeed = async () => {
-      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+      tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
         firebase,
         firestore,
         dispatch
@@ -176,18 +180,46 @@ function HomePage({ background = "white", textColor = "black" }) {
     };
     getFeed();
   }, []);
-  const tutorials = useSelector(
-    ({
-      tutorialPage: {
-        feed: { homepageFeedArray }
-      }
-    }) => homepageFeedArray
-  );
 
   const notification = () => {};
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+
+  const convertToDate = timestamp => {
+    return new Date(timestamp.seconds * 1000);
   };
+
+  const handleFeedChange = async filterType => {
+    let filteredTutorials;
+    switch (filterType) {
+      case "Featured":
+        filteredTutorials = await getTutorialsByTopTags()(
+          firebase,
+          firestore,
+          dispatch
+        );
+        break;
+      case "New":
+        await fetchNewTutorials();
+        filteredTutorials = [...tutorialFeedArray].sort(
+          (a, b) => convertToDate(b.createdAt) - convertToDate(a.createdAt)
+        );
+        break;
+      case "Top":
+        await fetchNewTutorials();
+        filteredTutorials = [...tutorialFeedArray].sort(
+          (a, b) => b.upVotes - a.upVotes
+        );
+        break;
+      default:
+        filteredTutorials = tutorials;
+    }
+
+    setTutorials(filteredTutorials);
+  };
+
+  const fetchNewTutorials = async () => {
+    await getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+  };
+
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
@@ -234,7 +266,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             onSidebarClick={e => closeModal(e)}
           />
           <Card className={classes.card}>
-            <Activity />
+            <Activity handleFeedChange={handleFeedChange} />
           </Card>
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />

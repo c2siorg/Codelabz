@@ -9,6 +9,12 @@ import OrgUser from "../../../assets/images/org-user.svg";
 import { userList } from "../../HomePage/userList";
 import Card from "@mui/material/Card";
 import UserHighlights from "./UserHighlights";
+import { useDispatch, useSelector } from "react-redux";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import {
+  getTutorialFeedData,
+  getTutorialFeedIdArray
+} from "../../../store/actions/tutorialPageActions";
 
 const useStyles = makeStyles(theme => ({
   parentBody: {
@@ -50,6 +56,32 @@ const useStyles = makeStyles(theme => ({
 
 function UserProfile(props) {
   const classes = useStyles();
+  const firebase = useFirebase();
+  const firestore = useFirestore();
+  const dispatch = useDispatch();
+  getTutorialFeedData;
+
+  const profileData = useSelector(({ firebase: { profile } }) => profile);
+
+  useEffect(() => {
+    const getFeed = async () => {
+      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+        firebase,
+        firestore,
+        dispatch
+      );
+      getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+    };
+    getFeed();
+  }, []);
+
+  const tutorials = useSelector(
+    ({
+      tutorialPage: {
+        feed: { homepageFeedArray }
+      }
+    }) => homepageFeedArray
+  );
 
   const [organizations, setUpOrganizations] = useState([
     {
@@ -104,11 +136,14 @@ function UserProfile(props) {
           </Grid>
 
           <Grid>
-            {userList.persons.map(person => {
-              return person.Heading == "CardWithoutPicture" ? (
-                <CardWithoutPicture {...person} className={classes.card} />
+            {tutorials.map(tutorial => {
+              return !tutorial?.featured_image ? (
+                <CardWithoutPicture
+                  tutorial={tutorial}
+                  className={classes.card}
+                />
               ) : (
-                <CardWithPicture {...person} className={classes.card} />
+                <CardWithPicture tutorial={tutorial} className={classes.card} />
               );
             })}
           </Grid>

@@ -5,7 +5,7 @@ import { createTutorial } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
-import { Alert, Box } from "@mui/material";
+import { Alert, Box, Chip } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
 import { IconButton } from "@mui/material";
@@ -19,6 +19,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import MovieIcon from "@mui/icons-material/Movie";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
+import CloseIcon from "@mui/icons-material/Close";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,6 +33,19 @@ const useStyles = makeStyles(theme => ({
   purple: {
     color: deepPurple[700],
     backgroundColor: deepPurple[500]
+  },
+  tagsContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    marginTop: "1rem",
+    marginBottom: "1rem"
+  },
+  chip: {
+    margin: theme.spacing(0.5)
+  },
+  button: {
+    marginLeft: theme.spacing(1),
+    padding: "0.4rem 0.4rem"
   }
 }));
 
@@ -43,10 +57,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
-    owner: ""
+    owner: "",
+    tags: []
   });
 
   const loadingProp = useSelector(
@@ -71,6 +88,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   useEffect(() => {
     setError(errorProp);
   }, [errorProp]);
+
+  useEffect(() => {
+    setformValue(prev => ({
+      ...prev,
+      tags: tags
+    }));
+  }, [tags]);
 
   const organizations = useSelector(
     ({
@@ -114,6 +138,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       : null;
 
   useEffect(() => {
+    setTags([]);
+    setNewTag("");
+    setformValue({
+      title: "",
+      summary: "",
+      owner: "",
+      tags: []
+    });
     setVisible(viewModal);
   }, [viewModal]);
 
@@ -145,6 +177,24 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   };
 
+  const handleAddTag = () => {
+    if (newTag.trim() !== "") {
+      setTags([...tags, newTag.trim()]);
+      setNewTag("");
+    }
+  };
+
+  const handleDeleteTag = tagToDelete => {
+    setTags(tags.filter(tag => tag !== tagToDelete));
+  };
+
+  const handleKeyDown = e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    }
+  };
+
   const classes = useStyles();
   return (
     <Modal
@@ -166,12 +216,12 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           background: "white",
           padding: "2rem",
           paddingTop: "1rem",
-          maxWidth: "80%"
+          maxWidth: "40%"
         }}
       >
         {error && (
           <Alert message={""} type="error" closable="true" className="mb-24">
-            description={"Tutorial Creation Failed"}/
+            description={"Tutorial Creation Failed"}
           </Alert>
         )}
         <Typography variant="h5">Create a Tutorial</Typography>
@@ -226,6 +276,35 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             style={{ marginBottom: "2rem" }}
           />
 
+          <TextField
+            label="Enter a tag"
+            variant="outlined"
+            size="small"
+            value={newTag}
+            onChange={e => setNewTag(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={handleAddTag}
+          >
+            Add Tag
+          </Button>
+
+          <div className={classes.tagsContainer}>
+            {tags.map((tag, index) => (
+              <Chip
+                key={index}
+                label={tag}
+                onDelete={() => handleDeleteTag(tag)}
+                className={classes.chip}
+                deleteIcon={<CloseIcon />}
+              />
+            ))}
+          </div>
+
           <IconButton>
             <ImageIcon />
           </IconButton>
@@ -240,7 +319,17 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             <div style={{ float: "right" }}>
               <Button
                 key="back"
-                onClick={onSidebarClick}
+                onClick={() => {
+                  onSidebarClick();
+                  setTags([]);
+                  setNewTag("");
+                  setformValue({
+                    title: "",
+                    summary: "",
+                    owner: "",
+                    tags: []
+                  });
+                }}
                 id="cancelAddTutorial"
               >
                 Cancel

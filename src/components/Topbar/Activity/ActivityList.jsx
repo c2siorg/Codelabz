@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function ActivityList({ value, toggle, acitvitylist, classname }) {
+function ActivityList({ value, toggle, activityList, classname }) {
   const classes = useStyles();
 
   return (
@@ -36,7 +36,7 @@ function ActivityList({ value, toggle, acitvitylist, classname }) {
       <Grid container spacing={2} className={classname}>
         <Grid item xs={12}>
           <Stack spacing={2} direction={"row"}>
-            {acitvitylist.map((item, index) => (
+            {activityList.map((item, index) => (
               <Button
                 variant="outlined"
                 color="primary"
