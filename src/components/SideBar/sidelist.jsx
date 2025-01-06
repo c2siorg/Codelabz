@@ -57,7 +57,10 @@ const useStyles = makeStyles(theme => ({
   },
   customBadge: {
     color: "#ffffff",
-    backgroundColor: "#03AAFA"
+    backgroundColor: "#03AAFA",
+    fontSize: "0.6rem",
+    height: "16px",
+    minWidth: "16px"
   }
 }));
 
@@ -71,11 +74,11 @@ const SideList = ({
   onStateChange = () => {},
   toggleSlider = () => {},
   style,
-  children
+  children,
+  notificationCount
 }) => {
   const classes = useStyles();
   const location = useLocation();
-  const notification = 10;
 
   /**
    * * Cases for rendering the menu items
@@ -111,11 +114,25 @@ const SideList = ({
                   >
                     {item.img && (
                       <ListItemIcon className={classes.listIcon}>
-                        <img
-                          alt={"..."}
-                          src={item.img}
-                          className={classes.icons}
-                        />
+                        {item.name === "Notifications" ? (
+                          <Badge
+                            badgeContent={notificationCount}
+                            color="primary"
+                            classes={{ badge: classes.customBadge }}
+                          >
+                            <img
+                              alt={"..."}
+                              src={item.img}
+                              className={classes.icons}
+                            />
+                          </Badge>
+                        ) : (
+                          <img
+                            alt={"..."}
+                            src={item.img}
+                            className={classes.icons}
+                          />
+                        )}
                       </ListItemIcon>
                     )}
                     <ListItemText
@@ -147,8 +164,8 @@ const SideList = ({
                     <ListItemIcon className={classes.listIcon}>
                       <Badge
                         badgeContent={
-                          notification &&
-                          (notification > 99 ? "99+" : notification)
+                          notificationCount &&
+                          (notificationCount > 99 ? "99+" : notificationCount)
                         }
                         color="primary"
                         classes={{ badge: classes.customBadge }}

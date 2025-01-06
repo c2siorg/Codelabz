@@ -283,7 +283,7 @@ export const getLaunchedOrgsData = () => async (firestore, dispatch) => {
   }
 };
 
-const isUserSubscribed = async (org_handle, firebase, firestore) => {
+export const isUserSubscribed = async (org_handle, firebase, firestore) => {
   const auth = firebase.auth().currentUser;
 
   const subscription = await firestore

@@ -34,7 +34,7 @@ describe("User Dashboard Test | CodeLabz", () => {
   it("Check Profile", function () {
     cy.visit(`${this.base_url}user-dashboard/profile`);
     cy.get(
-      '[data-testid="profile"] > .makeStyles-navLink-81 > .MuiButtonBase-root'
+      '[data-testid="profile"]'
     )
       .should("exist")
       .click();
@@ -68,7 +68,7 @@ describe("User Dashboard Test | CodeLabz", () => {
     cy.visit(`${this.base_url}user-dashboard/profile`);
 
     cy.get(
-      '[data-testid="userSettings"] > .makeStyles-navLink-81 > .MuiButtonBase-root'
+      '[data-testid="userSettings"]'
     )
       .should("exist")
       .click();

@@ -10,6 +10,7 @@
 
 # production
 /build
+/dist
 
 #config
 # src/config/index.js
@@ -28,7 +29,6 @@ yarn.lock
 .env
 /.idea
 .vscode/settings.json
-package-lock.json
 INTERNAL.md
 RULES.md
 firebase-debug.log

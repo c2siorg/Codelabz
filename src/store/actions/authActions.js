@@ -88,8 +88,24 @@ export const signUp = userData => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SIGN_UP_START });
     const { email, password } = userData;
+
     await firebase.createUser({ email, password }, { email });
+    const currentUser = firebase.auth().currentUser;
+    if (!currentUser) {
+      throw new Error("User not found after signup");
+    }
+
+    try {
+      await currentUser.sendEmailVerification();
+      console.log("Email verification sent successfully.");
+    } catch (verificationError) {
+      console.error("Error sending email verification:", verificationError);
+      dispatch({ type: actions.SIGN_UP_FAIL, payload: verificationError });
+      throw verificationError;
+    }
+
     await firebase.logout();
+
     dispatch({ type: actions.SIGN_UP_SUCCESS });
   } catch (e) {
     dispatch({ type: actions.SIGN_UP_FAIL, payload: e });
@@ -187,10 +203,9 @@ export const checkUserHandleExists = userHandle => async firebase => {
   }
 };
 
-export const checkOrgHandleExists = orgHandle => async firebase => {
+export const checkOrgHandleExists = orgHandle => async firestore => {
   try {
-    const organizationHandle = await firebase
-      .firestore()
+    const organizationHandle = await firestore
       .collection("cl_org_general")
       .doc(orgHandle)
       .get();
@@ -229,9 +244,8 @@ export const setUpInitialData =
       }
 
       if (orgData) {
-        const isOrgHandleExists = await checkOrgHandleExists(org_handle)(
-          firebase
-        );
+        const isOrgHandleExists =
+          await checkOrgHandleExists(org_handle)(firestore);
 
         if (isOrgHandleExists) {
           dispatch({
@@ -254,6 +268,13 @@ export const setUpInitialData =
             updatedAt: firestore.FieldValue.serverTimestamp()
           }
         );
+
+        // Create organisation handle
+        await firestore.collection("org_users").doc(`${org_handle}_${userData.uid}`).set({
+          uid: userData.uid,
+          org_handle: org_handle,
+          permissions: [3]
+        });
 
         const timeOutID = setTimeout(() => {
           firebase

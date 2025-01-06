@@ -14,6 +14,7 @@ import { Alert } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase } from "react-redux-firebase";
+import { useHistory } from "react-router-dom"; // Import useHistory
 import validator from "validator";
 import { clearAuthError, signUp } from "../../../store/actions";
 import Card from "@mui/material/Card";
@@ -21,9 +22,10 @@ import Card from "@mui/material/Card";
 const SignupForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  // const [success, setSuccess] = useState(false);
   const firebase = useFirebase();
   const dispatch = useDispatch();
+  const history = useHistory(); // Initialize useHistory
   const errorProp = useSelector(({ auth }) => auth.profile.error);
   const loadingProp = useSelector(({ auth }) => auth.profile.loading);
 
@@ -60,11 +62,16 @@ const SignupForm = () => {
 
   useEffect(() => {
     if (errorProp === false && loadingProp === false) {
-      setSuccess(true);
+      // setSuccess(true);
+      // Redirect to login page with state
+      history.push("/login", {
+        successMessage:
+          "Verification email has been sent. Please verify your email."
+      });
     } else {
-      setSuccess(false);
+      // setSuccess(false);
     }
-  }, [errorProp, loadingProp]);
+  }, [errorProp, loadingProp, history]);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () =>
@@ -137,7 +144,13 @@ const SignupForm = () => {
       validateConfirmPassword() &&
       agreed
     ) {
-      await signUp({ email, password })(firebase, dispatch);
+      try {
+        // Dispatch signup action with email and password
+        await signUp({ email, password })(firebase, dispatch);
+      } catch (error) {
+        setError(error);
+        setErrorOpen(true);
+      }
     } else {
       setAgreedText(true);
     }
@@ -183,7 +196,7 @@ const SignupForm = () => {
         </Collapse>
       )}
 
-      {success && (
+      {/* {success && (
         <Collapse in={success}>
           <Alert
             severity="success"
@@ -205,7 +218,7 @@ const SignupForm = () => {
             verification link.
           </Alert>
         </Collapse>
-      )}
+      )} */}
 
       <Card data-testId="signUpForm" style={{ boxShadow: "none" }}>
         <TextField
