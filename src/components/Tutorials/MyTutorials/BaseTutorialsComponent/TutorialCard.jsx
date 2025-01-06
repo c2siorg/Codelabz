@@ -31,7 +31,7 @@ const TutorialCard = ({
             {title}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            {title}
+            {summary}
           </Typography>
           {loading ? <Skeleton variant="text" /> : null}
           {loading ? <Skeleton variant="text" /> : null}

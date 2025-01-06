@@ -9,7 +9,7 @@ import LeftMenu from "./LeftMenu";
 import { useHistory } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-
+import { useSelector } from "react-redux";
 import SideBar from "../../../SideBar/index";
 import useWindowSize from "../../../../helpers/customHooks/useWindowSize";
 
@@ -61,10 +61,26 @@ function MainNavbar() {
   const windowSize = useWindowSize();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openMenu, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const toggleSlider = () => {
     setOpen(!openMenu);
   };
-  const notification = () => {};
+  const notifications = useSelector(
+    state => state.notifications.data.notifications
+  );
+  const notificationCount = notifications?.filter(
+    notification => !notification.isRead
+  ).length;
+  const handleSearchChange = e => {
+    setSearchQuery(e.target.value);
+  };
+  const handleSearch = e => {
+    e.preventDefault();
+    if (searchQuery.length > 0) {
+      history.push(`/search?query=${searchQuery}`);
+    }
+  };
+
   return (
     <Headroom>
       <nav
@@ -105,17 +121,28 @@ function MainNavbar() {
             </Grid>
           </Grid>
           <Grid item xs={12} md={5}>
-            <Paper component={"form"} className={classes.root} elevation={0}>
+            <Paper
+              component={"form"}
+              className={classes.root}
+              elevation={0}
+              onSubmit={handleSearch}
+            >
               <IconButton
-                type="submit"
+                type="button"
                 aria-label="search"
                 disableRipple
                 className={classes.icon}
                 data-testid="navbarSearch"
+                onClick={handleSearch}
               >
                 <SearchIcon />
               </IconButton>
-              <InputBase className={classes.input} placeholder="Search..." />
+              <InputBase
+                className={classes.input}
+                value={searchQuery}
+                placeholder="Search..."
+                onChange={handleSearchChange}
+              />
             </Paper>
           </Grid>
           <Grid
@@ -137,7 +164,7 @@ function MainNavbar() {
           <SideBar
             open={openMenu}
             toggleSlider={toggleSlider}
-            notification={notification}
+            notificationCount={notificationCount}
             drawWidth={960}
           />
         )}

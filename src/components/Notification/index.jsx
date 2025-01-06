@@ -5,7 +5,7 @@ import UserCard from "../CardTabs/Users";
 import IconButton from "@mui/material/IconButton";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import useStyles from "./styles";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
@@ -14,9 +14,16 @@ import Box from "@mui/material/Box";
 import CardWithoutPicture from "../Card/CardWithoutPicture";
 import { MoreVertOutlined } from "@mui/icons-material";
 import NotificationBox from "./NotificationBox";
-import { notifications } from "./notifications";
+import { useSelector, useDispatch } from "react-redux";
+import { getNotificationData } from "../../store/actions";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+
 const Notification = ({ background = "white", textColor = "black" }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const firebase = useFirebase();
+  const firestore = useFirestore();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
     setOpen(!openMenu);
@@ -72,6 +79,29 @@ const Notification = ({ background = "white", textColor = "black" }) => {
     }
   ]);
 
+  const notifications = useSelector(
+    state => state.notifications.data.notifications
+  );
+  const [localNotifications, setLocalNotifications] = useState(notifications);
+
+  // for instant UI update
+  const handleNotificationDelete = id => {
+    setLocalNotifications(
+      localNotifications.filter(
+        notification => notification.notification_id !== id
+      )
+    );
+  };
+
+  useEffect(() => {
+    const getNotifications = async () => {
+      await getNotificationData()(firebase, firestore, dispatch);
+    };
+
+    getNotifications();
+    setLocalNotifications(notifications);
+  }, [firebase, firestore, dispatch]);
+
   return (
     <>
       <section
@@ -111,17 +141,47 @@ const Notification = ({ background = "white", textColor = "black" }) => {
               sx={{
                 fontWeight: "600",
                 fontSize: "1.5rem",
-                marginBottom: "24px"
+                marginBottom: "24px",
+                display: "flex",
+                justifyContent: "center"
               }}
             >
-              Notifications
+              {localNotifications.length > 0 ? "Notifications" : ""}
             </Typography>
+
             <div className={classes.container}>
-              {notifications.map((notification, key) => {
-                return (
-                  <NotificationBox key={key} notification={notification} />
-                );
-              })}
+              {localNotifications.length > 0 ? (
+                localNotifications.map(notification => (
+                  <NotificationBox
+                    key={notification.notification_id}
+                    notification={notification}
+                    onDelete={handleNotificationDelete}
+                  />
+                ))
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                    textAlign: "center",
+                    color: textColor,
+                    padding: "1rem 8rem 0 8rem"
+                  }}
+                >
+                  <NotificationsNoneIcon
+                    sx={{ fontSize: 80, marginBottom: 2 }}
+                  />
+                  <Typography variant="h6" gutterBottom>
+                    No notifications available
+                  </Typography>
+                  <Typography variant="body2">
+                    Check back later for updates or explore other sections.
+                  </Typography>
+                </Box>
+              )}
             </div>
           </Grid>
           <Grid item className={classes.sideBody}>

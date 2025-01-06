@@ -5,6 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/lab/Alert";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { resendVerifyEmail } from "../../../store/actions";
 
 const AlertComp = ({ description, type }) => {
@@ -33,7 +34,8 @@ const AlertComp = ({ description, type }) => {
   );
 };
 
-const ViewAlerts = ({ error }) => {
+const ViewAlerts = ({ error, successMessage }) => {
+  const history = useHistory();
   const [resendLoading, setResendLoading] = useState(false);
   const [resendError, setResendError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -52,6 +54,23 @@ const ViewAlerts = ({ error }) => {
       setSuccess(false);
     }
   }, [errorProp, loadingProp]);
+
+  useEffect(() => {
+    if (successMessage) {
+      // If success message is received, set success state to true
+      setSuccess(true);
+
+      // Set a timer to clear the success message after 5 seconds
+      const timer = setTimeout(() => {
+        setSuccess(false);
+        // Reset location state
+        history.replace({ ...history.location, state: { successMessage: "" } });
+      }, 5000);
+
+      // Return a cleanup function to clear the timer when the component unmounts or successMessage changes
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, history]);
 
   return (
     <>
@@ -83,12 +102,7 @@ const ViewAlerts = ({ error }) => {
         <AlertComp description={"Resending the verification email..."} />
       )}
 
-      {success && (
-        <AlertComp
-          description={"Please check your email and verify your email."}
-          type="success"
-        />
-      )}
+      {success && <AlertComp description={successMessage} type="success" />}
     </>
   );
 };

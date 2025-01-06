@@ -9,10 +9,6 @@ import {
 import { makeStyles } from "@mui/styles";
 import CardActions from "@mui/material/CardActions";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import ToggleButton from "@mui/lab/ToggleButton";
-import ToggleButtonGroup from "@mui/lab/ToggleButtonGroup";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import React, {
   useState,
   useEffect,
@@ -29,6 +25,7 @@ import {
   getCommentReply,
   addComment
 } from "../../../../store/actions/tutorialPageActions";
+import CommentLikesDislikes from "../../../ui-helpers/CommentLikesDislikes";
 const useStyles = makeStyles(() => ({
   container: {
     margin: "10px 0",
@@ -55,12 +52,11 @@ const useStyles = makeStyles(() => ({
 const Comment = ({ id }) => {
   const classes = useStyles();
   const [showReplyfield, setShowReplyfield] = useState(false);
-  const [alignment, setAlignment] = React.useState("left");
   const [count, setCount] = useState(1);
   const firestore = useFirestore();
   const firebase = useFirebase();
   const dispatch = useDispatch();
-  useState(() => {
+  useEffect(() => {
     getCommentData(id)(firebase, firestore, dispatch);
   }, [id]);
 
@@ -83,18 +79,6 @@ const Comment = ({ id }) => {
   );
 
   const [replies] = repliesArray.filter(replies => replies.comment_id == id);
-
-  const handleIncrement = () => {
-    setCount(count + 1);
-  };
-
-  const handleDecrement = () => {
-    setCount(count - 1);
-  };
-
-  const handleAlignment = (event, newAlignment) => {
-    setAlignment(newAlignment);
-  };
 
   const handleSubmit = comment => {
     const commentData = {
@@ -129,32 +113,7 @@ const Comment = ({ id }) => {
                   Reply
                 </Button>
               )}
-              <ToggleButtonGroup
-                size="small"
-                className={classes.small}
-                value={alignment}
-                exclusive
-                onChange={handleAlignment}
-                aria-label="text alignment"
-              >
-                <ToggleButton
-                  className={classes.small}
-                  onClick={handleIncrement}
-                  value="left"
-                  aria-label="left aligned"
-                >
-                  <KeyboardArrowUpIcon />
-                  <span>{count}</span>
-                </ToggleButton>
-                <ToggleButton
-                  className={classes.small}
-                  onClick={handleDecrement}
-                  value="center"
-                  aria-label="centered"
-                >
-                  <KeyboardArrowDownIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
+              <CommentLikesDislikes comment_id={data.comment_id} />
               <IconButton aria-label="share" data-testId="MoreIcon">
                 <MoreVertOutlinedIcon />
               </IconButton>
@@ -165,7 +124,7 @@ const Comment = ({ id }) => {
           <div style={{ margin: "10px 0 0 10px" }}>
             <Textbox type="reply" handleSubmit={handleSubmit} />
             {replies?.replies.map((id, index) => {
-              return <Comment id={id} />;
+              return <Comment key={index} id={id} />;
             })}
           </div>
         )}

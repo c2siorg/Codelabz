@@ -16,53 +16,81 @@ export {
   verifyPasswordResetCode
 } from "./authActions";
 export {
+  addFollower,
   addOrgUser,
   clearEditGeneral,
   clearOrgData,
+  deleteOrganization,
   editGeneralData,
   getLaunchedOrgsData,
+  getOrgBasicData,
   getOrgData,
   getOrgUserData,
+  isUserSubscribed,
+  removeFollower,
   removeOrgUser,
   searchFromIndex,
-  unPublishOrganization,
-  uploadOrgProfileImage,
-  addFollower,
-  removeFollower,
   subscribeOrg,
-  unSubscribeOrg
+  unPublishOrganization,
+  unSubscribeOrg,
+  uploadOrgProfileImage
 } from "./orgActions";
 export {
+  addUserFollower,
   clearProfileEditError,
   clearUserProfile,
   createOrganization,
+  getAllOrgsOfCurrentUser,
   getProfileData,
   getUserProfileData,
+  isUserFollower,
+  removeUserFollower,
+  setCurrentOrgUserPermissions,
   updateUserProfile,
   uploadProfileImage,
-  addUserFollower,
-  removeUserFollower
+  getUserFeedIdArray,
+  getUserFeedData,
 } from "./profileActions";
 export {
+  getTutorialFeedIdArray,
+  getTutorialFeedData,
+  getTutorialData,
+  getTutorialSteps,
+  getCommentData,
+  getCommentReply,
+  addComment
+} from "./tutorialPageActions"
+export {
   addNewTutorialStep,
+  addNotification,
+  checkUserOrOrgHandle,
   clearCreateTutorials,
   clearTutorialImagesReducer,
   clearTutorialsBasicData,
   createTutorial,
+  deleteNotification,
   getCurrentStepContentFromFirestore,
   getCurrentTutorialData,
+  getNotificationData,
   getOrgTutorialsBasicData,
+  getTutorialsByTopTags,
   getUserTutorialsBasicData,
   hideUnHideStep,
   publishUnpublishTutorial,
-  remoteTutorialImages,
+  readNotification,
   removeStep,
+  remoteTutorialImages,
   searchFromTutorialsIndex,
   setCurrentStep,
-  setCurrentStepNo,
   setCurrentStepContent,
+  setCurrentStepNo,
   setTutorialTheme,
   updateStepTime,
   updateStepTitle,
+  fetchAndIndexTutorials,
+  updateTagFrequencies,
   uploadTutorialImages
 } from "./tutorialsActions";
+export {
+  getRecommendedTutorials,
+} from "./tutorialPageActions";

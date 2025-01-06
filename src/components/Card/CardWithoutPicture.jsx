@@ -14,13 +14,11 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import TurnedInNotOutlinedIcon from "@mui/icons-material/TurnedInNotOutlined";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import ToggleButton from "@mui/lab/ToggleButton";
-import ToggleButtonGroup from "@mui/lab/ToggleButtonGroup";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { getUserProfileData } from "../../store/actions";
+import TutorialLikesDislikes from "../ui-helpers/TutorialLikesDislikes";
+
 const useStyles = makeStyles(theme => ({
   root: {
     margin: "0.5rem",
@@ -67,22 +65,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function CardWithoutPicture({ tutorial }) {
   const classes = useStyles();
-  const [alignment, setAlignment] = React.useState("left");
-  const [count, setCount] = useState(1);
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
-  const handleIncrement = () => {
-    setCount(count + 1);
-  };
-
-  const handleDecrement = () => {
-    setCount(count - 1);
-  };
-
-  const handleAlignment = (event, newAlignment) => {
-    setAlignment(newAlignment);
-  };
 
   useEffect(() => {
     getUserProfileData(tutorial?.created_by)(firebase, firestore, dispatch);
@@ -161,14 +146,18 @@ export default function CardWithoutPicture({ tutorial }) {
         </CardContent>
       </Link>
       <CardActions className={classes.settings} disableSpacing>
-        <Chip
-          label="HTML"
-          component="a"
-          href="#chip"
-          clickable
-          variant="outlined"
-          className={classes.margin}
-        />
+        {tutorial?.tut_tags &&
+          tutorial?.tut_tags.map((tag, index) => (
+            <Chip
+              label={tag}
+              key={index}
+              component="a"
+              href="#chip"
+              clickable
+              variant="outlined"
+              className={classes.margin}
+            />
+          ))}
         <Typography
           variant="overline"
           display="block"
@@ -178,32 +167,7 @@ export default function CardWithoutPicture({ tutorial }) {
           {"10 min"}
         </Typography>
         <div className={classes.grow} />
-        <ToggleButtonGroup
-          size="small"
-          className={classes.small}
-          value={alignment}
-          exclusive
-          onChange={handleAlignment}
-          aria-label="text alignment"
-        >
-          <ToggleButton
-            className={classes.small}
-            onClick={handleIncrement}
-            value="left"
-            aria-label="left aligned"
-          >
-            <KeyboardArrowUpIcon />
-            <span>{count}</span>
-          </ToggleButton>
-          <ToggleButton
-            className={classes.small}
-            onClick={handleDecrement}
-            value="center"
-            aria-label="centered"
-          >
-            <KeyboardArrowDownIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <TutorialLikesDislikes tutorial_id={tutorial?.tutorial_id} />
         <IconButton aria-label="share" data-testId="CommentIcon">
           <ChatOutlinedIcon />
         </IconButton>
