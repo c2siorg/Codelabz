@@ -187,6 +187,42 @@ export const resendVerifyEmail = email => async dispatch => {
   }
 };
 
+/*
+-> Retrieve the currently logged-in user from Firebase.
+-> If no user is logged in, return a failure response.
+
+-> Use the provided old password to reauthenticate the user.
+
+-> If reauthentication fails, return a failure response.
+-> If reauthentication is successful, update the password with the new one.
+
+-> Return a success response.
+
+*/
+
+export const changePassword = (oldPassword, newPassword) => async (firebase, dispatch) => {
+  try {
+    dispatch({ type: actions.CHANGE_PASSWORD_START });
+
+    const user = firebase.auth().currentUser;
+
+    // Reauthenticate the user with their current password
+    const credential = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      oldPassword
+    );
+    await user.reauthenticateWithCredential(credential);
+
+    // Change the password
+    await user.updatePassword(newPassword);
+
+    dispatch({ type: actions.CHANGE_PASSWORD_SUCCESS });
+  } catch (e) {
+    // console.log(e.message);
+    dispatch({ type: actions.CHANGE_PASSWORD_FAIL, payload: e.message });
+  }
+};
+
 /**
  * Check user handle exists or not
  * @param userHandle
