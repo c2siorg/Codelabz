@@ -118,8 +118,8 @@ function UserProfile(props) {
                 story={
                   "Lorem ipsum dolor sit amet, consectetuer adipiscing elit"
                 }
-                followers={402}
-                following={40}
+                followers={props.profileData.followerCount?props.profileData.followerCount:0}
+                following={props.profileData.followingCount?props.profileData.followingCount:0}
               />
             </Card>
           </Grid>

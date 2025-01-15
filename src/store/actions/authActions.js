@@ -194,10 +194,14 @@ export const resendVerifyEmail = email => async dispatch => {
  */
 export const checkUserHandleExists = userHandle => async firebase => {
   try {
-    const handle = await firebase
-      .ref(`/cl_user_handle/${userHandle}`)
-      .once("value");
-    return handle.exists();
+    const docs = await firebase
+          .collection("cl_user")
+          .where("handle", "==", userHandle)
+          .get();
+        if(docs.docs.length==0){
+          return false;
+        }
+        return true;
   } catch (e) {
     throw e.message;
   }
