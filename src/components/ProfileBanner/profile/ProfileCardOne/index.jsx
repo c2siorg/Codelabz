@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import useStyles from "./styles";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import { Button, Menu, MenuItem } from "@mui/material";
-
-// import dp from "../../../../assets/images/demoperson1.jpeg";
-import iconbuttonImage from "../../../../assets/images/Filled3dots.svg";
+import { Avatar, Button, Menu, MenuItem } from "@mui/material";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import { Link } from "react-router-dom";
+import iconbuttonImage from "../../../../assets/images/Filled3dots.svg";
+import { avatarName } from "../../../../helpers/avatarName";
 
 export default function ProfileCardOne({
   profileImage,
@@ -16,14 +16,19 @@ export default function ProfileCardOne({
   following
 }) {
   const classes = useStyles();
+  const acronym = avatarName(name);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
+  
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   return (
     <>
       <div
@@ -33,12 +38,22 @@ export default function ProfileCardOne({
         <div className={classes.profileCover}>
           <div className={classes.profileInfo}>
             <div>
-              <img
+              <Avatar
                 className={classes.profileUserImg}
                 src={profileImage}
-                alt="Avatar"
+                alt={name}
                 data-testId="user_profile_card_one_avatar"
-              />
+                sx={{
+                  bgcolor: profileImage ? 'transparent' : '#3AAFA9',
+                  width: 120,
+                  height: 120,
+                  fontSize: '3.5rem'
+                }}
+              >
+                {!profileImage && (
+                  acronym || <PersonOutlineOutlinedIcon sx={{ fontSize: '2.5rem' }} />
+                )}
+              </Avatar>
             </div>
             <div className={classes.profileUserConnect}>
               <Grid container spacing={1}>
