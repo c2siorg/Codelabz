@@ -1,4 +1,8 @@
 const { db, rtdb, admin } = require("../auth");
+const transporter = require('../mail/transporter');
+const templates = require('../mail/mailTemplate');
+
+
 
 exports.sendVerificationEmailHandler = async user => {
   try {
@@ -12,6 +16,21 @@ exports.sendVerificationEmailHandler = async user => {
       const verificationLink = await admin
         .auth()
         .generateEmailVerificationLink(email);
+
+    // comment line number 20 to 32 if you dont want to use email service  
+
+    const htmlBody = templates.verificationEmail(verificationLink);
+
+      // Set up mail options for Nodemailer
+     const mailOptions = {
+        from: 'Codelabz <no-reply@codelabz.com>',
+        to: email,
+        subject: 'Welcome to CodeLabz - Verify Your Email',
+        html: htmlBody,
+      };
+
+      await transporter.sendMail(mailOptions);
+  
       await db.collection("cl_mail").add({
         to: email,
         template: {

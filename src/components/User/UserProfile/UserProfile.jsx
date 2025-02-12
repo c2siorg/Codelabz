@@ -111,8 +111,6 @@ function UserProfile(props) {
               <ProfileCardOne
                 profileImage={
                   props.profileData.photoURL
-                    ? props.profileData.photoURL
-                    : "https://i.pravatar.cc/300"
                 }
                 name={props.profileData.displayName}
                 story={
