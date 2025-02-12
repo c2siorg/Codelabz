@@ -51,4 +51,11 @@ pubsub-debug.log
 ui-debug.log
 dataconnect/
 dataconnect-generated/
+dataconnect-debug.log
+functions/.eslintrc.js
+functions/src/index.ts
+functions/tsconfig.dev.json
+functions/tsconfig.json
+package-lock.json
+
 
