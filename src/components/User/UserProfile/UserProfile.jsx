@@ -9,6 +9,7 @@ import OrgUser from "../../../assets/images/org-user.svg";
 import { userList } from "../../HomePage/userList";
 import Card from "@mui/material/Card";
 import UserHighlights from "./UserHighlights";
+import { getAllOrganizations } from "../../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import {
@@ -59,9 +60,22 @@ function UserProfile(props) {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
-  getTutorialFeedData;
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
+
+  // Use state for organizations just like before
+  const [organizations, setOrganizations] = useState([]);
+
+  // Add useEffect to fetch organizations
+  useEffect(() => {
+    const fetchOrgs = async () => {
+      const orgs = await getAllOrganizations()(firebase, firestore, dispatch);
+      if (orgs && orgs.length > 0) {
+        setOrganizations(orgs);
+      }
+    };
+    fetchOrgs();
+  }, [firebase, firestore, dispatch]);
 
   useEffect(() => {
     const getFeed = async () => {
@@ -83,25 +97,6 @@ function UserProfile(props) {
     }) => homepageFeedArray
   );
 
-  const [organizations, setUpOrganizations] = useState([
-    {
-      name: "Google Summer of Code",
-      img: [OrgUser]
-    },
-    {
-      name: "Google Summer of Code",
-      img: [OrgUser]
-    },
-    {
-      name: "Google Summer of Code",
-      img: [OrgUser]
-    },
-    {
-      name: "Google Summer of Code",
-      img: [OrgUser]
-    }
-  ]);
-
   return (
     <>
       <div className={classes.parentBody}>
@@ -109,13 +104,9 @@ function UserProfile(props) {
           <Grid>
             <Card>
               <ProfileCardOne
-                profileImage={
-                  props.profileData.photoURL
-                }
+                profileImage={props.profileData.photoURL}
                 name={props.profileData.displayName}
-                story={
-                  "Lorem ipsum dolor sit amet, consectetuer adipiscing elit"
-                }
+                story={"Lorem ipsum dolor sit amet, consectetuer adipiscing elit"}
                 followers={402}
                 following={40}
               />

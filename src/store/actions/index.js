@@ -14,6 +14,7 @@ export {
   signUp,
   verifyEmail,
   verifyPasswordResetCode
+  
 } from "./authActions";
 export {
   addFollower,
@@ -33,7 +34,8 @@ export {
   subscribeOrg,
   unPublishOrganization,
   unSubscribeOrg,
-  uploadOrgProfileImage
+  uploadOrgProfileImage,
+  getAllOrganizations
 } from "./orgActions";
 export {
   addUserFollower,

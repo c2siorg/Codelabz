@@ -3,6 +3,7 @@ import { useFirebase } from "react-redux-firebase";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
+import OrgUser from "../../assets/images/org-user.svg";
 
 const elasticlunr = new Elasticlunr("handle", "handle", "name");
 
@@ -423,5 +424,24 @@ export const deleteOrganization =
       dispatch({ type: actions.CLEAR_ORG_USER_STATE });
     } catch (e) {
       console.log(e);
+    }
+  };
+
+  export const getAllOrganizations = () => async (firebase, firestore, dispatch) => {
+    try {
+      const orgDocs = await firestore
+        .collection("cl_org_general")
+        .get();
+  
+      const organizations = orgDocs.docs.map(doc => ({
+        name: doc.data().org_name,
+        img: [OrgUser], // Using the same default image
+        date: '' // Optional: Add if you want to show date
+      }));
+  
+      return organizations;
+    } catch (error) {
+      console.error("Error fetching organizations:", error);
+      return [];
     }
   };
