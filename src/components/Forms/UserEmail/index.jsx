@@ -40,7 +40,7 @@ const UserEmail = () => {
         }}
       >
         <Typography style={{ margin: "5px 0" }}>
-          {data.primaryEmail} -{" "}
+          {profileData.email} -{" "}
           <Typography variant="span" style={{ color: "#039500" }}>
             Primary
           </Typography>
