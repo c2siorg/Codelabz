@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => ({
     borderRadius: "50%",
     objectFit: "cover",
     border: "3px solid white",
-    maxWidth: "fit-content"
+    
+    // maxWidth: "fit-content"
   },
   profileInfo: {
     display: "flex",
