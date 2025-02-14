@@ -1,182 +1,219 @@
-# Table of Content
+# Contributing to Codelabz
 
-- [Table of Content](#table-of-content)
-- [User Guide](#user-guide)
-  - [Prerequisites](#prerequisites)
-  - [Project Setup](#project-setup)
-    - [Using Docker-Compose](#using-docker-compose)
-  - [Firebase Setup](#firebase-setup)
-    - [Run Firebase Emulator](#run-firebase-emulator)
-  - [Run the Project](#run-the-project)
-  - [Run the Storybook](#run-the-storybook)
-  - [Run the tests](#run-the-tests)
+Thank you for your interest in contributing to **Codelabz**! This document will guide you through the process of setting up your development environment and getting started with the project. Please read through the instructions carefully, and feel free to reach out if you have any questions.
 
-# User Guide
+---
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Quick Start Guide](#quick-start-guide)
+  - [Fork & Clone the Repository](#fork--clone-the-repository)
+  - [Install Dependencies](#install-dependencies)
+  - [Environment Setup](#environment-setup)
+- [Project Setup](#project-setup)
+  - [Using Docker-Compose (Optional)](#using-docker-compose-optional)
+- [Firebase Setup](#firebase-setup)
+  - [Firebase Web App Configuration](#firebase-web-app-configuration)
+  - [Firebase Functions & Service Account](#firebase-functions--service-account)
+- [Firebase Emulator Setup](#firebase-emulator-setup)
+- [Running the Project](#running-the-project)
+  - [Development Server](#development-server)
+  - [Storybook](#storybook)
+  - [Testing with Cypress](#testing-with-cypress)
+- [Troubleshooting & Additional Tips](#troubleshooting--additional-tips)
+- [Need Help?](#need-help)
+
+---
 
 ## Prerequisites
 
-- Node.js version 14.
-- Java JDK version 11 or higher. (For running emulators)
-- make command line tool. ( optional )
-  > 📝**NOTE** : `make` is optional here. You can open `Makefile` and type the associated command manually also, but it is recommended to use `make` so you don't need to run multiple commands.
+Before you begin, ensure you have the following installed on your system:
+
+- **Node.js**: Version 14 (use [nvm](https://github.com/nvm-sh/nvm) to manage multiple versions easily)
+- **Java JDK**: Version 11 or higher (required for running Firebase emulators)
+- **make**: Command-line tool (optional but recommended for running scripts)
+
+---
+
+## Quick Start Guide
+
+### Fork & Clone the Repository
+
+1. **Fork the Repo:**  
+   Visit [Codelabz on GitHub](https://github.com/c2siorg/Codelabz) and fork the repository to your own account.
+
+2. **Clone Your Fork:**  
+   Open your terminal and run:
+   ```bash
+   git clone https://github.com/<YOUR_USERNAME>/Codelabz.git
+   ```
+   Replace `<YOUR_USERNAME>` with your GitHub username.
+
+3. **Navigate to the Project Folder:**
+   ```bash
+   cd Codelabz
+   ```
+
+### Install Dependencies
+
+Install all project dependencies by running one of the following commands:
+```bash
+npm install
+```
+Or, if you prefer using the make command:
+```bash
+make install
+```
+
+### Environment Setup
+
+1. **Create a `.env` File:**  
+   In the project root, create a file named `.env`.
+
+2. **Configure Environment Variables:**  
+   Copy all the keys from the provided `.env.sample` file and replace them with your own values (e.g., Firebase configuration, database URL, VAPID key, etc.).
+
+3. **Note on Node Version:**  
+   Ensure you are using Node.js version 14.
+
+---
 
 ## Project Setup
 
-> 📝**NOTE**: Make sure that you are using version 14 of node.
+After completing the quick start guide, follow these additional steps for a complete setup:
 
-> ⚡**Tip**: You can use nvm (node version manager) tool to install multiple node versions and can switch between them easily.
+### Using Docker-Compose (Optional)
 
-1. Fork the repo as your own copy.
-2. Click on `Code` button and then copy HTTPs link. ( it will look like this `https://github.com/<YOUR_USERNAME>/Codelabz.git`)
-3. Clone the repo by running `git clone https://github.com/<YOUR_USERNAME>/Codelabz.git`
-4. Go to the folder `cd Codelabz`.
-5. Run `npm install` or `make install`( this will install all the dependencies in your project)
-6. Create a `.env` file in root of directory.
-7. Setup firebase and get your own set of keys. ( follow steps in [Firebase Setup](#firebase-setup) section to setup firebase )
-8. Copy all the key fields from `.env.sample` and place your own set of values there.
-9. Run `npm run dev`.
-10. Visit [http://127.0.0.1:5173/](http://127.0.0.1:5173/) in your preferred browser.
-
-> 📝**NOTE** : Above steps are enough for you to get started with the Codelabz app. If you want to access the database you need to start the emulators.For setup husky follow [Husky Setup](#husky-setup)
-
-### Using Docker-Compose
-
-You can also use docker-compose to setup your project. Simply create your `.env` file and run
-
-```
-docker-compose up
-```
-
-This will setup your project along with firebase emulator in a docker environment.
+If you prefer a containerized environment, you can use Docker Compose:
+1. Ensure your `.env` file is properly set up.
+2. Run:
+   ```bash
+   docker-compose up
+   ```
+   This command will start the project along with the Firebase emulator in a Docker environment.
 
 ---
 
 ## Firebase Setup
 
-1. Sign in to https://console.firebase.google.com/.
-2. Click **Add Project** and necessary information about the project.(Below mentioned the Steps to add project to firebase)
-   - To add Firebase resources to an existing Google Cloud project, enter its project name or select it from the dropdown menu.
-   - To create a new project, enter the desired project name. You can also optionally edit the project ID displayed below the project name
-   - Firebase generates a unique ID for your Firebase project based upon the name you give it. If you want to edit this project ID, you must do it now as it cannot be altered after Firebase provisions resources for your project. Visit Understand Firebase Projects to learn about how Firebase uses the project ID.
-3. Agree to the terms and click **Create Project**.
-4. After creating the project, click **Add Firebase to your web app**.
-   - In the center of the Firebase console's project overview page, click the Web icon to launch the setup workflow.
-   - If you've already added an app to your Firebase project, click Add app to display the platform options.
-   - Enter your app's nickname.
-   - This nickname is an internal, convenience identifier and is only visible to you in the Firebase console.
-   - Click Register app.
-5. Copy the firebase configuration.
-6. Follow the below steps to setup firebase functions
-   - Go to functions directory (`cd functions`) and install dependencies (`npm install`)
-   - Create a folder `private` inside functions directory
-   - Then you have to generate a private key file for your service account. Follow the below steps to get private key:
-     1. In the Firebase console, open Settings > Service Accounts.
-     2. Click Generate New Private Key, then confirm by clicking Generate Key.
-     3. Securely store the JSON file containing the key and rename it to `cl-dev-pk.json`
-     4. Move the `cl-dev-pk.json` to `Codelabz/functions/private`
-7. Paste the configuration `.env` file. **(this will be found in the project settings section of firebase cloud)**
-8. You can find your `<FIREBASE_DATABASE_URL>` in the Realtime Database section of the Firebase console. Depending on the location of the database, the database URL will be in one of the following forms:
-   - `https://DATABASE_NAME.firebaseio.com` **(for databases in us-central1)**
-   - `https://DATABASE_NAME.REGION.firebasedatabase.app`**(for databases in all other locations)**
-9. You can get your `<FIREBASE_VAPID_KEY>` from Cloud-Messaging tab
-   - navigate to the setting of your project Open the Cloud Messaging tab.
-   - scroll to the Web configuration section.
-   - In the Web Push certificates tab, click Generate Key Pair. The console displays a notice that the key pair was generated. You get your Vapid key form there.
-10. As you're using emulator, set `<USE_EMULATOR>` to "true"
-11. You can get your `<CYPRESS_PROJECT_ID>` as cypress project id from [cypress cloud](https://cloud.cypress.io)
+Codelabz uses Firebase for backend services. Follow these steps to configure your Firebase project:
 
-You should fill in these values in their relevant fields in the `.env` file.
+### Firebase Web App Configuration
 
-### Firebase Emulator Setup
+1. **Create a Firebase Project:**
+   - Visit [Firebase Console](https://console.firebase.google.com/) and click **Add Project**.
+   - Enter your project name and follow the prompts to create a new project.
 
-1. Refer this site [https://firebase.google.com/docs/emulator-suite/install_and_configure]
-2. Make sure you have the correct jdk version installed
-3. Make sure you are in the parent directory
-4. Now lets connect your local firebase to cloub by running command (`firebase login`)
-5. Then authenticate your firebase using browser and set the selected web app for codelabz
-6. Then run the command (`firebase init`)
-7. Select all the emulator necessitites by pressing a or selecting them manually and pressing space
-8. Answer the commands
-9. Lets set up your credentials of test data
-10. Run your firebase emulator by running the following command.
+2. **Register a Web App:**
+   - In your Firebase project overview, click the **Web** icon.
+   - Enter your app's nickname and click **Register app**.
+   - Copy the Firebase configuration object and paste the values into your `.env` file.
 
-```shell
-make emulator
+### Firebase Functions & Service Account
 
-```
+1. **Set Up Firebase Functions:**
+   - Navigate to the `functions` directory:
+     ```bash
+     cd functions
+     ```
+   - Install dependencies:
+     ```bash
+     npm install
+     ```
 
-11. If make command isn't installed then run command
+2. **Generate a Service Account Key:**
+   - In the Firebase console, go to **Settings > Service Accounts**.
+   - Click **Generate New Private Key**, then confirm by clicking **Generate Key**.
+   - Securely store the JSON file and rename it to `cl-dev-pk.json`.
+   - Move `cl-dev-pk.json` into the `functions/private` folder.
 
-```shell
-firebase emulators:start --import=testdata
+3. **Update `.env` File:**
+   - Fill in the required fields such as `<FIREBASE_DATABASE_URL>`, `<FIREBASE_VAPID_KEY>`, and `<CYPRESS_PROJECT_ID>` using the information from your Firebase project settings.
 
-```
-
-12. If you want to start without any testdata , use the following command
-
-```shell
-make emulator
-
-```
-
-14.If make command isn't installed then run
-
-```shell
- firebase emulator:start
-```
-
-You will observe 3 terminals opening
-
-### Run Firebase Emulator
-
-Run your firebase emulator by running the following command.
-
-```shell
-make emulator-import
-```
-
-This will run the emulator with the `testdata`. Check out [TESTDATA.md](./TESTDATA.md) for more info.
-
-if you don't want to import testdata, run
-
-```
-make emulator
-```
-
-If you want to export the emulator, run
-
-```
-make emulator-export
-```
+4. **Enable Emulator Mode:**  
+   Set `<USE_EMULATOR>` to `true` in your `.env` file when using the Firebase emulator.
 
 ---
 
-## Run the Project
+## Firebase Emulator Setup
 
-To run the project
-`npm run dev`
+To run the Firebase emulator locally:
 
-If you failed to run the project do the following steps :
+1. **Install & Configure the Emulator Suite:**  
+   Follow the official guide: [Firebase Emulator Suite Setup](https://firebase.google.com/docs/emulator-suite/install_and_configure)
 
-- delete node modules
-- delete package-lock.json
-- re run `npm install `
-  If error still exists add `SKIP_PREFLIGHT_CHECK=true` in your .env file
+2. **Run the Emulator:**
+   ```bash
+   make emulator
+   ```
+   Or, if you don't have the make command:
+   ```bash
+   firebase emulators:start
+   ```
 
-## Run the Storybook
-
-To run storybook :
-` npm run storybook`
-It will redirect to 6006 port. Find detailed information [here](https://storybook.js.org/docs/react/get-started/introduction)
+3. **Export Emulator Data (Optional):**
+   ```bash
+   make emulator-export
+   ```
 
 ---
 
-## Run the tests
+## Running the Project
 
-To run cypress tests:
-`npm run cy:run`
-It will open a prompt displaying all the tests. You can find detailed information [here](https://docs.cypress.io/guides/guides/command-line#How-to-run-commands)
+### Development Server
 
-**Instead, if you want to open the cypress app**. You can run,
+To start the development server:
+```bash
+npm run dev
+```
+Then, open your browser and navigate to [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
 
-`npm run cy:open`
+### Storybook
+
+To view the UI components in isolation using Storybook:
+```bash
+npm run storybook
+```
+Storybook will run on port `6006`.
+
+### Testing with Cypress
+
+- **Headless Test Run:**
+  ```bash
+  npm run cy:run
+  ```
+- **Interactive Mode:**
+  ```bash
+  npm run cy:open
+  ```
+
+---
+
+## Troubleshooting & Additional Tips
+
+- **Node Version:**  
+  Always use Node.js version 14. If using `nvm`, switch with:
+  ```bash
+  nvm use 14
+  ```
+
+- **Make Command:**  
+  The `make` command is optional but simplifies multiple commands. If not available, run the commands manually as described.
+
+- **Environment Variables:**  
+  Ensure your `.env` file is correctly set up with all required keys.
+
+---
+
+## Need Help?
+
+If you run into any issues or have suggestions for improvements:
+- Open an issue on [GitHub](https://github.com/c2siorg/Codelabz/issues).
+
+Thank you for contributing to **Codelabz**!
+
+---
+
+Happy coding!  
+The Codelabz Team
