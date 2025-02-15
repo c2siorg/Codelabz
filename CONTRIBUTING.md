@@ -97,62 +97,79 @@ If you prefer a containerized environment, you can use Docker Compose:
 
 ## Firebase Setup
 
+
 Codelabz uses Firebase for backend services. Follow these steps to configure your Firebase project:
 
 ### Firebase Web App Configuration
 
-1. **Create a Firebase Project:**
-   - Visit [Firebase Console](https://console.firebase.google.com/) and click **Add Project**.
-   - Enter your project name and follow the prompts to create a new project.
+1. Sign in to https://console.firebase.google.com/.
+2. Click **Add Project** and necessary information about the project.(Below mentioned the Steps to add project to firebase)
+   - To add Firebase resources to an existing Google Cloud project, enter its project name or select it from the dropdown menu.
+   - To create a new project, enter the desired project name. You can also optionally edit the project ID displayed below the project name
+   - Firebase generates a unique ID for your Firebase project based upon the name you give it. If you want to edit this project ID, you must do it now as it cannot be altered after Firebase provisions resources for your project. Visit Understand Firebase Projects to learn about how Firebase uses the project ID.
+3. Agree to the terms and click **Create Project**.
+4. After creating the project, click **Add Firebase to your web app**.
+   - In the center of the Firebase console's project overview page, click the Web icon to launch the setup workflow.
+   - If you've already added an app to your Firebase project, click Add app to display the platform options.
+   - Enter your app's nickname.
+   - This nickname is an internal, convenience identifier and is only visible to you in the Firebase console.
+   - Click Register app.
+5. Copy the firebase configuration.
+6. Follow the below steps to setup firebase functions
+   - Go to functions directory (`cd functions`) and install dependencies (`npm install`)
+   - Create a folder `private` inside functions directory
+   - Then you have to generate a private key file for your service account. Follow the below steps to get private key:
+     1. In the Firebase console, open Settings > Service Accounts.
+     2. Click Generate New Private Key, then confirm by clicking Generate Key.
+     3. Securely store the JSON file containing the key and rename it to `cl-dev-pk.json`
+     4. Move the `cl-dev-pk.json` to `Codelabz/functions/private`
+7. Paste the configuration `.env` file. **(this will be found in the project settings section of firebase cloud)**
+8. You can find your `<FIREBASE_DATABASE_URL>` in the Realtime Database section of the Firebase console. Depending on the location of the database, the database URL will be in one of the following forms:
+   - `https://DATABASE_NAME.firebaseio.com` **(for databases in us-central1)**
+   - `https://DATABASE_NAME.REGION.firebasedatabase.app`**(for databases in all other locations)**
+9. You can get your `<FIREBASE_VAPID_KEY>` from Cloud-Messaging tab
+   - navigate to the setting of your project Open the Cloud Messaging tab.
+   - scroll to the Web configuration section.
+   - In the Web Push certificates tab, click Generate Key Pair. The console displays a notice that the key pair was generated. You get your Vapid key form there.
+10. As you're using emulator, set `<USE_EMULATOR>` to "true"
+11. You can get your `<CYPRESS_PROJECT_ID>` as cypress project id from [cypress cloud](https://cloud.cypress.io)
 
-2. **Register a Web App:**
-   - In your Firebase project overview, click the **Web** icon.
-   - Enter your app's nickname and click **Register app**.
-   - Copy the Firebase configuration object and paste the values into your `.env` file.
+You should fill in these values in their relevant fields in the `.env` file.
 
-### Firebase Functions & Service Account
+### Additional Environment Variables for Email/SMTP
 
-1. **Set Up Firebase Functions:**
-   - Navigate to the `functions` directory:
-     ```bash
-     cd functions
-     ```
-   - Install dependencies:
-     ```bash
-     npm install
-     ```
+If your project needs email notifications or similar features, you may need the following variables in your .env file:
 
-2. **Generate a Service Account Key:**
-   - In the Firebase console, go to **Settings > Service Accounts**.
-   - Click **Generate New Private Key**, then confirm by clicking **Generate Key**.
-   - Securely store the JSON file and rename it to `cl-dev-pk.json`.
-   - Move `cl-dev-pk.json` into the `functions/private` folder.
+```
+EMAIL_USER=your-email-username
+EMAIL_PASS=your-email-password
+SMTP_SERVER=gmail
+```
+(Adjust according to your SMTP provider’s details.)
 
-3. **Update `.env` File:**
-   - Fill in the required fields such as `<FIREBASE_DATABASE_URL>`, `<FIREBASE_VAPID_KEY>`, and `<CYPRESS_PROJECT_ID>` using the information from your Firebase project settings.
 
-4. **Enable Emulator Mode:**  
-   Set `<USE_EMULATOR>` to `true` in your `.env` file when using the Firebase emulator.
 
----
+### Firebase Emulator Setup
 
-## Firebase Emulator Setup
+1. Refer this site [https://firebase.google.com/docs/emulator-suite/install_and_configure]
+2. Make sure you have the correct jdk version installed
+3. Make sure you are in the parent directory
+4. Now lets connect your local firebase to cloub by running command (`firebase login`)
+5. Then authenticate your firebase using browser and set the selected web app for codelabz
+6. Then run the command (`firebase init`)
+7. Select all the emulator necessitites by pressing a or selecting them manually and pressing space
+8. Answer the commands
+9. Lets set up your credentials of test data
+10. Run your firebase emulator by running the following command.
 
-To run the Firebase emulator locally:
-
-1. **Install & Configure the Emulator Suite:**  
-   Follow the official guide: [Firebase Emulator Suite Setup](https://firebase.google.com/docs/emulator-suite/install_and_configure)
-
-2. **Run the Emulator:**
-   ```bash
-   make emulator
-   ```
-   Or, if you don't have the make command:
+```shell
+make emulator
+```
+Or, if you don't have the make command:
    ```bash
    firebase emulators:start
    ```
-
-3. **Export Emulator Data (Optional):**
+**Export Emulator Data (Optional):**
    ```bash
    make emulator-export
    ```
@@ -190,7 +207,15 @@ Storybook will run on port `6006`.
 
 ---
 
+
 ## Troubleshooting & Additional Tips
+
+```
+macOS Users: Port 5000 can sometimes be used by macOS for AirPlay or other system services. If you run into issues with hosting or emulator ports, open your Firebase configuration (firebase.json) or .env file and change the port to something else (e.g., 5001, 5173, etc.)
+```
+
+If you failed to run the project do the following steps :
+
 
 - **Node Version:**  
   Always use Node.js version 14. If using `nvm`, switch with:
