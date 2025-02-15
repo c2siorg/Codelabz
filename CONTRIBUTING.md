@@ -87,6 +87,19 @@ This will setup your project along with firebase emulator in a docker environmen
 
 You should fill in these values in their relevant fields in the `.env` file.
 
+### Additional Environment Variables for Email/SMTP
+
+If your project needs email notifications or similar features, you may need the following variables in your .env file:
+
+```
+EMAIL_USER=your-email-username
+EMAIL_PASS=your-email-password
+SMTP_SERVER=gmail
+```
+(Adjust according to your SMTP provider’s details.)
+
+
+
 ### Firebase Emulator Setup
 
 1. Refer this site [https://firebase.google.com/docs/emulator-suite/install_and_configure]
@@ -102,7 +115,6 @@ You should fill in these values in their relevant fields in the `.env` file.
 
 ```shell
 make emulator
-
 ```
 
 11. If make command isn't installed then run command
@@ -155,6 +167,10 @@ make emulator-export
 
 To run the project
 `npm run dev`
+
+```
+macOS Users: Port 5000 can sometimes be used by macOS for AirPlay or other system services. If you run into issues with hosting or emulator ports, open your Firebase configuration (firebase.json) or .env file and change the port to something else (e.g., 5001, 5173, etc.)
+```
 
 If you failed to run the project do the following steps :
 
