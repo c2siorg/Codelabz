@@ -9,7 +9,7 @@ RUN npm install -g firebase-tools@11
 
 # Pre-download emulators
 RUN firebase setup:emulators:firestore && \
-    firebase setup:emulators:auth && \
+    firebase setup:emulators:storage && \
     firebase setup:emulators:database && \
     firebase setup:emulators:pubsub && \
     firebase setup:emulators:ui
@@ -36,7 +36,7 @@ EXPOSE 8085
 EXPOSE 9199
 EXPOSE 4400
 
-RUN mkdir scripts
+RUN mkdir -p scripts
 RUN echo '#!/bin/sh \nfirebase emulators:start --import=testdata --project demo-sampark &\nsleep 10\nnpm run dev --host &\nwait' > ./scripts/entrypoint.sh 
 RUN chmod +x ./scripts/entrypoint.sh
 
