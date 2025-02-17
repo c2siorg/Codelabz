@@ -13,7 +13,8 @@ export default function ProfileCardOne({
   name,
   story,
   followers,
-  following
+  following,
+  isOwnProfile // New prop to determine if this is the logged-in user's profile
 }) {
   const classes = useStyles();
   const acronym = avatarName(name);
@@ -99,12 +100,14 @@ export default function ProfileCardOne({
                   style={{ marginTop: "15px" }}
                   data-testId="user_profile_card_one_buttonGroup"
                 >
-                  <button
-                    className={classes.profileSubscribeButton}
-                    data-testId="user_profile_card_one_buttonGroup_followButton"
-                  >
-                    Follow
-                  </button>
+                  {!isOwnProfile && (
+                    <button
+                      className={classes.profileSubscribeButton}
+                      data-testId="user_profile_card_one_buttonGroup_followButton"
+                    >
+                      Follow
+                    </button>
+                  )}
                   <button className={classes.profileShareButton}>Share</button>
                   <button className={classes.profileReportButton}>
                     Report

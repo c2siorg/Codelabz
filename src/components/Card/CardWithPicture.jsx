@@ -120,7 +120,7 @@ export default function CardWithPicture({ tutorial }) {
               color="textPrimary"
               data-testId="UserName"
             >
-              {user?.displayName}
+              {tutorial?.created_by}
             </Typography>
             {tutorial?.owner && (
               <>

@@ -61,6 +61,16 @@ function UserProfile(props) {
   const firestore = useFirestore();
   const dispatch = useDispatch();
 
+  // Get the logged-in user's profile from Redux
+  const loggedInProfile = useSelector(({ firebase: { profile } }) => profile);
+
+  console.log(loggedInProfile.uid);
+  
+  
+  // Check if the profile being viewed is the logged-in user's profile
+  const isOwnProfile = loggedInProfile.uid === props.profileData.uid;
+
+
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
   // Use state for organizations just like before
@@ -107,8 +117,9 @@ function UserProfile(props) {
                 profileImage={props.profileData.photoURL}
                 name={props.profileData.displayName}
                 story={"Lorem ipsum dolor sit amet, consectetuer adipiscing elit"}
-                followers={402}
-                following={40}
+                followers={props.profileData.followerCount || 0 }
+                following={props.profileData.followingCount}
+                isOwnProfile={isOwnProfile}
               />
             </Card>
           </Grid>
