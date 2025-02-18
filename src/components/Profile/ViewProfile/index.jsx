@@ -9,21 +9,58 @@ import {
 } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { BasicImage, NoImage } from "../../../helpers/images";
-import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
-import Box from "@mui/material/Box";
-import { ThemeProvider } from "@mui/material";
+import {
+  Card,
+  Grid,
+  Divider,
+  Button,
+  LinearProgress,
+  Box,
+  ThemeProvider,
+  Typography,
+  Avatar,
+  IconButton,
+  Tabs,
+  Tab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Tooltip,
+  Paper,
+  Badge
+} from "@mui/material";
 import { basicTheme } from "../../../helpers/themes";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import LinkIcon from "@mui/icons-material/Link";
-import FlagIcon from "@mui/icons-material/Flag";
-import Typography from "@mui/material/Typography";
+import {
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon,
+  GitHub as GitHubIcon,
+  LinkedIn as LinkedInIcon,
+  Link as LinkIcon,
+  Flag as FlagIcon,
+  Mail as MailIcon,
+  Share as ShareIcon,
+  Report as ReportIcon,
+  EditOutlined as EditIcon,
+  Close as CloseIcon
+} from "@mui/icons-material";
+
+// Custom TabPanel component
+function TabPanel({ children, value, index, ...other }) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`profile-tabpanel-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 const ProfileView = () => {
   const { handle } = useParams();
@@ -34,8 +71,12 @@ const ProfileView = () => {
   const [targetUserFollowing, setTargetUserFollowing] = useState(0);
   const [following, setFollowing] = useState([]);
   const [followDisable, setFollowDisable] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
+  const [followersDialogOpen, setFollowersDialogOpen] = useState(false);
+  const [followingDialogOpen, setFollowingDialogOpen] = useState(false);
   const db = firebase.firestore();
 
+  // Get profile data
   useEffect(() => {
     getUserProfileData(handle)(firebase, firestore, dispatch);
     return () => {
@@ -61,52 +102,36 @@ const ProfileView = () => {
     }) => error
   );
 
+  // Fetch followers and following data
   useEffect(() => {
-    const unsubscribe = db
+    if (!profileData?.uid) return;
+
+    const followersUnsubscribe = db
       .collection("cl_user")
-      .doc(profileData?.uid)
+      .doc(profileData.uid)
       .onSnapshot(snap => {
         const data = snap.data();
-        setFollowers(data?.followers);
+        setFollowers(data?.followers || []);
+        setTargetUserFollowing(data?.following?.length || 0);
       });
 
-    return () => unsubscribe();
-  }, [profileData, db]);
-
-  useEffect(() => {
-    const unsubscribe = db
-      .collection("cl_user")
-      .doc(profileData?.uid)
-      .onSnapshot(snap => {
-        const data = snap.data();
-        setTargetUserFollowing(data?.following);
-      });
-
-    return () => unsubscribe();
-  }, [profileData, db]);
-
-  useEffect(() => {
-    const unsubscribe = db
+    const followingUnsubscribe = db
       .collection("cl_user")
       .doc(currentProfileData?.uid)
       .onSnapshot(snap => {
         const data = snap.data();
-        setFollowing(data?.following);
+        setFollowing(data?.following || []);
       });
 
-    return () => unsubscribe();
-  }, [currentProfileData, db]);
-  const checkAvailable = data => {
-    return !!(data && data.length > 0);
-  };
+    return () => {
+      followersUnsubscribe();
+      followingUnsubscribe();
+    };
+  }, [profileData, currentProfileData, db]);
 
-  if (loading || !profileData) {
-    return (
-      <ThemeProvider theme={basicTheme}>
-        <LinearProgress theme={basicTheme} />
-      </ThemeProvider>
-    );
-  }
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   const addFollower = async e => {
     e.preventDefault();
@@ -118,247 +143,278 @@ const ProfileView = () => {
   const removeFollower = async e => {
     e.preventDefault();
     setFollowDisable(true);
-    await removeUserFollower(
-      currentProfileData,
-      profileData,
-      firestore,
-      dispatch
-    );
+    await removeUserFollower(currentProfileData, profileData, firestore, dispatch);
     setFollowDisable(false);
   };
 
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    // You could add a snackbar notification here
+  };
+
+  if (loading || !profileData) {
+    return (
+      <ThemeProvider theme={basicTheme}>
+        <LinearProgress />
+      </ThemeProvider>
+    );
+  }
+
+  const socialLinks = [
+    {
+      icon: <FacebookIcon className="facebook-color" />,
+      link: profileData.link_facebook,
+      baseUrl: "https://www.facebook.com/",
+      label: "Facebook"
+    },
+    {
+      icon: <TwitterIcon className="twitter-color" />,
+      link: profileData.link_twitter,
+      baseUrl: "https://twitter.com/",
+      label: "Twitter"
+    },
+    {
+      icon: <GitHubIcon className="github-color" />,
+      link: profileData.link_github,
+      baseUrl: "https://github.com/",
+      label: "GitHub"
+    },
+    {
+      icon: <LinkedInIcon className="linkedin-color" />,
+      link: profileData.link_linkedin,
+      baseUrl: "https://www.linkedin.com/in/",
+      label: "LinkedIn"
+    }
+  ];
+
   return (
     <ThemeProvider theme={basicTheme}>
-      <Card className="p-0">
-        {profileData && (
-          <div>
-            <Box mt={2} mb={2} m={3}>
-              <Grid container>
-                <span style={{ fontSize: "1.3em", fontWeight: "480" }}>
-                  Profile Details
-                </span>
-              </Grid>
+      <Box sx={{ maxWidth: 1200, margin: "0 auto", padding: 2 }}>
+        <Paper elevation={3}>
+          {/* Header Section */}
+          <Box sx={{ position: "relative", height: 200, bgcolor: "primary.main" }}>
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: -50,
+                left: 32,
+                display: "flex",
+                alignItems: "flex-end"
+              }}
+            >
+              <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent={
+                  profileData.uid === currentProfileData.uid ? (
+                    <IconButton
+                      sx={{ bgcolor: "white" }}
+                      size="small"
+                      onClick={() => {/* Handle profile pic update */}}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  ) : null
+                }
+              >
+                <Avatar
+                  src={profileData.photoURL || NoImage}
+                  alt={profileData.displayName}
+                  sx={{ width: 150, height: 150, border: "4px solid white" }}
+                />
+              </Badge>
             </Box>
-            <Divider></Divider>
-            <Box mt={2} mb={2} m={3}>
-              <Grid container>
-                <Grid xs={12} md={3} lg={3} item={true}>
-                  {profileData.photoURL && profileData.photoURL.length > 0
-                    ? BasicImage(profileData.photoURL, profileData.displayName)
-                    : BasicImage(NoImage, "Not Available")}
-                </Grid>
-                <Grid
-                  xs={12}
-                  md={9}
-                  lg={9}
-                  className="pl-24-d pt-24-m"
-                  item={true}
-                >
-                  <p>
-                    <span style={{ fontSize: "1.3em", fontWeight: "bold" }}>
-                      {profileData.displayName}
-                    </span>
-                  </p>
-                  {checkAvailable(profileData.description) && (
-                    <p className="text-justified">{profileData.description}</p>
-                  )}
-                  {checkAvailable(profileData.link_facebook) && (
-                    <p>
-                      <a
-                        href={
-                          "https://www.facebook.com/" +
-                          profileData.link_facebook
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px"
-                          }}
-                        >
-                          <Box mr={1}>
-                            <FacebookIcon
-                              fontSize="small"
-                              className="facebook-color"
-                            />
-                          </Box>{" "}
-                          {profileData.link_facebook}
-                        </div>
-                      </a>
-                    </p>
-                  )}
-                  {checkAvailable(profileData.link_twitter) && (
-                    <p>
-                      <a
-                        href={"https://twitter.com/" + profileData.link_twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px"
-                          }}
-                        >
-                          <Box mr={1}>
-                            <TwitterIcon
-                              fontSize="small"
-                              className="twitter-color"
-                            />{" "}
-                          </Box>
-                          {profileData.link_twitter}
-                        </div>
-                      </a>
-                    </p>
-                  )}
-                  {checkAvailable(profileData.link_github) && (
-                    <p>
-                      <a
-                        href={"https://github.com/" + profileData.link_github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px"
-                          }}
-                        >
-                          <Box mr={1}>
-                            <GitHubIcon
-                              fontSize="small"
-                              className="github-color"
-                            />{" "}
-                          </Box>
-                          {profileData.link_github}
-                        </div>
-                      </a>
-                    </p>
-                  )}
-                  {checkAvailable(profileData.link_linkedin) && (
-                    <p>
-                      <a
-                        href={
-                          "https://www.linkedin.com/in/" +
-                          profileData.link_linkedin
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px"
-                          }}
-                        >
-                          <Box mr={1}>
-                            <LinkedInIcon
-                              fontSize="small"
-                              className="linkedin-color"
-                            />
-                          </Box>{" "}
-                          {profileData.link_linkedin}
-                        </div>
-                      </a>
-                    </p>
-                  )}
-                  {checkAvailable(profileData.website) && (
-                    <p>
-                      <a
-                        href={profileData.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px"
-                          }}
-                        >
-                          <Box mr={1}>
-                            <LinkIcon
-                              fontSize="small"
-                              className="website-color"
-                            />
-                          </Box>{" "}
-                          {profileData.website}
-                        </div>
-                      </a>
-                    </p>
-                  )}
-                  {checkAvailable(profileData.country) && (
-                    <p className="mb-0">
-                      <a
-                        href={
-                          "https://www.google.com/search?q=" +
-                          profileData.country
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "10px"
-                          }}
-                        >
-                          <Box mr={1}>
-                            <FlagIcon
-                              fontSize="small"
-                              className="website-color"
-                            />{" "}
-                          </Box>
-                          {profileData.country}
-                        </div>
-                      </a>
-                    </p>
-                  )}
+          </Box>
 
-                  <Typography
-                    variant="body2"
-                    style={{ margin: ".5rem 0 .5rem 0" }}
-                  >
-                    Followers :{" "}
-                    <span>
-                      {profileData.followerCount
-                        ? profileData.followerCount
-                        : 0}
-                    </span>{" "}
-                    Following :{" "}
-                    <span>
-                      {profileData.followingCount
-                        ? profileData.followingCount
-                        : 0}
-                    </span>
+          {/* Profile Info Section */}
+          <Box sx={{ mt: 8, px: 4, pb: 2 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={8}>
+                <Typography variant="h4" gutterBottom>
+                  {profileData.displayName}
+                </Typography>
+                {profileData.description && (
+                  <Typography variant="body1" color="text.secondary" paragraph>
+                    {profileData.description}
                   </Typography>
-                  {!profileData.isFollowing ? (
-                    <Button
-                      variant="contained"
-                      onClick={e => addFollower(e)}
-                      style={{ marginTop: "1rem" }}
-                      disabled={followDisable}
-                    >
-                      follow
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={e => removeFollower(e)}
-                      variant="contained"
-                      style={{ marginTop: "1rem" }}
-                      disabled={followDisable}
-                    >
-                      unfollow
-                    </Button>
+                )}
+                
+                {/* Location and Website */}
+                <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                  {profileData.country && (
+                    <Typography variant="body2" sx={{ display: "flex", alignItems: "center" }}>
+                      <FlagIcon sx={{ mr: 0.5 }} fontSize="small" />
+                      {profileData.country}
+                    </Typography>
                   )}
-                </Grid>
+                  {profileData.website && (
+                    <Typography variant="body2" sx={{ display: "flex", alignItems: "center" }}>
+                      <LinkIcon sx={{ mr: 0.5 }} fontSize="small" />
+                      <a href={profileData.website} target="_blank" rel="noopener noreferrer">
+                        {new URL(profileData.website).hostname}
+                      </a>
+                    </Typography>
+                  )}
+                </Box>
+
+                {/* Social Links */}
+                <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
+                  {socialLinks.map(({ icon, link, baseUrl, label }) => 
+                    link ? (
+                      <Tooltip title={label} key={label}>
+                        <IconButton
+                          href={baseUrl + link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {icon}
+                        </IconButton>
+                      </Tooltip>
+                    ) : null
+                  )}
+                </Box>
               </Grid>
+
+              <Grid item xs={12} md={4} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-start" }}>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  {profileData.uid !== currentProfileData.uid && (
+                    <>
+                      <Button
+                        variant={profileData.isFollowing ? "outlined" : "contained"}
+                        onClick={profileData.isFollowing ? removeFollower : addFollower}
+                        disabled={followDisable}
+                        startIcon={profileData.isFollowing ? null : null}
+                      >
+                        {profileData.isFollowing ? "Following" : "Follow"}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<MailIcon />}
+                        onClick={() => {/* Handle message */}}
+                      >
+                        Organisations
+                      </Button>
+                    </>
+                  )}
+                  <IconButton onClick={handleShare}>
+                    <ShareIcon />
+                  </IconButton>
+                  <IconButton>
+                    <ReportIcon />
+                  </IconButton>
+                </Box>
+              </Grid>
+            </Grid>
+
+            {/* Stats Section */}
+            <Box sx={{ mt: 3, display: "flex", gap: 4 }}>
+              <Button onClick={() => setFollowersDialogOpen(true)}>
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography variant="h6">{profileData.followerCount || 0}</Typography>
+                  <Typography variant="body2" color="text.secondary">Followers</Typography>
+                </Box>
+              </Button>
+              <Button onClick={() => setFollowingDialogOpen(true)}>
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography variant="h6">{profileData.followingCount || 0}</Typography>
+                  <Typography variant="body2" color="text.secondary">Following</Typography>
+                </Box>
+              </Button>
             </Box>
-          </div>
-        )}
-        {profileData === false && "No profile with the provided handle"}
-      </Card>
+
+            {/* Tabs Section */}
+            <Box sx={{ mt: 4 }}>
+              <Tabs value={tabValue} onChange={handleTabChange}>
+                <Tab label="Tutorial" />
+                <Tab label="About" />
+                <Tab label="Activity" />
+              </Tabs>
+              
+              <TabPanel value={tabValue} index={0}>
+                {/* Posts content */}
+                <Typography variant="body1">User's posts will appear here</Typography>
+              </TabPanel>
+              
+              <TabPanel value={tabValue} index={1}>
+                {/* About content */}
+                <Typography variant="body1">Detailed user information</Typography>
+              </TabPanel>
+              
+              <TabPanel value={tabValue} index={2}>
+                {/* Activity content */}
+                <Typography variant="body1">User's recent activity</Typography>
+              </TabPanel>
+            </Box>
+          </Box>
+        </Paper>
+
+        {/* Followers Dialog */}
+        <Dialog
+          open={followersDialogOpen}
+          onClose={() => setFollowersDialogOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            Followers
+            <IconButton
+              onClick={() => setFollowersDialogOpen(false)}
+              sx={{ position: "absolute", right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <List>
+              {followers.map((follower) => (
+                <ListItem key={follower.uid}>
+                  <ListItemAvatar>
+                    <Avatar src={follower.photoURL} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={follower.displayName}
+                    secondary={follower.email}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+        </Dialog>
+
+        {/* Following Dialog */}
+        <Dialog
+          open={followingDialogOpen}
+          onClose={() => setFollowingDialogOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            Following
+            <IconButton
+              onClick={() => setFollowingDialogOpen(false)}
+              sx={{ position: "absolute", right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <List>
+              {following.map((follow) => (
+                <ListItem key={follow.uid}>
+                  <ListItemAvatar>
+                    <Avatar src={follow.photoURL} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={follow.displayName}
+                    secondary={follow.email}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+        </Dialog>
+      </Box>
     </ThemeProvider>
   );
 };

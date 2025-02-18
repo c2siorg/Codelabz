@@ -93,7 +93,7 @@ export default function CardWithoutPicture({ tutorial }) {
             {user?.photoURL && user?.photoURL.length > 0 ? (
               <img src={user?.photoURL} />
             ) : (
-              user?.displayName[0]
+              tutorial?.created_by[0]
             )}
           </Avatar>
         }
@@ -106,7 +106,7 @@ export default function CardWithoutPicture({ tutorial }) {
               color="textPrimary"
               data-testId="UserName"
             >
-              {user?.displayName}
+              {tutorial?.created_by}
             </Typography>
             {tutorial?.owner && (
               <>

@@ -1,22 +1,22 @@
 bug:
-  - "(bug|Bug)"
+  - '(bug|Bug)'
 documentation:
-  - "(documentation|Documentation)"
+  - '(documentation|Documentation)'
 firebase:
-  - "(firebase|Firebase|firestore|Firestore|emulator|Emulator|storage|Storage)"
-UI/UX:
-  - "(UI|ui|UX|ux|screen|width|icon|height|button|page|css|CSS|margin|padding)"
-help wanted:
-  - "help"
-good first issue:
-  - "good first issue"
-CI/CD:
-  - "CI/CD"
+  - '(firebase|Firebase|firestore|Firestore|emulator|Emulator|storage|Storage)'
+'UI/UX':
+  - '(UI|ui|UX|ux|screen|width|icon|height|button|page|css|CSS|margin|padding)'
+'help wanted':
+  - 'help'
+'good first issue':
+  - 'good first issue'
+'CI/CD':
+  - 'CI/CD'
 dependency:
-  - "(dependency|dependencies|npm)"
+  - '(dependency|dependencies|npm)'
 Urgent:
-  - "(Urgent|urgent|important)"
+  - '(Urgent|urgent|important)'
 broken:
-  - "(broken|Broken|not working)"
+  - '(broken|Broken|not working)'
 feature:
-  - (Feature|feature|add|Add|ADD)
+  - '(Feature|feature|add|Add|ADD)'

@@ -101,8 +101,16 @@ const UserCard = ({ title, userId }) => {
         desg: user.handle,
         onClick: {}
       }));
-    setUsersToFollow(updatedUsersToFollow);
-  }, [users]);
+    
+    // Sort users: put non-followed users first
+    const sortedUsers = [...updatedUsersToFollow].sort((a, b) => {
+      const aFollowed = a.isFollowing ? 1 : -1;
+      const bFollowed = b.isFollowing ? 1 : -1;
+      return aFollowed - bFollowed;
+    });
+    
+    setUsersToFollow(sortedUsers);
+  }, [users, userId]);
 
   return (
     <div className={classes.root} data-testId="UsersCard">
