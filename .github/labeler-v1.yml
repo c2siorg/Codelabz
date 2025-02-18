@@ -1,0 +1,80 @@
+# Labels for issues
+bug:
+- pattern: "(?i)bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+
+chore:
+- pattern: "(?i)chore"
+  color: "fef2c0"
+  description: "Routine tasks, maintenance, or housekeeping"
+
+documentation:
+- pattern: "(?i)documentation|docs"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+firebase:
+- pattern: "(?i)firebase|firestore|emulator|storage"
+  color: "ffca28"
+  description: "Issues related to Firebase services"
+
+UI/UX:
+- pattern: "(?i)ui|ux|screen|width|icon|height|button|page|css|margin|padding"
+  color: "cfd3d7"
+  description: "User interface and experience related issues"
+
+help wanted:
+- pattern: "(?i)help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+good first issue:
+- pattern: "(?i)good first issue|beginner friendly"
+  color: "7057ff"
+  description: "Good for newcomers"
+
+CI/CD:
+- pattern: "(?i)CI/CD"
+  color: "a2eeef"
+  description: "Continuous Integration and Deployment"
+
+dependency:
+- pattern: "(?i)dependency|dependencies|npm"
+  color: "fbca04"
+  description: "Dependency-related issues"
+
+Urgent:
+- pattern: "(?i)urgent|important|critical"
+  color: "b60205"
+  description: "Critical or high priority"
+
+broken:
+- pattern: "(?i)broken|not working|error"
+  color: "e99695"
+  description: "Broken functionality"
+
+feat:
+- pattern: "(?i)feat|feature|add|enhancement|improvement"
+  color: "0e8a16"
+  description: "New feature or request"
+
+question:
+- pattern: "(?i)question|help|doubt|confusion"
+  color: "d876e3"
+  description: "Further information is requested"
+
+other:
+- pattern: "(?i)other|miscellaneous"
+  color: "5319e7"
+  description: "Other issues that do not fit in the above categories"
+
+approved:
+- pattern: "(?i)approved|accepted|approved"
+  color: "28a745"
+  description: "Issue has been approved for implementation"
+
+unapproved:
+- pattern: "(?i)unapproved|rejected|unapproved"
+  color: "cb2431"
+  description: "Issue has been unapproved or rejected for implementation"

@@ -1,0 +1,42 @@
+root:
+- changed-files:
+  - any-glob-to-any-file: '*'
+
+Documentation:
+- changed-files:
+  - any-glob-to-any-file: ['CONTRIBUTING.md', 'ISSUE_TEMPLATE/*', 'TESTDATA.md', 'code_of_conduct.md', 'database.rules.json', 'firebase.json', 'firestore.rules', 'firestore.indexes.json', 'LICENSE', 'README.md']
+
+feature:
+- head-branch: ['^feature', 'feature']
+
+release:
+- base-branch: 'master'
+
+security:
+- changed-files:
+  - any-glob-to-any-file: 'firebase.json'
+  - any-glob-to-any-file: 'firestore.rules'
+  - any-glob-to-any-file: 'firestore.indexes.json'
+
+CI/CD:
+- changed-files:
+  - any-glob-to-any-file: '.github/workflows/*'
+  - any-glob-to-any-file: '**/*.yml'
+
+testing:
+- changed-files:
+  - any-glob-to-any-file: 'cypress/**/*.js'
+
+design:
+- changed-files:
+  - any-glob-to-any-file: 'designs/**/*.css'
+  - any-glob-to-any-file: 'designs/**/*.scss'
+  - any-glob-to-any-file: 'designs/**/*.html'
+
+component:
+- changed-files:
+  - any-glob-to-any-file: 'src/components/**/*'
+
+css:
+- changed-files:
+  - any-glob-to-any-file: 'src/css/**/*'
