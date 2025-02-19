@@ -72,7 +72,7 @@ make install
    In the project root, create a file named `.env`.
 
 2. **Configure Environment Variables:**  
-   Copy all the keys from the provided `.env.sample` file and replace them with your own values (e.g., Firebase configuration, database URL, VAPID key, etc.).
+   Copy all the keys from the provided `.env.sample` file and replace them with your own values.
 
 3. **Note on Node Version:**  
    Ensure you are using Node.js version 14.
