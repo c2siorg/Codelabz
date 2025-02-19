@@ -96,28 +96,18 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   }, [tags]);
 
-  const { organizations, isEmpty } = useSelector(
-    ({
-      profile: {
-        data: { organizations, isEmpty }
-      }
-    }) => ({ organizations, isEmpty })
-  );
-  // console.log("organizations", organizations);
 
-  useEffect(() => {
-    if (!organizations && !isEmpty) {
-      getProfileData()(firebase, firestore, dispatch);
-    }
-  }, [firestore, firebase, dispatch, organizations]);
+  const profileState = useSelector(state => state.profile.data);
+  
+const { organizations, isEmpty } = profileState || { organizations: null, isEmpty: false };
 
-  const userHandle = useSelector(
-    ({
-      firebase: {
-        profile: { handle }
-      }
-    }) => handle
-  );
+useEffect(() => {
+  const isFetchProfile = organizations === null && !isEmpty;
+  
+  if (isFetchProfile) {
+    getProfileData()(firebase, firestore, dispatch);
+  }
+}, [firestore, firebase, dispatch, organizations, isEmpty]);
 
   const displayName = useSelector(
     ({
