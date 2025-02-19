@@ -6,6 +6,8 @@ import { Tabs, Tab, Paper } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import OrgsCarousel from "./components/orgsCarousel";
 import TagCard from "../../CardTabs/Tags";
+import { getAllTags } from "../../../store/actions";
+import { useFirebase,useFirestore } from "react-redux-firebase";
 const useStyles = makeStyles(theme => ({
   container: {
     padding: "30px 40px 0"
@@ -25,30 +27,27 @@ const OrgsExplore = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const classes = useStyles();
 
-  const [tags, setTags] = useState([
-    "HTML",
-    "JavaScript",
-    "Css",
-    "Python",
-    "React",
-    "Java",
-    "HTML",
-    "System Design",
-    "Cyber Security",
-    "Python",
-    "Node",
-    "Django",
-    "C",
-    "C++",
-    "Python",
-    "GoLang",
-    "ML",
-    "AI/ML",
-    "Cloud",
-    "DevOps",
-    "Figma",
-    "Angular"
-  ]);
+  const [tags, setTags] = useState([]);
+  const firebase = useFirebase();
+  const firestore = useFirestore();
+
+
+    useEffect(()=>{
+      const fetchTags = async () =>{
+        try{
+          const fetchedTags = await getAllTags()(firebase,firestore);
+          
+          setTags(fetchedTags);
+          
+          console.log(tags);
+        }catch(Error){
+          console.error('Error fetching tags:', error);
+  
+        }
+      }
+  
+      fetchTags();
+    },[firebase, firestore])
 
   const handleTabChange = (e, value) => {
     setSelectedTab(value);
@@ -89,7 +88,7 @@ const OrgsExplore = () => {
           data-testId="explorePageTag"
         >
           <Grid item>
-            <TagCard tags={tags} sx={{ width: "100%" }} />
+            <TagCard tags={tags} sx={{ width: "100%" }}  />
           </Grid>
         </Grid>
       </Box>

@@ -1,9 +1,12 @@
+import { useState } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
 import React, { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import { getAllTags } from "../../../store/actions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,8 +40,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TagCard = props => {
+const TagCard = ({ tags, onTagSelect }) => {
   const classes = useStyles();
+  const [selectedTags, setSelectedTags] = useState([]);
+
+
+  const handleTagClick = (tag) => {
+    let newSelectedTags;
+    if (selectedTags.includes(tag)) {
+      newSelectedTags = selectedTags.filter(t => t !== tag);
+    } else {
+      newSelectedTags = [...selectedTags, tag];
+    }
+    setSelectedTags(newSelectedTags);
+    onTagSelect(newSelectedTags); 
+  };
 
   return (
     <div className={classes.root} data-testId="TagsCard">
@@ -53,12 +69,14 @@ const TagCard = props => {
             Popular Tags
           </Typography>
           <div className={classes.tagsContainer}>
-            {props.tags.map(function (tag, index) {
+            {tags.map(function (tag, index) {
               return (
                 <Chip
                   key={index}
                   size="small"
-                  label={tag}
+                  label={tag.name}
+                  onClick={() => handleTagClick(tag.name)}
+                  color={selectedTags.includes(tag.name) ? "primary" : "default"}
                   id={index}
                   className={classes.chip}
                   data-testId={index === 0 ? "TagsChip" : ""}

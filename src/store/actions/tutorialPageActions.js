@@ -256,3 +256,66 @@ export const getRecommendedTutorials = currentTutorialTags => async (firebase, f
     return [];
   }
 };
+
+export const getAllTags = () => async (firebase, firestore) => {
+  try {
+    const tagCollectionRef = firestore.collection('tag_frequencies');
+    const snapshot = await tagCollectionRef
+      .orderBy('count', 'desc')
+      .get();
+
+    const tags = snapshot.docs.map(doc => ({
+      name: doc.id,
+      count: doc.data().count || 0
+    }));
+
+    return tags;
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    throw error;
+  }
+};
+
+
+export const getFilteredTutorials = (selectedTags = []) => async (firebase, firestore, dispatch) => {
+  try {
+    const tutorialsRef = firestore.collection("tutorials");
+    let query = tutorialsRef;
+
+    if (selectedTags.length > 0) {
+      // If tags are selected, filter by those tags
+      query = query.where("tut_tags", "array-contains-any", selectedTags);
+    }
+
+    const querySnapshot = await query.get();
+    
+    const filteredTutorials = querySnapshot.docs
+      .map(doc => {
+        const tutorial = doc.data();
+        if (!tutorial.isPublished) return null;
+
+        // Calculate relevance score if tags are selected
+        if (selectedTags.length > 0) {
+          const matchingTags = tutorial.tut_tags.filter(tag => 
+            selectedTags.includes(tag)
+          );
+          return {
+            ...tutorial,
+            relevanceScore: matchingTags.length
+          };
+        }
+        return tutorial;
+      })
+      .filter(tutorial => tutorial !== null);
+
+    // Sort by relevance score if tags are selected
+    if (selectedTags.length > 0) {
+      filteredTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
+    }
+
+    return filteredTutorials;
+  } catch (error) {
+    console.error("Error fetching filtered tutorials:", error);
+    return [];
+  }
+};
