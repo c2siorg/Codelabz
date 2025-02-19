@@ -38,6 +38,7 @@ import {
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
 import { getTutorialsByTopTags } from "../../store/actions";
+import CardWithVideo from "../Card/CardWithVideo";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -182,6 +183,8 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
+
+  console.log(tutorials)
   return (
     <Card
       className={classes.wrapper}
@@ -232,7 +235,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             <TagCard tags={tags} />
           </Box>
           {tutorials.map(tutorial => {
-            return !tutorial?.featured_image ? (
+            return tutorial?.featured_video ? (<CardWithVideo tutorial={tutorial}/>):!tutorial?.featured_image ? (
               <CardWithoutPicture tutorial={tutorial} />
             ) : (
               <CardWithPicture tutorial={tutorial} />
