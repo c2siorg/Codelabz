@@ -50,53 +50,41 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
     }) => deleting_error
   );
 
+  const [uploadSnackbarOpen, setUploadSnackbarOpen] = React.useState(false);
+  const [uploadErrorSnackbarOpen, setUploadErrorSnackbarOpen] = React.useState(false);
+  const [deleteSnackbarOpen, setDeleteSnackbarOpen] = React.useState(false);
+  const [deleteErrorSnackbarOpen, setDeleteErrorSnackbarOpen] = React.useState(false);
+
   useEffect(() => {
     if (uploading === false && uploading_error === false) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message="Image Uploaded successfully...."
-      />;
+      setUploadSnackbarOpen(true);
     } else if (uploading === false && uploading_error) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message={uploading_error}
-      />;
+      setUploadErrorSnackbarOpen(true);
     }
   }, [uploading, uploading_error]);
 
   useEffect(() => {
     if (deleting === false && deleting_error === false) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message="Deleted Succefully...."
-      />;
+      setDeleteSnackbarOpen(true);
     } else if (deleting === false && deleting_error) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message={deleting_error}
-      />;
+      setDeleteErrorSnackbarOpen(true);
     }
   }, [deleting, deleting_error]);
+
+  const handleSnackbarClose = () => {
+    switch(type){
+      case 'upload':
+        setUploadSnackbarOpen(false);
+        setUploadErrorSnackbarOpen(false);
+        break;
+      case 'delete':
+        setDeleteSnackbarOpen(false);
+        setDeleteErrorSnackbarOpen(false);
+        break;
+      default:
+        break;
+    }
+  }
 
   useEffect(() => {
     clearTutorialImagesReducer()(dispatch);
@@ -127,6 +115,7 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
     )(firebase, firestore, dispatch);
 
   return (
+  <>
     <Drawer
       title="Images"
       data-testid="imageDrawer"
@@ -206,6 +195,36 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
           ))}
       </div>
     </Drawer>
+    <Snackbar
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "left"
+    }}
+    open={uploadErrorSnackbarOpen}
+    autoHideDuration={6000}
+    onClose={() => handleSnackbarClose("upload")}
+    message={uploading_error}
+    />
+    <Snackbar
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left"
+      }}
+      open={deleteSnackbarOpen}
+      autoHideDuration={6000}
+      onClose={() => handleSnackbarClose("delete")}
+      message="Deleted Successfully...."
+    />
+    <Snackbar
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left"
+      }}
+      open={deleteErrorSnackbarOpen}
+      autoHideDuration={6000}
+      onClose={() => handleSnackbarClose("delete")}
+      message={deleting_error}
+    /></>
   );
 };
 
