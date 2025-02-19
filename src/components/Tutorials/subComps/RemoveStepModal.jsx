@@ -19,21 +19,16 @@ const RemoveStepModal = ({
   const firestore = useFirestore();
   const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     setVisible(viewModal);
   }, [viewModal]);
 
   const handleOnOk = event => {
-    <Snackbar
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left"
-      }}
-      open={true}
-      autoHideDuration={6000}
-      message="Updating...."
-    />;
+    setSnackbarOpen(true);
+    setSnackbarMessage("Updating...");
     if (step_length > 1) {
       event.preventDefault();
       removeStep(
@@ -43,21 +38,18 @@ const RemoveStepModal = ({
         currentStep
       )(firebase, firestore, dispatch).then(() => {
         setVisible(false);
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={true}
-          autoHideDuration={6000}
-          message="removed...."
-        />;
+        setSnackbarOpen(true)
+        setSnackbarMessage("Removed...");
       });
     }
   };
   const handleOnCancel = () => setVisible(false);
-
+  const handleSnackbarClose = () =>{
+     setSnackbarOpen(false);
+     setSnackbarMessage("");
+  }
   return (
+    <>
     <Modal
       open={visible}
       onClose={handleOnCancel}
@@ -89,6 +81,16 @@ const RemoveStepModal = ({
         </form>
       </div>
     </Modal>
+     <Snackbar
+     anchorOrigin={{
+       vertical: "bottom",
+       horizontal: "left"
+     }}
+     open={snackbarOpen}
+     autoHideDuration={6000}
+     onClose={handleSnackbarClose}
+     message={snackbarMessage}
+   /></>
   );
 };
 
