@@ -226,8 +226,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
       if (showOrgForm) {
         validateHandle(
           checkOrgHandleExists,
-          firebase,
-          dispatch,
+          firestore,
           orgHandle,
           setOrgHandleValidateError,
           setOrgHandleValidateErrorMessage,
