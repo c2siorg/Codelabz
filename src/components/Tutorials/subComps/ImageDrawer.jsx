@@ -105,18 +105,12 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
     };
   }, [dispatch]);
 
-  const props = {
-    name: "file",
-    multiple: true,
-    beforeUpload(file, files) {
-      uploadTutorialImages(owner, tutorial_id, files)(
-        firebase,
-        firestore,
-        dispatch
-      );
-      return false;
-    }
-  };
+  const beforeUpload = async files => {
+    console.log("Image Upload Started")
+    await uploadTutorialImages(owner, tutorial_id, files)(firebase, firestore, dispatch);
+    console.log("Uploaded the images")
+    return false;
+  }
 
   const deleteFile = (name, url) =>
     remoteTutorialImages(
@@ -148,7 +142,9 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
             fullWidth
             accept="image/*"
             type="file"
-            {...props}
+            name="file"
+            multiple
+            onChange={e => beforeUpload(e.target.files)}
           />
           {uploading ? (
             <>
@@ -161,7 +157,7 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
                 <InboxOutlined />
               </p>
               <p className="ant-upload-text">
-                Click or drag images to here to upload
+                Click or drag images here to upload
               </p>
             </>
           )}

@@ -245,7 +245,7 @@ export const getTutorialsByTopTags = (limit = 10) => async (firebase, firestore)
 
 export const checkUserOrOrgHandle = handle => async (firebase, firestore) => {
   const userHandleExists = await checkUserHandleExists(handle)(firebase);
-  const orgHandleExists = await checkOrgHandleExists(handle)(firestore);
+  const orgHandleExists = await checkOrgHandleExists(handle)(firebase);
 
   if (userHandleExists && !orgHandleExists) {
     return "user";

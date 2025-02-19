@@ -195,22 +195,26 @@ export const resendVerifyEmail = email => async dispatch => {
 export const checkUserHandleExists = userHandle => async firebase => {
   try {
     const handle = await firebase
-      .ref(`/cl_user_handle/${userHandle}`)
-      .once("value");
-    return handle.exists();
+    .firestore()
+    .collection("cl_user")
+    .doc(userHandle)
+    .get();
+    console.log("User Handle",handle)
+    return handle.exists;
   } catch (e) {
     throw e.message;
   }
 };
 
-export const checkOrgHandleExists = orgHandle => async firestore => {
+export const checkOrgHandleExists = orgHandle => async firebase => {
   try {
-    const organizationHandle = await firestore
+    const organizationHandle = await firebase
+      .firestore()
       .collection("cl_org_general")
       .doc(orgHandle)
       .get();
 
-    console.log(organizationHandle);
+    console.log("Organization Handle",organizationHandle);
     return organizationHandle.exists;
   } catch (e) {
     throw e.message;
