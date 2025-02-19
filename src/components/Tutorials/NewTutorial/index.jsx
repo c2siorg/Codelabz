@@ -96,6 +96,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   }, [tags]);
 
+
   const profileState = useSelector(state => state.profile.data);
   
 const { organizations, isEmpty } = profileState || { organizations: null, isEmpty: false };
