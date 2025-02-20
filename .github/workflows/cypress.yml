@@ -1,0 +1,79 @@
+name: Cypress End-to-End Tests
+
+on: push
+
+jobs:
+  cypress-tests:
+    name: Run Cypress Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18]
+
+    env:
+      CI: false
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node }}-
+
+      - name: Create .env File
+        run: |
+          echo "VITE_APP_FIREBASE_API_KEY=${{ secrets.VITE_APP_FIREBASE_API_KEY }}" >> .env
+          echo "VITE_APP_FIREBASE_PROJECT_ID=${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}" >> .env
+          echo "VITE_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
+          echo "VITE_APP_FIREBASE_APP_ID=${{ secrets.VITE_APP_FIREBASE_APP_ID }}" >> .env
+          echo "VITE_APP_FIREBASE_MEASUREMENTID=${{ secrets.VITE_APP_FIREBASE_MEASUREMENTID }}" >> .env
+          echo "VITE_APP_FIREBASE_FCM_VAPID_KEY=${{ secrets.VITE_APP_FIREBASE_FCM_VAPID_KEY }}" >> .env
+          echo "VITE_APP_AUTH_DOMAIN=${{ secrets.VITE_APP_AUTH_DOMAIN }}" >> .env
+          echo "VITE_APP_DATABASE_URL=${{ secrets.VITE_APP_DATABASE_URL }}" >> .env
+          echo "VITE_APP_USE_EMULATOR=true" >> .env
+          echo "SKIP_PREFLIGHT_CHECK=true" >> .env
+          echo "CI=false" >> .env
+          echo "CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}" >> .env
+
+      - name: Prepare Firebase Service Account
+        run: |
+          mkdir -p functions/private
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}" > functions/private/cl-dev-pk.json
+
+      - name: Install Functions Dependencies
+        run: cd functions && npm install --legacy-peer-deps
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Start Firebase Emulators
+        run: |
+          firebase emulators:start --import=./testdata --project ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }} &
+          sleep 15
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          config-file: cypress.config.js
+          install-command: npm install --legacy-peer-deps
+          build: npm run build
+          start: npm run dev
+          wait-on: "http://localhost:5173"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          COMMIT_INFO_BRANCH: ${{ github.ref_name }}

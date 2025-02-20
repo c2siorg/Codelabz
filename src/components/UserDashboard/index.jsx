@@ -82,7 +82,12 @@ function UserDashboard() {
     }
   ];
 
-  const notification = () => {};
+  const notifications = useSelector(
+    state => state.notifications.data.notifications
+  );
+  const notificationCount = notifications?.filter(
+    notification => !notification.isRead
+  ).length;
 
   const getData = prop => (Boolean(prop) ? prop : "");
   const profileData = useSelector(({ firebase: { profile } }) => profile);
@@ -149,7 +154,7 @@ function UserDashboard() {
               open={openMenu}
               menuItems={navLinks}
               toggleSlider={toggleSlider}
-              notification={notification}
+              notificationCount={notificationCount}
               drawWidth={960}
             />
           </div>

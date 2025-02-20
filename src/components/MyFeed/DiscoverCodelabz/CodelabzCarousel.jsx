@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFirestore, useFirebase } from "react-redux-firebase";
 import Default from "../../../assets/images/logo.jpeg";
 import { Link } from "react-router-dom";
-import { clearOrgData, getLaunchedOrgsData } from "../../../store/actions";
+import { getTutorialsByTopTags } from "../../../store/actions";
 import {
   getTutorialFeedIdArray,
   getTutorialFeedData
@@ -52,10 +52,10 @@ const useStyles = makeStyles(theme => ({
 
 const CodelabzCarousel = ({ sortBy }) => {
   const classes = useStyles();
-
-  const tutorials = useSelector(
+  const tutorialFeedArray = useSelector(
     ({ tutorialPage }) => tutorialPage.feed.homepageFeedArray
-  ) || [0, 0, 0, 0, 0, 0];
+  );
+  const [tutorials, setTutorials] = useState(tutorialFeedArray);
   const profileData = useSelector(({ firebase: { profile } }) => profile);
   const dispatch = useDispatch();
   const firestore = useFirestore();
@@ -74,23 +74,51 @@ const CodelabzCarousel = ({ sortBy }) => {
     return () => {};
   }, [firestore, dispatch]);
 
-  console.log(tutorials);
+  useEffect(() => {
+    handleFeedChange(sortBy);
+  }, [sortBy, tutorialFeedArray]);
 
-  const getTitle = () => {
-    switch (sortBy) {
-      case "trending":
-        return "Trending Now";
-      case "featured":
-        return "Featured on Codelabz";
-      case "best":
-        return "Best of this month";
-    }
+  const convertToDate = createdAt => {
+    return new Date(createdAt.seconds * 1000);
   };
+
+  const handleFeedChange = async filterType => {
+    let filteredTutorials;
+    const oneMonthAgo = new Date().setMonth(new Date().getMonth() - 1);
+    const twoWeeksAgo = new Date().setDate(new Date().getDate() - 14);
+
+    switch (filterType) {
+      case "trending":
+        filteredTutorials = [...tutorials]
+          .filter(tutorial => convertToDate(tutorial.createdAt) > twoWeeksAgo)
+          .sort((a, b) => b.upVotes - a.upVotes);
+        break;
+      case "best":
+        filteredTutorials = [...tutorials]
+          .filter(tutorial => convertToDate(tutorial.createdAt) > oneMonthAgo)
+          .sort((a, b) => b.upVotes - a.upVotes);
+        break;
+      case "Featured":
+        filteredTutorials = await getTutorialsByTopTags()(
+          firebase,
+          firestore,
+          dispatch
+        );
+        break;
+      default:
+        filteredTutorials = tutorials;
+    }
+
+    setTutorials(filteredTutorials);
+  };
+
   return (
     <>
       <Paper variant="outlined" className={classes.container}>
         <Typography variant="h4" className={classes.heading}>
-          {getTitle()}
+          {sortBy === "trending" && "Trending Now"}
+          {sortBy === "best" && "Best of the Month"}
+          {sortBy === "featured" && "Featured on Codelabz"}
         </Typography>
         <Swiper
           modules={[Navigation]}
@@ -101,9 +129,9 @@ const CodelabzCarousel = ({ sortBy }) => {
           spaceBetween={20}
           style={{ padding: "20px 20px" }}
         >
-          {tutorials.map((tutorial, i) => {
-            return tutorial == 0 ? (
-              <SwiperSlide>
+          {tutorials.map((tutorial, i) => (
+            <SwiperSlide key={i}>
+              {!tutorial ? (
                 <Paper variant="outlined" className={classes.root}>
                   <Skeleton
                     variant="rectangular"
@@ -114,9 +142,7 @@ const CodelabzCarousel = ({ sortBy }) => {
                   <Skeleton width={"100%"} height={"25px"} />
                   <Skeleton width={"60%"} height={"25px"} />
                 </Paper>
-              </SwiperSlide>
-            ) : (
-              <SwiperSlide>
+              ) : (
                 <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
                   <Paper variant="outlined" className={classes.root}>
                     <CardActionArea>
@@ -152,9 +178,9 @@ const CodelabzCarousel = ({ sortBy }) => {
                     </CardActionArea>
                   </Paper>
                 </Link>
-              </SwiperSlide>
-            );
-          })}
+              )}
+            </SwiperSlide>
+          ))}
         </Swiper>
       </Paper>
     </>

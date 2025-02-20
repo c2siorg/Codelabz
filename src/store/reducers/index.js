@@ -6,6 +6,7 @@ import profileReducer from "./profileReducer";
 import orgReducer from "./orgReducer";
 import tutorialsReducer from "./tutorialsReducer";
 import tutorialPageReducers from "./tutorialPageReducers";
+import notificationReducers from "./notificationReducers";
 
 // Add firebase to reducers
 const rootReducer = combineReducers({
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   profile: profileReducer,
   org: orgReducer,
   tutorials: tutorialsReducer,
-  tutorialPage: tutorialPageReducers
+  tutorialPage: tutorialPageReducers,
+  notifications: notificationReducers
 });
 
 export default rootReducer;

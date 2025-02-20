@@ -1,6 +1,11 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { isEmpty, isLoaded } from "react-redux-firebase";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  isEmpty,
+  isLoaded,
+  useFirebase,
+  useFirestore
+} from "react-redux-firebase";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import {
   UserIsAllowedUserDashboard,
@@ -27,11 +32,24 @@ import MainNavbar from "./components/NavBar/new/MainNavbar";
 import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
+import SearchResultsComponent from "./components/Tutorials/MyTutorials/Search/SearchResultsComponent";
+import { getProfileData } from "./store/actions";
 
 const AuthIsLoaded = ({ children }) => {
+  const firebase = useFirebase();
+  const firestore = useFirestore();
+  const dispatch = useDispatch();
+
   const profile = useSelector(({ firebase: { profile } }) => profile);
   const data = useSelector(({ profile: { data } }) => data);
   const general = useSelector(({ org: { general } }) => general);
+
+  useEffect(() => {
+    if (isLoaded(profile) && isLoaded(data) && isLoaded(general)) {
+      return; // Avoid fetching if data is already loaded
+    }
+    getProfileData()(firebase, firestore, dispatch);
+  }, [profile, firestore, firebase, dispatch]);
 
   //case for not logged in user
   if (
@@ -157,6 +175,7 @@ const Routes = () => {
             path={"/tutorial/:id"}
             component={UserIsAllowedUserDashboard(TutorialPage)}
           />
+          <Route exact path={"/search"} component={SearchResultsComponent} />
           <Route
             exact
             path={"/editor"}

@@ -7,6 +7,7 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import { getUserProfileData } from "../../../store/actions";
 import { isUserFollower } from "../../../store/actions/profileActions";
 import { addUserFollower } from "../../../store/actions";
+
 const useStyles = makeStyles(() => ({
   container: {
     padding: "20px",
@@ -19,7 +20,8 @@ const useStyles = makeStyles(() => ({
     fontWeight: "600"
   }
 }));
-const User = ({ id, timestamp, showFollowButton, size }) => {
+
+const User = ({ id, timestamp, size }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const firebase = useFirebase();
@@ -55,13 +57,16 @@ const User = ({ id, timestamp, showFollowButton, size }) => {
     return () => {};
   }, [profileData, user]);
 
-  const followUser = () => {
-    addUserFollower(profileData, user, firestore);
+  const followUser = async () => {
+    await addUserFollower(profileData, user, firestore);
   };
 
   const getTime = timestamp => {
     return timestamp.toDate().toDateString();
   };
+
+  const showFollowButton = profileData?.uid !== user?.uid;
+
   return (
     <>
       <Grid
@@ -117,7 +122,7 @@ const User = ({ id, timestamp, showFollowButton, size }) => {
                 padding: "1px 10px"
               }}
             >
-              Follow +
+              {isFollowed ? "Following" : "Follow +"}
             </Button>
           )}
         </Grid>

@@ -74,10 +74,7 @@ const AddOrgUserModal = ({ currentOrgHandle }) => {
   }, [userProps]);
 
   const onFinish = async () => {
-    const handleExists = await checkUserHandleExists(handle)(
-      firebase,
-      dispatch
-    );
+    const handleExists = await checkUserHandleExists(handle)(firebase);
 
     if (handle.length < 1) {
       setHandleValidateError(true);

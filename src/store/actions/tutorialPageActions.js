@@ -100,7 +100,10 @@ export const getTutorialFeedData =
             owner: tutorial?.owner,
             created_by: tutorial?.created_by,
             createdAt: tutorial?.createdAt,
-            featured_image: tutorial?.featured_image
+            featured_image: tutorial?.featured_image,
+            tut_tags: tutorial?.tut_tags,
+            upVotes: tutorial?.upVotes || 0,
+            downVotes: tutorial?.downVotes || 0,
           };
           return tutorialData;
         });
@@ -120,6 +123,9 @@ export const getTutorialData =
         .doc(tutorialID)
         .get();
       const tutorial = data.data();
+      if (tutorial.comments && Array.isArray(tutorial.comments)) {
+        tutorial.comments.reverse();
+      }
       dispatch({ type: actions.GET_POST_DATA_SUCCESS, payload: tutorial });
     } catch (e) {
       dispatch({ type: actions.GET_POST_DATA_FAIL });
@@ -195,26 +201,58 @@ export const getCommentReply =
 export const addComment = comment => async (firebase, firestore, dispatch) => {
   try {
     dispatch({ type: actions.ADD_COMMENT_START });
-    await firestore
-      .collection("cl_comments")
-      .add(comment)
-      .then(docref => {
-        firestore.collection("cl_comments").doc(docref.id).update({
-          comment_id: docref.id
+
+    const docref = await firestore.collection("cl_comments").add(comment);
+
+    await firestore.collection("cl_comments").doc(docref.id).update({
+      comment_id: docref.id
+    });
+
+    if (comment.replyTo === comment.tutorial_id) {
+      await firestore
+        .collection("tutorials")
+        .doc(comment.tutorial_id)
+        .update({
+          comments: firebase.firestore.FieldValue.arrayUnion(docref.id)
         });
-        if (comment.replyTo == comment.tutorial_id) {
-          firestore
-            .collection("tutorials")
-            .doc(comment.tutorial_id)
-            .update({
-              comments: firebase.firestore.FieldValue.arrayUnion(docref.id)
-            });
-        }
-      })
-      .then(() => {
-        dispatch({ type: actions.ADD_COMMENT_SUCCESS });
-      });
+    }
+
+    dispatch({ type: actions.ADD_COMMENT_SUCCESS });
   } catch (e) {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
+  }
+};
+
+export const getRecommendedTutorials = currentTutorialTags => async (firebase, firestore) => {
+  try {
+    const tutorialsRef = firestore.collection("tutorials");
+
+    // Fetch tutorials with matching tags
+    const querySnapshot = await tutorialsRef
+      .where("tut_tags", "array-contains-any", currentTutorialTags)
+      .get();
+
+    // Calculate relevance score based on matching tags
+    const recommendedTutorials = querySnapshot.docs
+      .map(doc => {
+        const tutorial = doc.data();
+
+        // Skip unpublished tutorials
+        if (!tutorial.isPublished) return null;
+
+        const matchingTags = tutorial.tut_tags.filter(tag => currentTutorialTags.includes(tag));
+        return {
+          ...tutorial,
+          relevanceScore: matchingTags.length
+        };
+      })
+      .filter(tutorial => tutorial !== null);  // Remove null values from the array
+
+    recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+    return recommendedTutorials;
+  } catch (error) {
+    console.error("Error fetching recommended tutorials:", error);
+    return [];
   }
 };

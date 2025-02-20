@@ -9,4 +9,7 @@ export default defineConfig({
     testIsolation: false
   },
   projectId: process.env.CYPRESS_PROJECT_ID
+  // uncomment these after the secrets are configured
+  // record: true, // Enable test recording
+  // key: process.env.CYPRESS_RECORD_KEY // Cypress record key
 });

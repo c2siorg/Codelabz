@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function ActivityList({ value, toggle, acitvitylist, classname }) {
+function ActivityList({ value, toggle, activityList, classname }) {
   const classes = useStyles();
 
   return (
@@ -36,12 +36,13 @@ function ActivityList({ value, toggle, acitvitylist, classname }) {
       <Grid container spacing={2} className={classname}>
         <Grid item xs={12}>
           <Stack spacing={2} direction={"row"}>
-            {acitvitylist.map((item, index) => (
-              <Button
-                variant="outlined"
-                color="primary"
-                key={index}
-                className={`
+            {activityList &&
+              activityList.map((item, index) => (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  key={index}
+                  className={`
                     ${classes.defaultButton}
                     ${
                       value === item.id
@@ -49,21 +50,21 @@ function ActivityList({ value, toggle, acitvitylist, classname }) {
                         : classes.inactiveButton
                     }
                 `}
-                disableRipple
-                disableElevation
-                onClick={() => toggle(item)}
-              >
-                {item.icon && (
-                  <item.icon
-                    fontSize="small"
-                    style={{
-                      marginRight: "6px"
-                    }}
-                  />
-                )}
-                <Typography variant="body1">{item.text}</Typography>
-              </Button>
-            ))}
+                  disableRipple
+                  disableElevation
+                  onClick={() => toggle(item)}
+                >
+                  {item.icon && (
+                    <item.icon
+                      fontSize="small"
+                      style={{
+                        marginRight: "6px"
+                      }}
+                    />
+                  )}
+                  <Typography variant="body1">{item.text}</Typography>
+                </Button>
+              ))}
           </Stack>
         </Grid>
       </Grid>

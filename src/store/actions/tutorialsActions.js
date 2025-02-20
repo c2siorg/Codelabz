@@ -1,6 +1,10 @@
 import * as actions from "./actionTypes";
 import Elasticlunr from "../../helpers/elasticlunr";
-import { checkOrgHandleExists, checkUserHandleExists } from "./authActions";
+import {
+  checkOrgHandleExists,
+  checkUserHandleExists,
+  isUserSubscribed
+} from "./";
 import _ from "lodash";
 
 const tutorials_index = new Elasticlunr(
@@ -11,8 +15,26 @@ const tutorials_index = new Elasticlunr(
   "summary"
 );
 
+export const fetchAndIndexTutorials = () => async (firebase, firestore) => {
+  try {
+    const snapshot = await firestore.collection("tutorials").get();
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const tutorial = { id: doc.id, ...data };
+      // console.log("Adding tutorial to index:", tutorial);
+      tutorials_index.addDocToIndex(tutorial);
+    });
+
+    // console.log("All docs in index:", tutorials_index.getAllDocs());
+  } catch (error) {
+    console.error("Error fetching or indexing tutorials:", error);
+  }
+};
+
 export const searchFromTutorialsIndex = query => {
-  return tutorials_index.searchFromIndex(query);
+  const results = tutorials_index.searchFromIndex(query);
+  // console.log("searchFromIndex", query, results);
+  return results;
 };
 
 // Gets all the tutorials with this user having edit access
@@ -122,7 +144,7 @@ export const createTutorial =
   tutorialData => async (firebase, firestore, dispatch, history) => {
     try {
       dispatch({ type: actions.CREATE_TUTORIAL_START });
-      const { title, summary, owner, created_by, is_org } = tutorialData;
+      const { title, summary, owner, created_by, is_org, tags } = tutorialData;
 
       const setData = async () => {
         const document = firestore.collection("tutorials").doc();
@@ -140,6 +162,7 @@ export const createTutorial =
           tutorial_id: documentID,
           featured_image: "",
           icon: "",
+          tut_tags: tags,
           url: "",
           background_color: "#ffffff",
           text_color: "#000000",
@@ -159,6 +182,8 @@ export const createTutorial =
         return documentID;
       };
 
+      await updateTagFrequencies(tags)(firebase, firestore);
+
       if (is_org) {
         const documentID = await setData("organization");
         history.push(`/tutorials/${owner}/${documentID}`);
@@ -173,8 +198,40 @@ export const createTutorial =
     }
   };
 
-const checkUserOrOrgHandle = handle => async firestore => {
-  const userHandleExists = await checkUserHandleExists(handle)(firestore);
+export const updateTagFrequencies = (tags) => async (firebase, firestore) => {
+  const tagCollectionRef = firestore.collection('tag_frequencies')
+
+  for (const tag of tags) {
+    const tagDocRef = tagCollectionRef.doc(tag);
+    await firestore.runTransaction(async (transaction) => {
+      const tagDoc = await transaction.get(tagDocRef);
+      if (tagDoc.exists) {
+        const newCount = (tagDoc.data().count || 0) + 1;
+        transaction.update(tagDocRef, { count: newCount });
+      } else {
+        transaction.set(tagDocRef, { count: 1 });
+      }
+    });
+  }
+};
+
+export const getTutorialsByTopTags = (limit = 10) => async (firebase, firestore) => {
+  const tutorialCollectionRef = firestore.collection('tutorials');
+  const tagCollectionRef = firestore.collection('tag_frequencies');
+
+  const tagSnapshot = await tagCollectionRef.orderBy('count', 'desc').limit(limit).get();
+  const topTags = tagSnapshot.docs.map(doc => doc.id);
+  // console.log("topTags", topTags);
+
+  // Query tutorials that contain any of the top tags
+  const tutorialSnapshot = await tutorialCollectionRef.where('tut_tags', 'array-contains-any', topTags).get();
+  const tutorials = tutorialSnapshot.docs.map(doc => doc.data());
+
+  return tutorials;
+};
+
+export const checkUserOrOrgHandle = handle => async (firebase, firestore) => {
+  const userHandleExists = await checkUserHandleExists(handle)(firebase);
   const orgHandleExists = await checkOrgHandleExists(handle)(firestore);
 
   if (userHandleExists && !orgHandleExists) {
@@ -213,18 +270,24 @@ export const getCurrentTutorialData =
         ["id"],
         ["asc"]
       );
+
+      const tutorialData = {
+        ...tutorialDoc.data(),
+        steps: steps.filter(x => !x.deleted),
+        tutorial_id
+      };
+
       dispatch({
         type: actions.GET_CURRENT_TUTORIAL_SUCCESS,
-        payload: {
-          ...tutorialDoc.data(),
-          steps: steps.filter(x => !x.deleted),
-          tutorial_id
-        }
+        payload: tutorialData
       });
+
+      return tutorialData;
     } catch (e) {
       console.log("GET_CURRENT_TUTORIAL_FAIL", e);
       window.location.href = "/";
       dispatch({ type: actions.GET_CURRENT_TUTORIAL_FAIL, payload: e.message });
+      return null;
     }
   };
 
@@ -340,7 +403,20 @@ export const publishUnpublishTutorial =
             ["isPublished"]: !isPublished
           });
 
-        getCurrentTutorialData(owner, tutorial_id)(firebase, firestore, dispatch);
+        const { title, created_by } = await getCurrentTutorialData(
+          owner,
+          tutorial_id
+        )(firebase, firestore, dispatch);
+
+        if (!isPublished) {
+          console.log("!isPublished", !isPublished);
+          addNotification(
+            tutorial_id,
+            title,
+            created_by,
+            owner
+          )(firebase, firestore, dispatch);
+        }
       } catch (e) {
         console.log(e.message);
       }
@@ -355,7 +431,7 @@ export const removeStep =
           .doc(tutorial_id)
           .collection("steps")
           .doc(step_id)
-          .delete()
+          .delete();
 
         // const data = await firestore
         //   .collection("tutorials")
@@ -388,8 +464,7 @@ export const uploadTutorialImages =
   (owner, tutorial_id, files) => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.TUTORIAL_IMAGE_UPLOAD_START });
-      const type = await checkUserOrOrgHandle(owner)(firestore);
-
+      const type = await checkUserOrOrgHandle(owner)(firebase, firestore);
       const storagePath = `tutorials/${type}/${owner}/${tutorial_id}`;
       const dbPath = `tutorials`;
       await firebase.uploadFiles(storagePath, files, dbPath, {
@@ -430,7 +505,7 @@ export const remoteTutorialImages =
       dispatch({
         type: actions.TUTORIAL_IMAGE_DELETE_START
       });
-      const type = await checkUserOrOrgHandle(owner)(firestore);
+      const type = await checkUserOrOrgHandle(owner)(firebase, firestore);
 
       const storagePath = `tutorials/${type}/${owner}/${tutorial_id}/${name}`;
       const dbPath = `tutorials`;
@@ -531,3 +606,84 @@ export const setTutorialTheme =
         console.log(e.message);
       }
     };
+
+export const addNotification =
+  (tutorial_id, tutorialTitle, created_by, owner) =>
+    async (firebase, firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.ADD_NOTIFICATION_START });
+
+        const querySnapshot = await firestore
+          .collection("notifications")
+          .where("tutorial_id", "==", tutorial_id)
+          .get();
+
+        const isSubscribed = await isUserSubscribed(owner, firebase, firestore);
+
+        if (querySnapshot.empty && isSubscribed) {
+          const document = firestore.collection("notifications").doc();
+          const documentID = document.id;
+
+          const notification = {
+            notification_id: documentID,
+            content: `Posted new Tutorial ${tutorialTitle}. Learn the best practices followed in the industry in this tutorial.`,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            isRead: false,
+            username: created_by,
+            org: owner,
+            tutorial_id
+          };
+          await document.set(notification);
+        }
+        dispatch({ type: actions.ADD_NOTIFICATION_SUCCESS });
+      } catch (e) {
+        console.error("ADD_NOTIFICATION_FAILED", e);
+        dispatch({ type: actions.ADD_NOTIFICATION_FAILED, payload: e.message });
+      }
+    };
+
+export const getNotificationData =
+  () => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.GET_NOTIFICATION_DATA_START });
+      const notificationsSnapshot = await firestore
+        .collection("notifications")
+        .orderBy("createdAt", "desc")
+        .get();
+
+      const notifications = notificationsSnapshot.docs.map(doc => doc.data());
+
+      dispatch({
+        type: actions.GET_NOTIFICATION_DATA_SUCCESS,
+        payload: notifications
+      });
+    } catch (e) {
+      console.log(e);
+      dispatch({
+        type: actions.GET_NOTIFICATION_DATA_FAIL,
+        payload: e.message
+      });
+    }
+  };
+
+export const readNotification =
+  notification_id => async (firebase, firestore, dispatch) => {
+    try {
+      await firestore.collection("notifications").doc(notification_id).update({
+        isRead: true
+      });
+      dispatch({ type: actions.READ_NOTIFICATION, payload: notification_id });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+export const deleteNotification =
+  notification_id => async (firebase, firestore, dispatch) => {
+    try {
+      await firestore.collection("notifications").doc(notification_id).delete();
+      dispatch({ type: actions.DELETE_NOTIFICATION, payload: notification_id });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
