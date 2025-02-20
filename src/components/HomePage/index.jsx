@@ -204,7 +204,6 @@ function HomePage({ background = "white", textColor = "black" }) {
     setVisibleModal(prev => !prev);
   };
 
-  console.log(tutorials)
   return (
     <Card
       className={classes.wrapper}
