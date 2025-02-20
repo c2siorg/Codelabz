@@ -43,9 +43,6 @@ const User = ({ id, timestamp, size }) => {
     }) => data
   );
 
-  console.log("user", user);
-  console.log("profileData", profileData);  
-
   useEffect(() => {
     const checkIsFollowed = async () => {
       const status = await isUserFollower(
