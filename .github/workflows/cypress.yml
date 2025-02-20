@@ -11,7 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         node: [18]
-        # containers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     env:
       CI: false
@@ -51,7 +50,7 @@ jobs:
       - name: Prepare Firebase Service Account
         run: |
           mkdir -p functions/private
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > functions/private/cl-dev-pk.json
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}" > functions/private/cl-dev-pk.json
 
       - name: Install Functions Dependencies
         run: cd functions && npm install --legacy-peer-deps
@@ -68,45 +67,13 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
-          record: true
-          tag: node-${{ matrix.node }}
-          parallel: true
           config-file: cypress.config.js
-          group: "GitHub Actions"
           install-command: npm install --legacy-peer-deps
           build: npm run build
           start: npm run dev
           wait-on: "http://localhost:5173"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
           COMMIT_INFO_BRANCH: ${{ github.ref_name }}
-
-  print-results:
-    name: Print Cypress Cloud URL
-    needs: cypress-tests
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Print Cypress Cloud URL
-        run: |
-          echo Cypress finished with: ${{ needs.cypress-tests.outcome }}
-          echo See results at ${{ needs.cypress-tests.outputs.resultsUrl }}
-
-  handle-failure:
-    name: Handle Failure
-    if: ${{ failure() }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload Cypress Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Cypress Artifacts
-          path: |
-            cypress/screenshots
-            cypress/videos
-          if-no-files-found: ignore
-
-      - name: Notify on Failure
-        run: echo "The workflow has failed!"

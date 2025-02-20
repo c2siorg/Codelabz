@@ -41,7 +41,7 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ_2CD64 }}
-          projectId: codelabz-2cd64
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}
+          projectId: ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}
           channelId: pr-${{ github.event.pull_request.number }}
           expires: 7d
