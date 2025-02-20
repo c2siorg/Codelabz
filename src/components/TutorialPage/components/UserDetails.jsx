@@ -7,6 +7,7 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import { getUserProfileData } from "../../../store/actions";
 import { isUserFollower } from "../../../store/actions/profileActions";
 import { addUserFollower } from "../../../store/actions";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -78,20 +79,23 @@ const User = ({ id, timestamp, size }) => {
         xs={6}
       >
         <Grid sx={{ height: "100%", width: "auto" }} item>
-          <Avatar
-            sx={{
-              height: size == "sm" ? "24px" : "40px",
-              width: size == "sm" ? "24px" : "40px"
-            }}
-          >
-            {user?.photoURL && user?.photoURL.length > 0 ? (
-              <img src={user?.photoURL} />
-            ) : (
-              user?.displayName[0]
-            )}
-          </Avatar>
+          <Link to={`/profile/${user.uid}`}>
+            <Avatar
+              sx={{
+                height: size == "sm" ? "24px" : "40px",
+                width: size == "sm" ? "24px" : "40px"
+              }}
+            >
+              {user?.photoURL && user?.photoURL.length > 0 ? (
+                <img src={user?.photoURL} />
+              ) : (
+                user?.displayName[0]
+              )}
+            </Avatar>
+          </Link>
         </Grid>
         <Grid item sx={{ width: "fit-content" }}>
+          <Link to={`/profile/${user.uid}`}>
           <Typography
             sx={{
               fontSize: size == "sm" ? "14px" : "16px"
@@ -101,6 +105,7 @@ const User = ({ id, timestamp, size }) => {
               {user?.displayName}
             </span>
           </Typography>
+          </Link>
           <Typography
             sx={{
               fontSize: size == "sm" ? "10px" : "12px",
