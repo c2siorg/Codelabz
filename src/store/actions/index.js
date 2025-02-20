@@ -96,4 +96,5 @@ export {
 } from "./tutorialsActions";
 export {
   getRecommendedTutorials,
+  getAllTags,getFilteredTutorials
 } from "./tutorialPageActions";
