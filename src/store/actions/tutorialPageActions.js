@@ -103,7 +103,7 @@ export const getTutorialFeedData =
             featured_image: tutorial?.featured_image,
             tut_tags: tutorial?.tut_tags,
             upVotes: tutorial?.upVotes || 0,
-            downVotes: tutorial?.downVotes || 0,
+            downVotes: tutorial?.downVotes || 0
           };
           return tutorialData;
         });
@@ -126,6 +126,15 @@ export const getTutorialData =
       if (tutorial.comments && Array.isArray(tutorial.comments)) {
         tutorial.comments.reverse();
       }
+      const no_of_comments = await firestore
+        .collection("cl_comments")
+        .where("tutorial_id", "==", tutorialID)
+        .get()
+        .then(querySnapshot => {
+          return querySnapshot.size;
+        });
+      tutorial.no_of_comments = no_of_comments;
+      console.log("fetched", tutorial);
       dispatch({ type: actions.GET_POST_DATA_SUCCESS, payload: tutorial });
     } catch (e) {
       dispatch({ type: actions.GET_POST_DATA_FAIL });
@@ -165,6 +174,14 @@ export const getCommentData =
         .doc(commentId)
         .get();
       const comment = data.data();
+      const no_of_replies = await firestore
+        .collection("cl_comments")
+        .where("replyTo", "==", commentId)
+        .get()
+        .then(querySnapshot => {
+          return querySnapshot.size;
+        });
+      comment.no_of_replies = no_of_replies;
       dispatch({ type: actions.GET_COMMENT_DATA_SUCCESS, payload: comment });
     } catch (e) {
       dispatch({ type: actions.GET_COMMENT_DATA_FAIL });
@@ -218,41 +235,45 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
     }
 
     dispatch({ type: actions.ADD_COMMENT_SUCCESS });
+    return docref.id;
   } catch (e) {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
   }
 };
 
-export const getRecommendedTutorials = currentTutorialTags => async (firebase, firestore) => {
-  try {
-    const tutorialsRef = firestore.collection("tutorials");
+export const getRecommendedTutorials =
+  currentTutorialTags => async (firebase, firestore) => {
+    try {
+      const tutorialsRef = firestore.collection("tutorials");
 
-    // Fetch tutorials with matching tags
-    const querySnapshot = await tutorialsRef
-      .where("tut_tags", "array-contains-any", currentTutorialTags)
-      .get();
+      // Fetch tutorials with matching tags
+      const querySnapshot = await tutorialsRef
+        .where("tut_tags", "array-contains-any", currentTutorialTags)
+        .get();
 
-    // Calculate relevance score based on matching tags
-    const recommendedTutorials = querySnapshot.docs
-      .map(doc => {
-        const tutorial = doc.data();
+      // Calculate relevance score based on matching tags
+      const recommendedTutorials = querySnapshot.docs
+        .map(doc => {
+          const tutorial = doc.data();
 
-        // Skip unpublished tutorials
-        if (!tutorial.isPublished) return null;
+          // Skip unpublished tutorials
+          if (!tutorial.isPublished) return null;
 
-        const matchingTags = tutorial.tut_tags.filter(tag => currentTutorialTags.includes(tag));
-        return {
-          ...tutorial,
-          relevanceScore: matchingTags.length
-        };
-      })
-      .filter(tutorial => tutorial !== null);  // Remove null values from the array
+          const matchingTags = tutorial.tut_tags.filter(tag =>
+            currentTutorialTags.includes(tag)
+          );
+          return {
+            ...tutorial,
+            relevanceScore: matchingTags.length
+          };
+        })
+        .filter(tutorial => tutorial !== null); // Remove null values from the array
 
-    recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
+      recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-    return recommendedTutorials;
-  } catch (error) {
-    console.error("Error fetching recommended tutorials:", error);
-    return [];
-  }
-};
+      return recommendedTutorials;
+    } catch (error) {
+      console.error("Error fetching recommended tutorials:", error);
+      return [];
+    }
+  };
