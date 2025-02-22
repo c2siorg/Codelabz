@@ -46,22 +46,25 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
 // adds a user to organization's users list with a set of permissions
 export const addOrgUser =
   ({ org_handle, handle, permissions }) =>
-  async (firestore, dispatch) => {
+  async (firestore, firebase, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
-      const userDoc = await firestore
+      const userDoc = await firebase
+        .firestore()
         .collection("cl_user")
-        .where("handle", "==", handle)
+        .doc(handle)
         .get();
-      if (userDoc.docs.length === 1) {
-        const uid = userDoc.docs[0].get("uid");
+
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        const uid = userData.uid;
         await firestore
           .collection("org_users")
           .doc(`${org_handle}_${uid}`)
           .set({
             uid: uid,
             org_handle: org_handle,
-            permissions: permissions
+            permissions: [permissions]
           });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
