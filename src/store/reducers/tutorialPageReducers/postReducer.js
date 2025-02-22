@@ -54,6 +54,16 @@ const PostReducer = (state = initialState, { type, payload }) => {
         error: payload
       };
 
+    case actions.INC_COMMENT_COUNT:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          no_of_comments:
+            (state.data || { no_of_comments: 0 }).no_of_comments + 1
+        }
+      };
+
     default:
       return state;
   }

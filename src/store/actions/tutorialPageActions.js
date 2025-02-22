@@ -235,6 +235,7 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
     }
 
     dispatch({ type: actions.ADD_COMMENT_SUCCESS });
+    dispatch({ type: actions.INC_COMMENT_COUNT });
     return docref.id;
   } catch (e) {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
