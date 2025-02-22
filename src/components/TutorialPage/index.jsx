@@ -76,10 +76,13 @@ function TutorialPage({ background = "white", textColor = "black" }) {
       }
     }) => steps
   );
-  if ((!loading && !tutorial) || (!loading && !tutorial?.isPublished)) {
-    console.log(loading, tutorial);
-    history.push("/not-found");
-  }
+  const userHandle = useSelector(
+    ({
+      firebase: {
+        profile: { handle }
+      }
+    }) => handle
+  );
 
   const handleAddComment = async comment => {
     const commentData = {
@@ -87,7 +90,7 @@ function TutorialPage({ background = "white", textColor = "black" }) {
       replyTo: id,
       tutorial_id: id,
       createdAt: firestore.FieldValue.serverTimestamp(),
-      userId: "codelabzuser"
+      userId: userHandle
     };
     const commentId = await addComment(commentData)(
       firebase,
@@ -101,6 +104,19 @@ function TutorialPage({ background = "white", textColor = "black" }) {
       setCommentsArray(prevComments => [commentId, ...prevComments]);
     }
   };
+
+  useEffect(() => {
+    let timeoutId = null;
+    if ((!loading && !tutorial) || (!loading && !tutorial?.isPublished)) {
+      console.log(loading, tutorial);
+      timeoutId = setTimeout(() => {
+        history.push("/not-found");
+      }, 2000);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading, tutorial]);
 
   return (
     <Box

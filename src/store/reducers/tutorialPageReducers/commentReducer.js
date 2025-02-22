@@ -62,6 +62,13 @@ const CommentReducer = (state = initialState, { type, payload }) => {
         error: payload
       };
 
+    case actions.ADD_REPLIES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        replies: payload
+      };
+
     default:
       return state;
   }

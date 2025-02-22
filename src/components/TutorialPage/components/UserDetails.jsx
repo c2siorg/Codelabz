@@ -34,7 +34,9 @@ const User = ({ id, timestamp, size }) => {
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
-  const user = useSelector(
+  const [user, setUser] = useState(null);
+
+  const userData = useSelector(
     ({
       profile: {
         user: { data }
@@ -62,10 +64,16 @@ const User = ({ id, timestamp, size }) => {
   };
 
   const getTime = timestamp => {
-    return timestamp.toDate().toDateString();
+    return timestamp.toDate().toLocaleString();
   };
 
   const showFollowButton = profileData?.uid !== user?.uid;
+
+  useEffect(() => {
+    if (userData && userData.handle === id) {
+      setUser(userData);
+    }
+  }, [userData]);
 
   return (
     <>
