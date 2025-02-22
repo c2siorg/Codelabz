@@ -61,8 +61,9 @@ export const createOrganization =
       dispatch({ type: actions.PROFILE_EDIT_START });
       const userData = firebase.auth().currentUser;
       const { org_name, org_handle, org_country, org_website } = orgData;
-      const isOrgHandleExists =
-        await checkOrgHandleExists(org_handle)(firestore);
+      const isOrgHandleExists = await checkOrgHandleExists(org_handle)(
+        firestore
+      );
 
       if (isOrgHandleExists) {
         dispatch({
@@ -177,6 +178,7 @@ export const getUserProfileData =
           type: actions.GET_USER_DATA_SUCCESS,
           payload: { ...doc, isFollowing: followingStatus }
         });
+        return { ...doc, isFollowing: followingStatus };
       } else {
         dispatch({ type: actions.GET_USER_DATA_SUCCESS, payload: false });
       }
@@ -301,7 +303,7 @@ export const getUserFeedIdArray = userId => async (_, firestore) => {
   try {
     const userIdArray = [];
     const querySnapshot = await firestore.collection("cl_user").get();
-    const promises = querySnapshot.docs.map(async (doc) => {
+    const promises = querySnapshot.docs.map(async doc => {
       const followStatus = await isUserFollower(userId, doc.id, firestore);
       if (!followStatus) {
         userIdArray.push(doc.id);
@@ -316,29 +318,29 @@ export const getUserFeedIdArray = userId => async (_, firestore) => {
   }
 };
 
+export const getUserFeedData =
+  userIdArray => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.GET_USER_FEED_START });
 
-export const getUserFeedData = userIdArray => async (firebase, firestore, dispatch) => {
-  try {
-    dispatch({ type: actions.GET_USER_FEED_START });
+      if (userIdArray.length === 0) {
+        dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
+        return;
+      }
 
-    if (userIdArray.length === 0) {
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
-      return;
+      const users = await firestore
+        .collection("cl_user")
+        .where("uid", "in", userIdArray)
+        .get();
+
+      if (users.empty) {
+        dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
+      } else {
+        const userFeed = users.docs.map(doc => doc.data());
+        dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: userFeed });
+      }
+    } catch (e) {
+      dispatch({ type: actions.GET_USER_FEED_FAILED, payload: e });
+      console.error("Failed to get user feed data", e);
     }
-
-    const users = await firestore
-      .collection("cl_user")
-      .where("uid", "in", userIdArray)
-      .get();
-
-    if (users.empty) {
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
-    } else {
-      const userFeed = users.docs.map(doc => doc.data());
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: userFeed });
-    }
-  } catch (e) {
-    dispatch({ type: actions.GET_USER_FEED_FAILED, payload: e });
-    console.error("Failed to get user feed data", e);
-  }
-};
+  };

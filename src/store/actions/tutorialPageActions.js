@@ -1,84 +1,100 @@
 import * as actions from "./actionTypes";
 
-export const getTutorialFeedIdArray = uid => async (_, firestore) => {
-  try {
-    let followings = [];
-    if (uid) {
-      followings = await firestore
-        .collection("user_followers")
-        .where("followerId", "==", uid)
-        .where("isPublished", "==", true)
-        .get()
-        .then(async docs => {
-          const result = [];
-          for (const doc of docs.docs) {
-            const handle = await firestore
-              .collection("cl_user")
-              .doc(doc.data().followingId)
-              .get()
-              .then(doc => doc.data().handle);
+/**
+ *
+ * @param {string | null} uid the user id of the user whose feed is to be fetched
+ * @param {string | undefined} userFilterHandle the handle of the user whose tutorials are to be fetched
+ * @returns
+ */
 
-            result.push(handle);
-          }
-          return result;
-        });
-    }
-    let followingUsersTutorials = [];
-    if (followings.length > 0) {
-      followingUsersTutorials = await firestore
-        .collection("tutorials")
-        .where("created_by", "in", followings)
-        .where("isPublished", "==", true)
-        .limit(50)
-        .get()
-        .then(docs => {
-          const tutorialsArray = [];
-          docs.docs.map(doc => {
-            const tutorialId = doc.id;
-            tutorialsArray.push(tutorialId);
-          });
-          return tutorialsArray;
-        });
-    }
-    let newTutorials = [];
-    if (followings.length > 0) {
-      newTutorials = await firestore
-        .collection("tutorials")
-        .where("created_by", "not-in", followings)
-        .where("isPublished", "==", true)
-        .limit(50)
-        .get()
-        .then(docs => {
-          const tutorialsArray = [];
-          docs.docs.map(doc => {
-            const tutorialId = doc.id;
-            tutorialsArray.push(tutorialId);
-          });
-          return tutorialsArray;
-        });
-    } else {
-      newTutorials = await firestore
-        .collection("tutorials")
-        .where("isPublished", "==", true)
-        .limit(50)
-        .get()
-        .then(docs => {
-          const tutorialsArray = [];
-          docs.docs.map(doc => {
-            const tutorialId = doc.id;
-            tutorialsArray.push(tutorialId);
-          });
-          return tutorialsArray;
-        });
-    }
+export const getTutorialFeedIdArray =
+  (uid, userFilterHandle) => async (_, firestore) => {
+    try {
+      let followings = [];
+      if (uid) {
+        followings = await firestore
+          .collection("user_followers")
+          .where("followerId", "==", uid)
+          .where("isPublished", "==", true)
+          .get()
+          .then(async docs => {
+            const result = [];
+            for (const doc of docs.docs) {
+              const handle = await firestore
+                .collection("cl_user")
+                .doc(doc.data().followingId)
+                .get()
+                .then(doc => doc.data().handle);
 
-    const tutorials = followingUsersTutorials.concat(newTutorials);
+              result.push(handle);
+            }
+            return result;
+          });
+      }
+      // if userFilterHandle is provided, add it to followings array
+      if (userFilterHandle) {
+        if ((uid && followings.includes(userFilterHandle)) || !uid) {
+          followings = [userFilterHandle];
+        } else followings = [];
+      }
+      let followingUsersTutorials = [];
+      if (followings.length > 0) {
+        followingUsersTutorials = await firestore
+          .collection("tutorials")
+          .where("created_by", "in", followings)
+          .where("isPublished", "==", true)
+          .limit(50)
+          .get()
+          .then(docs => {
+            const tutorialsArray = [];
+            docs.docs.map(doc => {
+              const tutorialId = doc.id;
+              tutorialsArray.push(tutorialId);
+            });
+            return tutorialsArray;
+          });
+      }
+      let newTutorials = [];
+      // no requirement to fetch new tutorials if userFilterHandle is provided since it is fetched in followings
+      if (!userFilterHandle) {
+        if (followings.length > 0) {
+          newTutorials = await firestore
+            .collection("tutorials")
+            .where("created_by", "not-in", followings)
+            .where("isPublished", "==", true)
+            .limit(50)
+            .get()
+            .then(docs => {
+              const tutorialsArray = [];
+              docs.docs.map(doc => {
+                const tutorialId = doc.id;
+                tutorialsArray.push(tutorialId);
+              });
+              return tutorialsArray;
+            });
+        } else {
+          newTutorials = await firestore
+            .collection("tutorials")
+            .where("isPublished", "==", true)
+            .limit(50)
+            .get()
+            .then(docs => {
+              const tutorialsArray = [];
+              docs.docs.map(doc => {
+                const tutorialId = doc.id;
+                tutorialsArray.push(tutorialId);
+              });
+              return tutorialsArray;
+            });
+        }
+      }
+      const tutorials = followingUsersTutorials.concat(newTutorials);
 
-    return tutorials;
-  } catch (e) {
-    console.log(e);
-  }
-};
+      return tutorials;
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
 export const getTutorialFeedData =
   tutorialIdArray => async (firebase, firestore, dispatch) => {
@@ -103,7 +119,7 @@ export const getTutorialFeedData =
             featured_image: tutorial?.featured_image,
             tut_tags: tutorial?.tut_tags,
             upVotes: tutorial?.upVotes || 0,
-            downVotes: tutorial?.downVotes || 0,
+            downVotes: tutorial?.downVotes || 0
           };
           return tutorialData;
         });
@@ -223,36 +239,39 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
   }
 };
 
-export const getRecommendedTutorials = currentTutorialTags => async (firebase, firestore) => {
-  try {
-    const tutorialsRef = firestore.collection("tutorials");
+export const getRecommendedTutorials =
+  currentTutorialTags => async (firebase, firestore) => {
+    try {
+      const tutorialsRef = firestore.collection("tutorials");
 
-    // Fetch tutorials with matching tags
-    const querySnapshot = await tutorialsRef
-      .where("tut_tags", "array-contains-any", currentTutorialTags)
-      .get();
+      // Fetch tutorials with matching tags
+      const querySnapshot = await tutorialsRef
+        .where("tut_tags", "array-contains-any", currentTutorialTags)
+        .get();
 
-    // Calculate relevance score based on matching tags
-    const recommendedTutorials = querySnapshot.docs
-      .map(doc => {
-        const tutorial = doc.data();
+      // Calculate relevance score based on matching tags
+      const recommendedTutorials = querySnapshot.docs
+        .map(doc => {
+          const tutorial = doc.data();
 
-        // Skip unpublished tutorials
-        if (!tutorial.isPublished) return null;
+          // Skip unpublished tutorials
+          if (!tutorial.isPublished) return null;
 
-        const matchingTags = tutorial.tut_tags.filter(tag => currentTutorialTags.includes(tag));
-        return {
-          ...tutorial,
-          relevanceScore: matchingTags.length
-        };
-      })
-      .filter(tutorial => tutorial !== null);  // Remove null values from the array
+          const matchingTags = tutorial.tut_tags.filter(tag =>
+            currentTutorialTags.includes(tag)
+          );
+          return {
+            ...tutorial,
+            relevanceScore: matchingTags.length
+          };
+        })
+        .filter(tutorial => tutorial !== null); // Remove null values from the array
 
-    recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
+      recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-    return recommendedTutorials;
-  } catch (error) {
-    console.error("Error fetching recommended tutorials:", error);
-    return [];
-  }
-};
+      return recommendedTutorials;
+    } catch (error) {
+      console.error("Error fetching recommended tutorials:", error);
+      return [];
+    }
+  };

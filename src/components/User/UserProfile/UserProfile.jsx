@@ -8,7 +8,7 @@ import { makeStyles } from "@mui/styles";
 import OrgUser from "../../../assets/images/org-user.svg";
 import { userList } from "../../HomePage/userList";
 import Card from "@mui/material/Card";
-import UserHighlights from "./UserHighlights";
+import UserHighlights from "../../Profile/ViewProfile/UserHighlights";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import {
