@@ -93,7 +93,8 @@ const useStyles = makeStyles(theme => ({
     border: 0,
     direction: "column",
     backgroundColor: theme.palette.grey[200],
-    padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`
+    padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
+    textTransform: "none"
   },
   ProfilePhotoImage: {
     width: theme.spacing(12),
