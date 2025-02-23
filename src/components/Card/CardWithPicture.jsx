@@ -75,20 +75,19 @@ export default function CardWithPicture({ tutorial }) {
   const firebase = useFirebase();
   const firestore = useFirestore();
 
-  useEffect(() => {
-    getUserProfileData(tutorial?.created_by)(firebase, firestore, dispatch);
-  }, [tutorial]);
+  const [user, setUser] = useState(null);
 
-  const user = useSelector(
-    ({
-      profile: {
-        user: { data }
+  // Get profile data
+  useEffect(() => {
+    getUserProfileData(tutorial.created_by)(firebase, firestore, dispatch).then(
+      data => {
+        if (data) setUser(data);
       }
-    }) => data
-  );
+    );
+  }, [firebase, firestore, dispatch, tutorial.created_by]);
 
   const getTime = timestamp => {
-    return timestamp.toDate().toDateString();
+    return timestamp.toDate().toLocaleString();
   };
 
   return (
