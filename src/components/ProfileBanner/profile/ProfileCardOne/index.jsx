@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import useStyles from "./styles";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import { Menu, MenuItem } from "@mui/material";
+import { Button, Menu, MenuItem, Snackbar } from "@mui/material";
 
 // import dp from "../../../../assets/images/demoperson1.jpeg";
 import iconbuttonImage from "../../../../assets/images/Filled3dots.svg";
@@ -29,6 +29,7 @@ export default function ProfileCardOne({
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   return (
     <>
@@ -79,7 +80,25 @@ export default function ProfileCardOne({
                   <FollowUnfollowButton isFollowing={isFollowing} />
                 ) : null}
 
-                <button className={classes.profileShareButton}>Share</button>
+                <div>
+                  <Button
+                    sx={{ textTransform: "none" }}
+                    onClick={() => {
+                      setOpenSnackbar(true);
+                      navigator.clipboard.writeText(window.location.href);
+                    }}
+                    className={classes.profileShareButton}
+                  >
+                    Share
+                  </Button>
+                  <Snackbar
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                    open={openSnackbar}
+                    autoHideDuration={2000}
+                    onClose={() => setOpenSnackbar(false)}
+                    message="Copied to clipboard"
+                  />
+                </div>
                 <button className={classes.profileReportButton}>Report</button>
 
                 {!handle ? (
