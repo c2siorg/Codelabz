@@ -8,7 +8,8 @@ import * as actions from "./actionTypes";
  */
 
 export const getTutorialFeedIdArray =
-  (uid, userFilterHandle) => async (_, firestore) => {
+  (uid, userFilterHandle = undefined) =>
+  async (_, firestore) => {
     try {
       let followings = [];
       if (uid) {

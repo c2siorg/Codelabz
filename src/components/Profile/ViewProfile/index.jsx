@@ -3,7 +3,13 @@ import ProfileCardOne from "../../ProfileBanner/profile/ProfileCardOne";
 import Activity from "../../Topbar/Activity";
 import CardWithPicture from "../../Card/CardWithPicture";
 import CardWithoutPicture from "../../Card/CardWithoutPicture";
-import { Grid, LinearProgress, ThemeProvider } from "@mui/material";
+import {
+  CircularProgress,
+  Grid,
+  LinearProgress,
+  ThemeProvider,
+  Typography
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import OrgUser from "../../../assets/images/org-user.svg";
 import { userList } from "../../HomePage/userList";
@@ -16,7 +22,11 @@ import {
   getTutorialFeedIdArray
 } from "../../../store/actions/tutorialPageActions";
 import { useParams } from "react-router-dom";
-import { clearUserProfile, getUserProfileData } from "../../../store/actions";
+import {
+  clearUserProfile,
+  getTutorialsByTopTags,
+  getUserProfileData
+} from "../../../store/actions";
 import { basicTheme } from "../../../helpers/themes";
 
 const useStyles = makeStyles(theme => ({
@@ -64,6 +74,10 @@ function UserProfile() {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
+  const [tutorials, setTutorials] = useState([]);
+  const [filterType, setFilterType] = useState("Featured");
+  const [fetchedOnce, setFetchedOnce] = useState(false);
+  const [feedloading, setFeedLoading] = useState(false);
   const profileData = useSelector(
     ({
       profile: {
@@ -84,6 +98,54 @@ function UserProfile() {
   const isFollowing = profileData?.isFollowing;
 
   const showFollowButton = handle !== loggedInUser?.handle;
+  const tutorialFeedArray = useSelector(
+    ({
+      tutorialPage: {
+        feed: { homepageFeedArray }
+      }
+    }) => homepageFeedArray
+  );
+
+  const convertToDate = date => {
+    return date.toDate().getTime();
+  };
+
+  const handleFeedChange = async filterType => {
+    let filteredTutorials;
+    setFeedLoading(true);
+    switch (filterType) {
+      case "Featured":
+        console.log("filteredTutorials", filteredTutorials);
+        filteredTutorials = await getTutorialsByTopTags(10, handle)(
+          firebase,
+          firestore
+        );
+        break;
+      case "New":
+        filteredTutorials = [...tutorialFeedArray].sort(
+          (a, b) => convertToDate(b.createdAt) - convertToDate(a.createdAt)
+        );
+        break;
+      case "Top":
+        filteredTutorials = [...tutorialFeedArray].sort(
+          (a, b) => b.upVotes - a.upVotes
+        );
+        break;
+      default:
+        filteredTutorials = tutorials;
+    }
+    setFeedLoading(false);
+    setTutorials(filteredTutorials);
+  };
+
+  const handleAciivityChange = filterType => {
+    setFilterType(filterType);
+  };
+
+  // Get tutorial feed data for the first time
+  useEffect(() => {
+    handleFeedChange("Featured");
+  }, []);
 
   // Get profile data
   useEffect(() => {
@@ -95,23 +157,24 @@ function UserProfile() {
 
   useEffect(() => {
     const getFeed = async () => {
+      setFeedLoading(true);
       const tutorialIdArray = await getTutorialFeedIdArray(null, handle)(
         null,
         firestore
       );
-      console.log(tutorialIdArray, handle);
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+      setFetchedOnce(true);
     };
-    if (handle) getFeed();
-  }, [handle, firestore, dispatch]);
-
-  const tutorials = useSelector(
-    ({
-      tutorialPage: {
-        feed: { homepageFeedArray }
-      }
-    }) => homepageFeedArray
-  );
+    if (handle && filterType !== "Featured" && !fetchedOnce) getFeed();
+    handleFeedChange(filterType);
+  }, [
+    handle,
+    firestore,
+    dispatch,
+    filterType,
+    tutorialFeedArray,
+    setFeedLoading
+  ]);
 
   const [organizations, setUpOrganizations] = useState([
     {
@@ -169,21 +232,24 @@ function UserProfile() {
 
           <Grid className={classes.marginActivity}>
             <Card className={classes.paddingActivity}>
-              <Activity />
+              <Activity handleFeedChange={handleAciivityChange} />
             </Card>
           </Grid>
 
           <Grid>
             {tutorials.map(tutorial => {
               return !tutorial?.featured_image ? (
-                <CardWithoutPicture
-                  tutorial={tutorial}
-                  className={classes.card}
-                />
+                <CardWithoutPicture tutorial={tutorial} />
               ) : (
-                <CardWithPicture tutorial={tutorial} className={classes.card} />
+                <CardWithPicture tutorial={tutorial} />
               );
             })}
+            {tutorials.length === 0 && (
+              <Typography sx={{ textAlign: "center" }} fontSize={20}>
+                No Tutorials Found
+              </Typography>
+            )}
+            {feedloading && <CircularProgress />}
           </Grid>
         </div>
 
