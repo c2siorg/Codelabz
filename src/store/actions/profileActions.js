@@ -367,12 +367,48 @@ export const getUserFollowers = userId => async (firestore, dispatch) => {
         uid: data.uid,
         displayName: data.displayName,
         photoURL: data.photoURL,
-        handle: data.handle,
-        email: data.email
+        handle: data.handle
       };
     });
     dispatch({ type: actions.GET_USER_FOLLOWERS_SUCCESS, payload: followers });
   } catch (error) {
     dispatch({ type: actions.GET_USER_FOLLOWERS_FAIL, payload: error.message });
+  }
+};
+
+export const getUserFollowings = userId => async (firestore, dispatch) => {
+  try {
+    dispatch({ type: actions.GET_USER_FOLLOWINGS_START });
+    const followingsIdArray = (
+      await firestore
+        .collection("user_followers")
+        .where("followerId", "==", userId)
+        .limit(20)
+        .get()
+    ).docs.map(doc => doc.data().followingId);
+    const followings = (
+      await firestore
+        .collection("cl_user")
+        .where("uid", "in", followingsIdArray)
+        .limit(20)
+        .get()
+    ).docs.map(doc => {
+      const data = doc.data();
+      return {
+        uid: data.uid,
+        displayName: data.displayName,
+        photoURL: data.photoURL,
+        handle: data.handle
+      };
+    });
+    dispatch({
+      type: actions.GET_USER_FOLLOWINGS_SUCCESS,
+      payload: followings
+    });
+  } catch (error) {
+    dispatch({
+      type: actions.GET_USER_FOLLOWINGS_FAIL,
+      payload: error.message
+    });
   }
 };

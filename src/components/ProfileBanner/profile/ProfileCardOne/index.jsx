@@ -2,110 +2,13 @@ import React, { useEffect, useState } from "react";
 import useStyles from "./styles";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import { Button, Menu, MenuItem } from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 
 // import dp from "../../../../assets/images/demoperson1.jpeg";
 import iconbuttonImage from "../../../../assets/images/Filled3dots.svg";
 import { Link, useParams } from "react-router-dom";
-import { addUserFollower, removeUserFollower } from "../../../../store/actions";
-import { useDispatch, useSelector } from "react-redux";
-import { useFirestore } from "react-redux-firebase";
-import FollowerButton from "./FollowerButton";
-
-function FollowerFollowing({ initialFollowers = 0, initialFollowings = 0 }) {
-  const classes = useStyles();
-  const profileData = useSelector(
-    ({
-      profile: {
-        user: { data }
-      }
-    }) => data
-  );
-  const currentProfileData = useSelector(
-    ({ firebase: { profile } }) => profile
-  );
-  const firestore = useFirestore();
-  const [followersCount, setFollowersCount] = useState(initialFollowers);
-  const [followingCount, setFollowingCount] = useState(initialFollowings);
-
-  // Fetch followers and following data
-  useEffect(() => {
-    if (!profileData?.uid) return;
-
-    const userDocUnsubscribe = firestore
-      .collection("cl_user")
-      .doc(profileData.uid)
-      .onSnapshot(snap => {
-        const data = snap.data();
-        setFollowersCount(data?.followerCount || 0);
-        setFollowingCount(data?.followingCount || 0);
-      });
-
-    return () => {
-      userDocUnsubscribe();
-    };
-  }, [profileData, currentProfileData, firestore]);
-
-  return (
-    <React.Fragment>
-      <Grid item container direction="row">
-        <FollowerButton followersCount={followersCount} />
-        <Grid item>
-          <span
-            className={classes.profileInfoData}
-            style={{ marginRight: "2px" }}
-            data-testId="user_profile_card_one_followingCount"
-          >
-            {followingCount} following
-          </span>
-        </Grid>
-      </Grid>
-    </React.Fragment>
-  );
-}
-
-function FollowUnfollowButton({ isFollowing: initialFollowingStatus }) {
-  const [followDisable, setFollowDisable] = useState(false);
-  const profileData = useSelector(
-    ({
-      profile: {
-        user: { data }
-      }
-    }) => data
-  );
-  const [isFollowing, setIsFollowing] = useState(initialFollowingStatus);
-  const currentProfileData = useSelector(
-    ({ firebase: { profile } }) => profile
-  );
-
-  const firestore = useFirestore();
-  const addFollower = async e => {
-    e.preventDefault();
-    setFollowDisable(true);
-    await addUserFollower(currentProfileData, profileData, firestore);
-    setIsFollowing(true);
-    setFollowDisable(false);
-  };
-
-  const removeFollower = async e => {
-    e.preventDefault();
-    setFollowDisable(true);
-    await removeUserFollower(currentProfileData, profileData, firestore);
-    setIsFollowing(false);
-    setFollowDisable(false);
-  };
-  return (
-    <Button
-      variant={isFollowing ? "outlined" : "contained"}
-      onClick={isFollowing ? removeFollower : addFollower}
-      disabled={followDisable}
-      startIcon={isFollowing ? null : null}
-      data-testId="user_profile_card_one_buttonGroup_followButton"
-    >
-      {isFollowing ? "Following" : "Follow"}
-    </Button>
-  );
-}
+import { FollowUnfollowButton } from "./FollowUnfollowButton";
+import FollowersAndFollowings from "./FollowersAndFollowings";
 
 export default function ProfileCardOne({
   profileImage,
@@ -161,7 +64,7 @@ export default function ProfileCardOne({
                     {story}
                   </Typography>
                 </Grid>
-                <FollowerFollowing
+                <FollowersAndFollowings
                   initialFollowers={followers}
                   initialFollowings={following}
                 />

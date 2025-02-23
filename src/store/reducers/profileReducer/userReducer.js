@@ -71,12 +71,12 @@ const ProfileUserReducer = (state = initialState, { type, payload }) => {
         }
       };
 
-    case actions.GET_USER_FOLLOWING_START:
+    case actions.GET_USER_FOLLOWINGS_START:
       return {
         ...state,
         data: {
           ...(state.data || {}),
-          following: {
+          followings: {
             loading: true,
             error: null,
             data: null
@@ -84,12 +84,12 @@ const ProfileUserReducer = (state = initialState, { type, payload }) => {
         }
       };
 
-    case actions.GET_USER_FOLLOWING_SUCCESS:
+    case actions.GET_USER_FOLLOWINGS_SUCCESS:
       return {
         ...state,
         data: {
           ...(state.data || {}),
-          following: {
+          followings: {
             loading: false,
             error: false,
             data: payload
@@ -97,12 +97,12 @@ const ProfileUserReducer = (state = initialState, { type, payload }) => {
         }
       };
 
-    case actions.GET_USER_FOLLOWING_FAIL:
+    case actions.GET_USER_FOLLOWINGS_FAIL:
       return {
         ...state,
         data: {
           ...(state.data || {}),
-          following: {
+          followings: {
             loading: false,
             error: payload
           }
