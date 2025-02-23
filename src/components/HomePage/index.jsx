@@ -37,8 +37,8 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
+import CardWithVideo from "../Card/CardWithVideo";
 import { getTutorialsByTopTags,getAllTags,getFilteredTutorials } from "../../store/actions";
-
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -203,6 +203,8 @@ function HomePage({ background = "white", textColor = "black" }) {
   const closeModal = () => {
     setVisibleModal(prev => !prev);
   };
+
+  console.log(tutorials)
   return (
     <Card
       className={classes.wrapper}
@@ -257,7 +259,7 @@ function HomePage({ background = "white", textColor = "black" }) {
           </Box>
                     {tutorials?.length > 0 ? (
             tutorials.map(tutorial => {
-              return !tutorial?.featured_image ? (
+            return tutorial?.featured_video ? (<CardWithVideo tutorial={tutorial}/>): !tutorial?.featured_image ? (
                 <CardWithoutPicture key={tutorial.id} tutorial={tutorial} />
               ) : (
                 <CardWithPicture key={tutorial.id} tutorial={tutorial} />

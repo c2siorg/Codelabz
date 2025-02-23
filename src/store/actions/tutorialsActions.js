@@ -144,13 +144,25 @@ export const createTutorial =
   tutorialData => async (firebase, firestore, dispatch, history) => {
     try {
       dispatch({ type: actions.CREATE_TUTORIAL_START });
-      const { title, summary, owner, created_by, is_org, tags } = tutorialData;
+      const { title, summary, owner, created_by, is_org, tags, featured_video } = tutorialData;
 
       const setData = async () => {
         const document = firestore.collection("tutorials").doc();
 
         const documentID = document.id;
         const step_id = `${documentID}_${new Date().getTime()}`;
+
+        let videoUrl = "";
+        if(featured_video){
+          try {
+            const storageRef = firebase.storage().ref();
+            const videoRef = storageRef.child(`tutorial_videos/${documentID}_${featured_video.name}`);
+            await videoRef.put(featured_video);
+            videoUrl = await videoRef.getDownloadURL();
+          } catch (e) {
+            console.error("Error uploading video to firebase storage", e);
+          } 
+        }
 
         await document.set({
           created_by,
@@ -161,6 +173,7 @@ export const createTutorial =
           title,
           tutorial_id: documentID,
           featured_image: "",
+          featured_video: videoUrl,
           icon: "",
           tut_tags: tags,
           url: "",
@@ -232,7 +245,7 @@ export const getTutorialsByTopTags = (limit = 10) => async (firebase, firestore)
 
 export const checkUserOrOrgHandle = handle => async (firebase, firestore) => {
   const userHandleExists = await checkUserHandleExists(handle)(firebase);
-  const orgHandleExists = await checkOrgHandleExists(handle)(firestore);
+  const orgHandleExists = await checkOrgHandleExists(handle)(firebase);
 
   if (userHandleExists && !orgHandleExists) {
     return "user";
