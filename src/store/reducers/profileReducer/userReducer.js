@@ -33,6 +33,82 @@ const ProfileUserReducer = (state = initialState, { type, payload }) => {
         error: payload
       };
 
+    case actions.GET_USER_FOLLOWERS_START:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          followers: {
+            loading: true,
+            error: null,
+            data: null
+          }
+        }
+      };
+
+    case actions.GET_USER_FOLLOWERS_SUCCESS:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          followers: {
+            loading: false,
+            error: false,
+            data: payload
+          }
+        }
+      };
+
+    case actions.GET_USER_FOLLOWERS_FAIL:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          followers: {
+            loading: false,
+            error: payload
+          }
+        }
+      };
+
+    case actions.GET_USER_FOLLOWING_START:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          following: {
+            loading: true,
+            error: null,
+            data: null
+          }
+        }
+      };
+
+    case actions.GET_USER_FOLLOWING_SUCCESS:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          following: {
+            loading: false,
+            error: false,
+            data: payload
+          }
+        }
+      };
+
+    case actions.GET_USER_FOLLOWING_FAIL:
+      return {
+        ...state,
+        data: {
+          ...(state.data || {}),
+          following: {
+            loading: false,
+            error: payload
+          }
+        }
+      };
+
     default:
       return state;
   }

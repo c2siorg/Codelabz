@@ -67,7 +67,11 @@ const useStyles = makeStyles(theme => ({
     lineHeight: "22px",
     fontSize: "19px",
     color: "#878787",
-    fontWeight: "400"
+    fontWeight: "400",
+    "&:hover": {
+      color: "#4a4a4a"
+    },
+    cursor: "pointer"
   },
   profileUserConnect: {
     // width: "fit-content",

@@ -344,3 +344,35 @@ export const getUserFeedData =
       console.error("Failed to get user feed data", e);
     }
   };
+
+export const getUserFollowers = userId => async (firestore, dispatch) => {
+  try {
+    dispatch({ type: actions.GET_USER_FOLLOWERS_START });
+    const followersIdArray = (
+      await firestore
+        .collection("user_followers")
+        .where("followingId", "==", userId)
+        .limit(20)
+        .get()
+    ).docs.map(doc => doc.data().followerId);
+    const followers = (
+      await firestore
+        .collection("cl_user")
+        .where("uid", "in", followersIdArray)
+        .limit(20)
+        .get()
+    ).docs.map(doc => {
+      const data = doc.data();
+      return {
+        uid: data.uid,
+        displayName: data.displayName,
+        photoURL: data.photoURL,
+        handle: data.handle,
+        email: data.email
+      };
+    });
+    dispatch({ type: actions.GET_USER_FOLLOWERS_SUCCESS, payload: followers });
+  } catch (error) {
+    dispatch({ type: actions.GET_USER_FOLLOWERS_FAIL, payload: error.message });
+  }
+};

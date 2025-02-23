@@ -2,28 +2,15 @@ import React, { useEffect, useState } from "react";
 import useStyles from "./styles";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import {
-  Avatar,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItemAvatar,
-  ListItemText,
-  Menu,
-  MenuItem
-} from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
 
 // import dp from "../../../../assets/images/demoperson1.jpeg";
 import iconbuttonImage from "../../../../assets/images/Filled3dots.svg";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { addUserFollower, removeUserFollower } from "../../../../store/actions";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useFirestore } from "react-redux-firebase";
-import { Close } from "@mui/icons-material";
-import { ListItem } from "quill-delta-to-html";
+import FollowerButton from "./FollowerButton";
 
 function FollowerFollowing({ initialFollowers = 0, initialFollowings = 0 }) {
   const classes = useStyles();
@@ -40,10 +27,6 @@ function FollowerFollowing({ initialFollowers = 0, initialFollowings = 0 }) {
   const firestore = useFirestore();
   const [followersCount, setFollowersCount] = useState(initialFollowers);
   const [followingCount, setFollowingCount] = useState(initialFollowings);
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
-  const [followersDialogOpen, setFollowersDialogOpen] = useState(false);
-  const [followingDialogOpen, setFollowingDialogOpen] = useState(false);
 
   // Fetch followers and following data
   useEffect(() => {
@@ -54,8 +37,8 @@ function FollowerFollowing({ initialFollowers = 0, initialFollowings = 0 }) {
       .doc(profileData.uid)
       .onSnapshot(snap => {
         const data = snap.data();
-        setFollowersCount(data?.followerCount);
-        setFollowingCount(data?.followingCount);
+        setFollowersCount(data?.followerCount || 0);
+        setFollowingCount(data?.followingCount || 0);
       });
 
     return () => {
@@ -66,15 +49,7 @@ function FollowerFollowing({ initialFollowers = 0, initialFollowings = 0 }) {
   return (
     <React.Fragment>
       <Grid item container direction="row">
-        <Grid item>
-          <span
-            className={classes.profileInfoData}
-            style={{ marginRight: "20px" }}
-            data-testId="user_profile_card_one_follwerCount"
-          >
-            {followersCount} followers
-          </span>
-        </Grid>
+        <FollowerButton followersCount={followersCount} />
         <Grid item>
           <span
             className={classes.profileInfoData}
@@ -141,6 +116,7 @@ export default function ProfileCardOne({
   isFollowing = true,
   showFollowButton = false
 }) {
+  const { handle } = useParams();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -202,37 +178,42 @@ export default function ProfileCardOne({
 
                 <button className={classes.profileShareButton}>Share</button>
                 <button className={classes.profileReportButton}>Report</button>
-                <button
-                  className={classes.profileIconButton}
-                  id="basic-button"
-                  aria-controls={open ? "basic-menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleClick}
-                >
-                  <img src={iconbuttonImage} alt="iconbutton" />
-                </button>
-                <Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button"
-                  }}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right"
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "left"
-                  }}
-                >
-                  <Link to="/user-dashboard/settings">
-                    <MenuItem onClick={handleClose}>User Settings</MenuItem>
-                  </Link>
-                </Menu>
+
+                {!handle ? (
+                  <React.Fragment>
+                    <button
+                      className={classes.profileIconButton}
+                      id="basic-button"
+                      aria-controls={open ? "basic-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={handleClick}
+                    >
+                      <img src={iconbuttonImage} alt="iconbutton" />
+                    </button>
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button"
+                      }}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right"
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "left"
+                      }}
+                    >
+                      <Link to="/user-dashboard/settings">
+                        <MenuItem onClick={handleClose}>User Settings</MenuItem>
+                      </Link>
+                    </Menu>
+                  </React.Fragment>
+                ) : null}
               </Grid>
             </div>
           </div>
