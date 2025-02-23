@@ -15,6 +15,7 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../../store/actions/tutorialPageActions";
+import { clearUserProfile, getUserProfileData } from "../../../store/actions";
 
 const useStyles = makeStyles(theme => ({
   parentBody: {
@@ -63,13 +64,20 @@ function UserProfile(props) {
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
+  // Get profile data
+  useEffect(() => {
+    getUserProfileData(profileData.handle)(firebase, firestore, dispatch);
+    return () => {
+      clearUserProfile()(dispatch);
+    };
+  }, [firebase, firestore, dispatch, profileData.handle]);
+
   useEffect(() => {
     const getFeed = async () => {
-      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
-        firebase,
-        firestore,
-        dispatch
-      );
+      const tutorialIdArray = await getTutorialFeedIdArray(
+        null,
+        profileData.handle
+      )(firebase, firestore, dispatch);
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
     getFeed();
