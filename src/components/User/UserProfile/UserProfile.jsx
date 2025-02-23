@@ -118,7 +118,7 @@ function UserProfile(props) {
                 name={props.profileData.displayName}
                 story={"Lorem ipsum dolor sit amet, consectetuer adipiscing elit"}
                 followers={props.profileData.followerCount || 0 }
-                following={props.profileData.followingCount}
+                following={props.profileData.followingCount || 0 }
                 isOwnProfile={isOwnProfile}
               />
             </Card>

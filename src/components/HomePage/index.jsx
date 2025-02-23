@@ -37,8 +37,8 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
-import { getTutorialsByTopTags } from "../../store/actions";
 import CardWithVideo from "../Card/CardWithVideo";
+import { getTutorialsByTopTags,getAllTags,getFilteredTutorials } from "../../store/actions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -90,44 +90,51 @@ function HomePage({ background = "white", textColor = "black" }) {
       date: "25 March, 2022"
     }
   ]);
-  const [tags, setTags] = useState([
-    "HTML",
-    "JavaScript",
-    "Css",
-    "Python",
-    "React",
-    "Java",
-    "HTML",
-    "JavaScript",
-    "Css",
-    "Python",
-    "React",
-    "HTML",
-    "JavaScript",
-    "Css",
-    "Python",
-    "React",
-    "Java",
-    "HTML",
-    "JavaScript",
-    "Css",
-    "Python",
-    "React"
-  ]);
+  const [tags, setTags] = useState([]);
+
+
+    useEffect(()=>{
+      const fetchTags = async () =>{
+        try{
+          const fetchedTags = await getAllTags()(firebase,firestore);
+          
+          setTags(fetchedTags);
+          
+          console.log(tags);
+        }catch(Error){
+          console.error('Error fetching tags:', error);
+  
+        }
+      }
+  
+      fetchTags();
+    },[firebase, firestore])
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
   useEffect(() => {
     const getFeed = async () => {
-      tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
-        firebase,
-        firestore,
-        dispatch
-      );
-      getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+      if (profileData?.uid) {
+        try {
+          tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+            firebase,
+            firestore,
+            dispatch
+          );
+          if (Array.isArray(tutorialIdArray) && tutorialIdArray.length > 0) {
+            getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+          } else {
+            // Handle empty tutorial array - set empty tutorials
+            setTutorials([]);
+          }
+        } catch (error) {
+          console.error("Error fetching tutorial data:", error);
+          setTutorials([]);
+        }
+      }
     };
     getFeed();
-  }, []);
+  }, [profileData.uid, firebase, firestore, dispatch]);
 
   useEffect(() => {
     setTutorials(tutorialFeedArray);
@@ -142,6 +149,19 @@ function HomePage({ background = "white", textColor = "black" }) {
 
   const convertToDate = timestamp => {
     return new Date(timestamp.seconds * 1000);
+  };
+
+  const handleTagSelection = async (selectedTags) => {
+    try {
+      const filteredTutorials = await getFilteredTutorials(selectedTags)(
+        firebase,
+        firestore,
+        dispatch
+      );
+      setTutorials(filteredTutorials);
+    } catch (error) {
+      console.error("Error filtering tutorials:", error);
+    }
   };
 
   const handleFeedChange = async filterType => {
@@ -232,15 +252,26 @@ function HomePage({ background = "white", textColor = "black" }) {
             <Activity handleFeedChange={handleFeedChange} />
           </Card>
           <Box item sx={{ display: { md: "none" } }}>
-            <TagCard tags={tags} />
+          <TagCard 
+    tags={tags} 
+    onTagSelect={handleTagSelection}
+  />
           </Box>
-          {tutorials.map(tutorial => {
-            return tutorial?.featured_video ? (<CardWithVideo tutorial={tutorial}/>):!tutorial?.featured_image ? (
-              <CardWithoutPicture tutorial={tutorial} />
-            ) : (
-              <CardWithPicture tutorial={tutorial} />
-            );
-          })}
+                    {tutorials?.length > 0 ? (
+            tutorials.map(tutorial => {
+            return tutorial?.featured_video ? (<CardWithVideo tutorial={tutorial}/>): !tutorial?.featured_image ? (
+                <CardWithoutPicture key={tutorial.id} tutorial={tutorial} />
+              ) : (
+                <CardWithPicture key={tutorial.id} tutorial={tutorial} />
+              );
+            })
+          ) : (
+            <Card className={classes.card}>
+              <Typography variant="body1" align="center" style={{padding: '20px'}}>
+                No tutorials available. Create your first tutorial!
+              </Typography>
+            </Card>
+          )}
           <Box
             sx={{
               width: "100%",
@@ -310,7 +341,10 @@ function HomePage({ background = "white", textColor = "black" }) {
             data-testId="homepageTagSidebar"
           >
             <Grid item style={{ minWidth: "100%" }}>
-              <TagCard tags={tags} />
+            <TagCard 
+    tags={tags} 
+    onTagSelect={handleTagSelection}
+  />
             </Grid>
           </Grid>
           <Grid
