@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router";
-import ExploreOrg from "../../../components/MyFeed/ExploreOrgs";
+import ExploreOrg from "../../../components/MyFeed/discoverOrgs/OrgExplore";
 import ProviderWrapper from "../../../helpers/providerWrapper";
 
 export default {
