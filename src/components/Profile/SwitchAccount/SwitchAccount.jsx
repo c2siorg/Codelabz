@@ -150,6 +150,7 @@ export default function SwitchAccount({
       </CardContent>
       {buttonText && (
         <Button
+          data-testId="publishButton"
           className={classes.marginR}
           variant="outlined"
           onClick={buttonClick || (() => {})}

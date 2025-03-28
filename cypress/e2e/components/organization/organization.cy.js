@@ -92,4 +92,15 @@ describe("Organization Page | CodeLabz", () => {
     cy.get("[data-testId=googleButton]").should("exist");
     cy.get("[data-testId=twitterButton]").should("exist");
   });
+  it("Publish Button",function(){
+    cy.visit(`${this.base_url}org/settings/codelabzorg`);
+    cy.get('[data-testid="publishButton"]').should("exist");
+    cy.get('[data-testid="publishButton"]').should('have.text',"Publish").click();
+    cy.wait(4000);
+    cy.get('[data-testid="publishButton"]').should("exist");
+    cy.get('[data-testid="publishButton"]').should('have.text',"Unpublish").click();
+    cy.wait(4000);
+    cy.get('[data-testid="publishButton"]').should("exist");
+    cy.get('[data-testid="publishButton"]').should('have.text',"Publish");
+  })
 });
