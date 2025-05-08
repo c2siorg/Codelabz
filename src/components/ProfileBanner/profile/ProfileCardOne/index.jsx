@@ -21,11 +21,11 @@ export default function ProfileCardOne({
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  
+
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
-  
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -45,15 +45,16 @@ export default function ProfileCardOne({
                 alt={name}
                 data-testId="user_profile_card_one_avatar"
                 sx={{
-                  bgcolor: profileImage ? 'transparent' : '#3AAFA9',
+                  bgcolor: profileImage ? "transparent" : "#3AAFA9",
                   width: 120,
                   height: 120,
-                  fontSize: '3.5rem'
+                  fontSize: "3.5rem"
                 }}
               >
-                {!profileImage && (
-                  acronym || <PersonOutlineOutlinedIcon sx={{ fontSize: '2.5rem' }} />
-                )}
+                {!profileImage &&
+                  (acronym || (
+                    <PersonOutlineOutlinedIcon sx={{ fontSize: "2.5rem" }} />
+                  ))}
               </Avatar>
             </div>
             <div className={classes.profileUserConnect}>

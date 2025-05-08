@@ -9,10 +9,9 @@ import { useFirebase } from "react-redux-firebase";
 const UserPassword = () => {
   const classes = useStyles();
   const firebase = useFirebase();
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   return (
-    
     <Card className={classes.card} data-testId="passwordPage">
       <Box
         component="form"
@@ -50,21 +49,21 @@ const UserPassword = () => {
           Update Password
         </Button>
         <Box className={classes.row}>
-        <Typography 
-  component="button"
-  data-testid="logout"
-  onClick={() => signOut()(firebase, dispatch)}
-  className={classes.logoutText}
-  role="button"
-  tabIndex={0}
-  onKeyPress={(e) => {
-    if (e.key === 'Enter') {
-      signOut()(firebase, dispatch);
-    }
-  }}
->
-  Logout
-</Typography>
+          <Typography
+            component="button"
+            data-testid="logout"
+            onClick={() => signOut()(firebase, dispatch)}
+            className={classes.logoutText}
+            role="button"
+            tabIndex={0}
+            onKeyPress={e => {
+              if (e.key === "Enter") {
+                signOut()(firebase, dispatch);
+              }
+            }}
+          >
+            Logout
+          </Typography>
           <Typography
             className={classes.text}
             style={{ marginRight: 40, color: "#0075AD" }}

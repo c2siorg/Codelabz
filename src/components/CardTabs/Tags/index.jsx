@@ -44,8 +44,7 @@ const TagCard = ({ tags, onTagSelect }) => {
   const classes = useStyles();
   const [selectedTags, setSelectedTags] = useState([]);
 
-
-  const handleTagClick = (tag) => {
+  const handleTagClick = tag => {
     let newSelectedTags;
     if (selectedTags.includes(tag)) {
       newSelectedTags = selectedTags.filter(t => t !== tag);
@@ -53,7 +52,7 @@ const TagCard = ({ tags, onTagSelect }) => {
       newSelectedTags = [...selectedTags, tag];
     }
     setSelectedTags(newSelectedTags);
-    onTagSelect(newSelectedTags); 
+    onTagSelect(newSelectedTags);
   };
 
   return (
@@ -76,7 +75,9 @@ const TagCard = ({ tags, onTagSelect }) => {
                   size="small"
                   label={tag.name}
                   onClick={() => handleTagClick(tag.name)}
-                  color={selectedTags.includes(tag.name) ? "primary" : "default"}
+                  color={
+                    selectedTags.includes(tag.name) ? "primary" : "default"
+                  }
                   id={index}
                   className={classes.chip}
                   data-testId={index === 0 ? "TagsChip" : ""}

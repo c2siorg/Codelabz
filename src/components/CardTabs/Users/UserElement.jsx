@@ -23,23 +23,23 @@ const UserElement = ({ user, index, useStyles }) => {
   );
   const followerId = currentProfileData.uid;
   const followingId = profileData.uid;
-  const [followStatus, setFollowStatus] = useState('NOT_FOLLOWING');
+  const [followStatus, setFollowStatus] = useState("NOT_FOLLOWING");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFollowToggle = async (e) => {
+  const handleFollowToggle = async e => {
     e.stopPropagation();
     setIsLoading(true);
-    
+
     try {
-      if (followStatus === 'NOT_FOLLOWING') {
+      if (followStatus === "NOT_FOLLOWING") {
         await addUserFollower(currentProfileData, profileData, firestore);
-        setFollowStatus('FOLLOWED');
+        setFollowStatus("FOLLOWED");
       } else {
         await removeUserFollower(currentProfileData, profileData, firestore);
-        setFollowStatus('NOT_FOLLOWING');
+        setFollowStatus("NOT_FOLLOWING");
       }
     } catch (error) {
-      console.error('Error toggling follow status:', error);
+      console.error("Error toggling follow status:", error);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +56,7 @@ const UserElement = ({ user, index, useStyles }) => {
         followingId,
         firestore
       );
-      setFollowStatus(isFollowing ? 'FOLLOWED' : 'NOT_FOLLOWING');
+      setFollowStatus(isFollowing ? "FOLLOWED" : "NOT_FOLLOWING");
     };
 
     checkIfFollowing();
@@ -71,9 +71,9 @@ const UserElement = ({ user, index, useStyles }) => {
         mb: 1.5,
         cursor: "pointer",
         padding: "8px",
-        '&:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.04)',
-          borderRadius: '8px'
+        "&:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+          borderRadius: "8px"
         }
       }}
       onClick={handleUserClick}
@@ -100,10 +100,10 @@ const UserElement = ({ user, index, useStyles }) => {
             {user.name}
           </Box>
           <Box
-            sx={{ 
-              fontWeight: 400, 
+            sx={{
+              fontWeight: 400,
               fontSize: "0.8rem",
-              color: 'text.secondary'
+              color: "text.secondary"
             }}
             data-testId={index === 0 ? "UserDesg" : ""}
           >
@@ -117,30 +117,32 @@ const UserElement = ({ user, index, useStyles }) => {
         data-testId={index === 0 ? "UserAdd" : ""}
         sx={{
           cursor: "pointer",
-          display: 'flex',
-          alignItems: 'center',
-          padding: '4px 8px',
-          borderRadius: '4px',
-          transition: 'all 0.2s',
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.08)'
+          display: "flex",
+          alignItems: "center",
+          padding: "4px 8px",
+          borderRadius: "4px",
+          transition: "all 0.2s",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.08)"
           }
         }}
       >
         {isLoading ? (
           <CircularProgress size={20} />
         ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
             <img
-              src={followStatus === 'FOLLOWED' ? CheckUser : AddUser}
-              alt={followStatus === 'FOLLOWED' ? "Following" : "Follow"}
-              style={{ width: '20px', height: '20px' }}
+              src={followStatus === "FOLLOWED" ? CheckUser : AddUser}
+              alt={followStatus === "FOLLOWED" ? "Following" : "Follow"}
+              style={{ width: "20px", height: "20px" }}
             />
-            <span style={{ 
-              fontSize: '0.8rem',
-              color: followStatus === 'FOLLOWED' ? '#2e7d32' : 'inherit'
-            }}>
-              {followStatus === 'FOLLOWED' ? 'Following' : 'Follow'}
+            <span
+              style={{
+                fontSize: "0.8rem",
+                color: followStatus === "FOLLOWED" ? "#2e7d32" : "inherit"
+              }}
+            >
+              {followStatus === "FOLLOWED" ? "Following" : "Follow"}
             </span>
           </Box>
         )}

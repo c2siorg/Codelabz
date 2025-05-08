@@ -415,9 +415,10 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                     <div>
                       {filteredData.length !== 0 && (
                         <div className="dataOutput">
-                          {filteredData.map(item => {
+                          {filteredData.map((item, index) => {
                             return (
                               <div
+                                key={index}
                                 onClick={e => {
                                   setCountry(item.name);
                                   setCountrySearch("");
@@ -447,8 +448,8 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                     {showOrgForm === false
                       ? "I want to create an organization"
                       : showOrgForm === true
-                      ? "I don't want to create an organization"
-                      : "I want to create an organization"}
+                        ? "I don't want to create an organization"
+                        : "I want to create an organization"}
                   </Button>
                 </Box>
               </Card>

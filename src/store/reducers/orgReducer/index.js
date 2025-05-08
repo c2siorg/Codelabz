@@ -10,5 +10,5 @@ export default combineReducers({
   user: userReducer,
   data: dataReducer,
   launched: launchedOrgsReducer,
-  organisations:organizationReducer
+  organisations: organizationReducer
 });

@@ -104,10 +104,10 @@ const QuillEditor = ({ id, data, tutorial_id, textColor, bgColor }) => {
       //   color: getColor(currentUserHandle)
       // });
 
-      if(textColor){
+      if (textColor) {
         editor.container.style.color = textColor;
       }
-      if(bgColor){
+      if (bgColor) {
         editor.container.style.backgroundColor = bgColor;
       }
 

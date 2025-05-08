@@ -65,11 +65,9 @@ function UserProfile(props) {
   const loggedInProfile = useSelector(({ firebase: { profile } }) => profile);
 
   console.log(loggedInProfile.uid);
-  
-  
+
   // Check if the profile being viewed is the logged-in user's profile
   const isOwnProfile = loggedInProfile.uid === props.profileData.uid;
-
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
@@ -116,9 +114,11 @@ function UserProfile(props) {
               <ProfileCardOne
                 profileImage={props.profileData.photoURL}
                 name={props.profileData.displayName}
-                story={"Lorem ipsum dolor sit amet, consectetuer adipiscing elit"}
-                followers={props.profileData.followerCount || 0 }
-                following={props.profileData.followingCount || 0 }
+                story={
+                  "Lorem ipsum dolor sit amet, consectetuer adipiscing elit"
+                }
+                followers={props.profileData.followerCount || 0}
+                following={props.profileData.followingCount || 0}
                 isOwnProfile={isOwnProfile}
               />
             </Card>

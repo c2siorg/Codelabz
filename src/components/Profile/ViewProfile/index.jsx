@@ -143,7 +143,12 @@ const ProfileView = () => {
   const removeFollower = async e => {
     e.preventDefault();
     setFollowDisable(true);
-    await removeUserFollower(currentProfileData, profileData, firestore, dispatch);
+    await removeUserFollower(
+      currentProfileData,
+      profileData,
+      firestore,
+      dispatch
+    );
     setFollowDisable(false);
   };
 
@@ -193,7 +198,9 @@ const ProfileView = () => {
       <Box sx={{ maxWidth: 1200, margin: "0 auto", padding: 2 }}>
         <Paper elevation={3}>
           {/* Header Section */}
-          <Box sx={{ position: "relative", height: 200, bgcolor: "primary.main" }}>
+          <Box
+            sx={{ position: "relative", height: 200, bgcolor: "primary.main" }}
+          >
             <Box
               sx={{
                 position: "absolute",
@@ -211,7 +218,9 @@ const ProfileView = () => {
                     <IconButton
                       sx={{ bgcolor: "white" }}
                       size="small"
-                      onClick={() => {/* Handle profile pic update */}}
+                      onClick={() => {
+                        /* Handle profile pic update */
+                      }}
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
@@ -239,19 +248,29 @@ const ProfileView = () => {
                     {profileData.description}
                   </Typography>
                 )}
-                
+
                 {/* Location and Website */}
                 <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
                   {profileData.country && (
-                    <Typography variant="body2" sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
                       <FlagIcon sx={{ mr: 0.5 }} fontSize="small" />
                       {profileData.country}
                     </Typography>
                   )}
                   {profileData.website && (
-                    <Typography variant="body2" sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
                       <LinkIcon sx={{ mr: 0.5 }} fontSize="small" />
-                      <a href={profileData.website} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={profileData.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {new URL(profileData.website).hostname}
                       </a>
                     </Typography>
@@ -260,7 +279,7 @@ const ProfileView = () => {
 
                 {/* Social Links */}
                 <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
-                  {socialLinks.map(({ icon, link, baseUrl, label }) => 
+                  {socialLinks.map(({ icon, link, baseUrl, label }) =>
                     link ? (
                       <Tooltip title={label} key={label}>
                         <IconButton
@@ -276,13 +295,26 @@ const ProfileView = () => {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={4} sx={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-start" }}>
+              <Grid
+                item
+                xs={12}
+                md={4}
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-start"
+                }}
+              >
                 <Box sx={{ display: "flex", gap: 1 }}>
                   {profileData.uid !== currentProfileData.uid && (
                     <>
                       <Button
-                        variant={profileData.isFollowing ? "outlined" : "contained"}
-                        onClick={profileData.isFollowing ? removeFollower : addFollower}
+                        variant={
+                          profileData.isFollowing ? "outlined" : "contained"
+                        }
+                        onClick={
+                          profileData.isFollowing ? removeFollower : addFollower
+                        }
                         disabled={followDisable}
                         startIcon={profileData.isFollowing ? null : null}
                       >
@@ -291,7 +323,9 @@ const ProfileView = () => {
                       <Button
                         variant="outlined"
                         startIcon={<MailIcon />}
-                        onClick={() => {/* Handle message */}}
+                        onClick={() => {
+                          /* Handle message */
+                        }}
                       >
                         Organisations
                       </Button>
@@ -311,14 +345,22 @@ const ProfileView = () => {
             <Box sx={{ mt: 3, display: "flex", gap: 4 }}>
               <Button onClick={() => setFollowersDialogOpen(true)}>
                 <Box sx={{ textAlign: "center" }}>
-                  <Typography variant="h6">{profileData.followerCount || 0}</Typography>
-                  <Typography variant="body2" color="text.secondary">Followers</Typography>
+                  <Typography variant="h6">
+                    {profileData.followerCount || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Followers
+                  </Typography>
                 </Box>
               </Button>
               <Button onClick={() => setFollowingDialogOpen(true)}>
                 <Box sx={{ textAlign: "center" }}>
-                  <Typography variant="h6">{profileData.followingCount || 0}</Typography>
-                  <Typography variant="body2" color="text.secondary">Following</Typography>
+                  <Typography variant="h6">
+                    {profileData.followingCount || 0}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Following
+                  </Typography>
                 </Box>
               </Button>
             </Box>
@@ -330,17 +372,21 @@ const ProfileView = () => {
                 <Tab label="About" />
                 <Tab label="Activity" />
               </Tabs>
-              
+
               <TabPanel value={tabValue} index={0}>
                 {/* Posts content */}
-                <Typography variant="body1">User's posts will appear here</Typography>
+                <Typography variant="body1">
+                  User's posts will appear here
+                </Typography>
               </TabPanel>
-              
+
               <TabPanel value={tabValue} index={1}>
                 {/* About content */}
-                <Typography variant="body1">Detailed user information</Typography>
+                <Typography variant="body1">
+                  Detailed user information
+                </Typography>
               </TabPanel>
-              
+
               <TabPanel value={tabValue} index={2}>
                 {/* Activity content */}
                 <Typography variant="body1">User's recent activity</Typography>
@@ -367,7 +413,7 @@ const ProfileView = () => {
           </DialogTitle>
           <DialogContent>
             <List>
-              {followers.map((follower) => (
+              {followers.map(follower => (
                 <ListItem key={follower.uid}>
                   <ListItemAvatar>
                     <Avatar src={follower.photoURL} />
@@ -400,7 +446,7 @@ const ProfileView = () => {
           </DialogTitle>
           <DialogContent>
             <List>
-              {following.map((follow) => (
+              {following.map(follow => (
                 <ListItem key={follow.uid}>
                   <ListItemAvatar>
                     <Avatar src={follow.photoURL} />

@@ -13,8 +13,8 @@ const useStyles = makeStyles(theme => ({
     height: "150px",
     borderRadius: "50%",
     objectFit: "cover",
-    border: "3px solid white",
-    
+    border: "3px solid white"
+
     // maxWidth: "fit-content"
   },
   profileInfo: {

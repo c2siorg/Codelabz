@@ -1,5 +1,5 @@
 module.exports = {
-  verificationEmail: (verificationLink) => {
+  verificationEmail: verificationLink => {
     return `
       <!DOCTYPE html>
       <html>
@@ -121,7 +121,7 @@ module.exports = {
   },
 
   // Template for welcome email after verification
-  welcomeEmail: (username) => {
+  welcomeEmail: username => {
     return `
       <!DOCTYPE html>
       <html>

@@ -37,8 +37,11 @@ import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../store/actions/tutorialPageActions";
-import { getTutorialsByTopTags,getAllTags,getFilteredTutorials } from "../../store/actions";
-
+import {
+  getTutorialsByTopTags,
+  getAllTags,
+  getFilteredTutorials
+} from "../../store/actions";
 
 function HomePage({ background = "white", textColor = "black" }) {
   const classes = useStyles();
@@ -92,23 +95,21 @@ function HomePage({ background = "white", textColor = "black" }) {
   ]);
   const [tags, setTags] = useState([]);
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const fetchedTags = await getAllTags()(firebase, firestore);
 
-    useEffect(()=>{
-      const fetchTags = async () =>{
-        try{
-          const fetchedTags = await getAllTags()(firebase,firestore);
-          
-          setTags(fetchedTags);
-          
-          console.log(tags);
-        }catch(Error){
-          console.error('Error fetching tags:', error);
-  
-        }
+        setTags(fetchedTags);
+
+        console.log(tags);
+      } catch (Error) {
+        console.error("Error fetching tags:", error);
       }
-  
-      fetchTags();
-    },[firebase, firestore])
+    };
+
+    fetchTags();
+  }, [firebase, firestore]);
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
@@ -151,7 +152,7 @@ function HomePage({ background = "white", textColor = "black" }) {
     return new Date(timestamp.seconds * 1000);
   };
 
-  const handleTagSelection = async (selectedTags) => {
+  const handleTagSelection = async selectedTags => {
     try {
       const filteredTutorials = await getFilteredTutorials(selectedTags)(
         firebase,
@@ -250,12 +251,9 @@ function HomePage({ background = "white", textColor = "black" }) {
             <Activity handleFeedChange={handleFeedChange} />
           </Card>
           <Box item sx={{ display: { md: "none" } }}>
-          <TagCard 
-    tags={tags} 
-    onTagSelect={handleTagSelection}
-  />
+            <TagCard tags={tags} onTagSelect={handleTagSelection} />
           </Box>
-                    {tutorials?.length > 0 ? (
+          {tutorials?.length > 0 ? (
             tutorials.map(tutorial => {
               return !tutorial?.featured_image ? (
                 <CardWithoutPicture key={tutorial.id} tutorial={tutorial} />
@@ -265,7 +263,11 @@ function HomePage({ background = "white", textColor = "black" }) {
             })
           ) : (
             <Card className={classes.card}>
-              <Typography variant="body1" align="center" style={{padding: '20px'}}>
+              <Typography
+                variant="body1"
+                align="center"
+                style={{ padding: "20px" }}
+              >
                 No tutorials available. Create your first tutorial!
               </Typography>
             </Card>
@@ -339,10 +341,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             data-testId="homepageTagSidebar"
           >
             <Grid item style={{ minWidth: "100%" }}>
-            <TagCard 
-    tags={tags} 
-    onTagSelect={handleTagSelection}
-  />
+              <TagCard tags={tags} onTagSelect={handleTagSelection} />
             </Grid>
           </Grid>
           <Grid

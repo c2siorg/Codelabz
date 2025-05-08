@@ -45,9 +45,11 @@ Before you begin, ensure you have the following installed on your system:
 
 2. **Clone Your Fork:**  
    Open your terminal and run:
+
    ```bash
    git clone https://github.com/<YOUR_USERNAME>/Codelabz.git
    ```
+
    Replace `<YOUR_USERNAME>` with your GitHub username.
 
 3. **Navigate to the Project Folder:**
@@ -58,10 +60,13 @@ Before you begin, ensure you have the following installed on your system:
 ### Install Dependencies
 
 Install all project dependencies by running one of the following commands:
+
 ```bash
 npm install
 ```
+
 Or, if you prefer using the make command:
+
 ```bash
 make install
 ```
@@ -86,6 +91,7 @@ After completing the quick start guide, follow these additional steps for a comp
 ### Using Docker-Compose (Optional)
 
 If you prefer a containerized environment, you can use Docker Compose:
+
 1. Ensure your `.env` file is properly set up.
 2. Run:
    ```bash
@@ -96,7 +102,6 @@ If you prefer a containerized environment, you can use Docker Compose:
 ---
 
 ## Firebase Setup
-
 
 Codelabz uses Firebase for backend services. Follow these steps to configure your Firebase project:
 
@@ -145,9 +150,8 @@ EMAIL_USER=your-email-username
 EMAIL_PASS=your-email-password
 SMTP_SERVER=gmail
 ```
+
 (Adjust according to your SMTP provider’s details.)
-
-
 
 ### Firebase Emulator Setup
 
@@ -165,14 +169,18 @@ SMTP_SERVER=gmail
 ```shell
 make emulator
 ```
+
 Or, if you don't have the make command:
-   ```bash
-   firebase emulators:start
-   ```
+
+```bash
+firebase emulators:start
+```
+
 **Export Emulator Data (Optional):**
-   ```bash
-   make emulator-export
-   ```
+
+```bash
+make emulator-export
+```
 
 ---
 
@@ -181,17 +189,21 @@ Or, if you don't have the make command:
 ### Development Server
 
 To start the development server:
+
 ```bash
 npm run dev
 ```
+
 Then, open your browser and navigate to [http://127.0.0.1:5173/](http://127.0.0.1:5173/).
 
 ### Storybook
 
 To view the UI components in isolation using Storybook:
+
 ```bash
 npm run storybook
 ```
+
 Storybook will run on port `6006`.
 
 ### Testing with Cypress
@@ -207,7 +219,6 @@ Storybook will run on port `6006`.
 
 ---
 
-
 ## Troubleshooting & Additional Tips
 
 ```
@@ -216,9 +227,9 @@ macOS Users: Port 5000 can sometimes be used by macOS for AirPlay or other syste
 
 If you failed to run the project do the following steps :
 
-
 - **Node Version:**  
   Always use Node.js version 14. If using `nvm`, switch with:
+
   ```bash
   nvm use 14
   ```
@@ -234,6 +245,7 @@ If you failed to run the project do the following steps :
 ## Need Help?
 
 If you run into any issues or have suggestions for improvements:
+
 - Open an issue on [GitHub](https://github.com/c2siorg/Codelabz/issues).
 
 Thank you for contributing to **Codelabz**!

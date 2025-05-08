@@ -94,7 +94,7 @@ const SideList = ({
         {menuItems.map(function (item, index) {
           return (
             <div
-              key="menu-items"
+              key={index}
               style={
                 item.link == location.pathname
                   ? { background: "#d9f1fc", borderRadius: "100px" }

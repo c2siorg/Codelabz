@@ -96,18 +96,20 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   }, [tags]);
 
-
   const profileState = useSelector(state => state.profile.data);
-  
-const { organizations, isEmpty } = profileState || { organizations: null, isEmpty: false };
 
-useEffect(() => {
-  const isFetchProfile = organizations === null && !isEmpty;
-  
-  if (isFetchProfile) {
-    getProfileData()(firebase, firestore, dispatch);
-  }
-}, [firestore, firebase, dispatch, organizations, isEmpty]);
+  const { organizations, isEmpty } = profileState || {
+    organizations: null,
+    isEmpty: false
+  };
+
+  useEffect(() => {
+    const isFetchProfile = organizations === null && !isEmpty;
+
+    if (isFetchProfile) {
+      getProfileData()(firebase, firestore, dispatch);
+    }
+  }, [firestore, firebase, dispatch, organizations, isEmpty]);
 
   const displayName = useSelector(
     ({
