@@ -8,7 +8,7 @@
 
 # CodeLabz
 
-**CodeLabz** is a platform where the users can engage with online tutorials and the organizations can create tutorials for the users. The platform will be developed using ReactJS frontend library and the backend will be developed using the Google Cloud Firestore and Google Firebase Real-Time database.
+**CodeLabz** is a platform where users engage with online tutorials and organizations create content. The platform is built using React 18, Vite, and MUI for the frontend, while the backend utilizes Google Cloud Firestore and Firebase Realtime Database.
 
 # Deployment
 
@@ -42,7 +42,7 @@ No, you don't need to purchase Blaze plan to run the app. You need to purchase i
 
 ### Answer -
 
-First of all make sure that your are using version 14 of node. If the problem still persists try `npm install --legacy-peer-deps`.
+Since we have migrated to Vite and React 18, ensure your Node version is up to date (v16+). If the problem still persists try `npm install --legacy-peer-deps`.
 
 <hr/>
 
@@ -56,7 +56,7 @@ This problem generally arises when you have not setuped/started the Firebase emu
 
 1. [Setup firebase emulator](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#firebase-setup).
 2. [Start the Emulators](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#run-firebase-emulator)
-3. Run the app using `npm run dev`.
+3. Run the app using `npm run dev`.The app will start at http://localhost:5173 (default Vite port).
 
 > 📝**NOTE** : Remember to start the emulators before running the app.
 
