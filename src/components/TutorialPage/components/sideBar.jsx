@@ -45,7 +45,7 @@ const SideBar = ({ currentTutorial }) => {
     };
 
     fetchRecommendedTutorials();
-  }, [currentTutorial?.tags]);
+  }, [currentTutorial?.tags, currentTutorial?.id, firebase, firestore]);
 
   return (
     <>
