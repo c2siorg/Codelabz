@@ -117,6 +117,14 @@ useEffect(() => {
     }) => displayName
   );
 
+  const userHandle = useSelector(
+    ({
+      firebase: {
+        profile: { handle }
+      }
+    }) => handle
+  );
+
   //This name should be replaced by displayName when implementing backend
   const sampleName = "User Name Here";
   const allowOrgs = organizations && organizations.length > 0;
@@ -148,6 +156,10 @@ useEffect(() => {
 
   const onSubmit = formData => {
     formData.preventDefault();
+    if (!userHandle) {
+      console.error("Cannot create tutorial: userHandle is not available");
+      return;
+    }
     const tutorialData = {
       ...formValue,
       created_by: userHandle,
@@ -349,6 +361,7 @@ useEffect(() => {
                   }
                 }}
                 disabled={
+                  !userHandle ||
                   formValue.title === "" ||
                   formValue.summary === "" ||
                   formValue.owner === ""
