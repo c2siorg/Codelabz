@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   navigation: {
-    "&:selcted": {
+    "&:selected": {
       border: "2px solid black"
     }
   },
