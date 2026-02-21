@@ -13,7 +13,7 @@ const UserPassword = () => {
 
   return (
     
-    <Card className={classes.card} data-testId="passwordPage">
+    <Card className={classes.card} data-testid="passwordPage">
       <Box
         component="form"
         noValidate
@@ -27,7 +27,7 @@ const UserPassword = () => {
           <Input
             type="password"
             className={classes.input}
-            data-testId="oldPassword"
+            data-testid="oldPassword"
           />
         </Box>
         <Box style={{ margin: "5px 0" }}>
@@ -35,7 +35,7 @@ const UserPassword = () => {
           <Input
             type="password"
             className={classes.input}
-            data-testId="newPassword"
+            data-testid="newPassword"
           />
         </Box>
         <Box style={{ margin: "5px 0" }}>
@@ -43,10 +43,10 @@ const UserPassword = () => {
           <Input
             type="password"
             className={classes.input}
-            data-testId="confirmPassword"
+            data-testid="confirmPassword"
           />
         </Box>
-        <Button className={classes.button} data-testId="updatePassword">
+        <Button className={classes.button} data-testid="updatePassword">
           Update Password
         </Button>
         <Box className={classes.row}>
@@ -68,20 +68,20 @@ const UserPassword = () => {
           <Typography
             className={classes.text}
             style={{ marginRight: 40, color: "#0075AD" }}
-            data-testId="logoutOfOtherBrowsers"
+            data-testid="logoutOfOtherBrowsers"
           >
             Logout of all other browsers
           </Typography>
         </Box>
         <Box className={classes.row}>
-          <Typography className={classes.text} data-testId="loginSecurity">
+          <Typography className={classes.text} data-testid="loginSecurity">
             Login security
           </Typography>
           <Box style={{ display: "flex", alignItems: "center" }}>
             <Typography className={classes.text}>
               Require email verification
             </Typography>
-            <Switch color="primary" data-testId="emailVerification" />
+            <Switch color="primary" data-testid="emailVerification" />
           </Box>
         </Box>
       </Box>

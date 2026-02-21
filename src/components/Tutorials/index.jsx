@@ -266,7 +266,7 @@ const ViewTutorial = () => {
                 {!isDesktop && stepPanelVisible ? null : (
                   <>
                     {mode === "view" && (
-                      <div data-testId="tutorial-content">
+                      <div data-testid="tutorial-content">
                         <HtmlTextRenderer html={currentStepContent} />
                       </div>
                     )}

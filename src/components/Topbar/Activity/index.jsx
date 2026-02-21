@@ -42,7 +42,7 @@ function Activity({ handleFeedChange }) {
 
   return (
     <React.Fragment>
-      <Grid container data-testId="activityCard">
+      <Grid container data-testid="activityCard">
         <div className={classes.root}>
           <Grid item>
             <Typography variant="h6">Activity</Typography>

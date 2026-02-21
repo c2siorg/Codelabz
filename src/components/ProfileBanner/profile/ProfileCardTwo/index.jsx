@@ -15,7 +15,7 @@ export default function ProfileCardTwo({
     <>
       <div
         className={classes.profileRightTop}
-        data-testId="user_profile_card_two"
+        data-testid="user_profile_card_two"
       >
         <div className={classes.profileCover}>
           <div className={classes.profileInfo}>
@@ -23,13 +23,14 @@ export default function ProfileCardTwo({
               <img
                 className={classes.profileUserImg}
                 src={profileImage}
-                data-testId="user_profile_card_two_avatar"
+                alt={name || "User profile image"}
+                data-testid="user_profile_card_two_avatar"
               />
             </div>
             <div style={{ width: "fit-content", marginLeft: "2.5rem" }}>
               <Typography
                 className={classes.profileInfoName}
-                data-testId="user_profile_card_two_name"
+                data-testid="user_profile_card_two_name"
               >
                 {name}
               </Typography>
@@ -40,14 +41,14 @@ export default function ProfileCardTwo({
                 <span
                   className={classes.profileInfoData}
                   style={{ marginRight: "20px" }}
-                  data-testId="user_profile_card_two_contributorCount"
+                  data-testid="user_profile_card_two_contributorCount"
                 >
                   {contributors} Contributors
                 </span>
                 <span
                   className={classes.profileInfoData}
                   style={{ marginRight: "2px" }}
-                  data-testId="user_profile_card_two_followerCount"
+                  data-testid="user_profile_card_two_followerCount"
                 >
                   • {followers} followers
                 </span>

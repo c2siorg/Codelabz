@@ -220,7 +220,7 @@ const SignupForm = () => {
         </Collapse>
       )} */}
 
-      <Card data-testId="signUpForm" style={{ boxShadow: "none" }}>
+      <Card data-testid="signUpForm" style={{ boxShadow: "none" }}>
         <TextField
           label="Email"
           variant="outlined"
@@ -231,7 +231,7 @@ const SignupForm = () => {
           helperText={emailValidateError ? emailValidateErrorMessage : null}
           error={emailValidateError}
           fullWidth
-          data-testId="signUpEmail"
+          data-testid="signUpEmail"
           autoComplete="email"
           required
           onFocus={onFocusEmail}
@@ -256,7 +256,7 @@ const SignupForm = () => {
           value={password}
           onFocus={onFocusPassword}
           onChange={onChangePassword}
-          data-testId="signUpPassword"
+          data-testid="signUpPassword"
           autoComplete="new-password"
           type={showPassword ? "text" : "password"}
           style={{ marginBottom: "15px" }}
@@ -290,7 +290,7 @@ const SignupForm = () => {
           error={confirmPasswordValidateError}
           fullWidth
           required
-          data-testId="signUpConfirmPassword"
+          data-testid="signUpConfirmPassword"
           value={confirmPassword}
           onFocus={onFocusConfirmPassword}
           onChange={onChangeConfirmPassword}
@@ -322,7 +322,7 @@ const SignupForm = () => {
               onChange={() => setAgreed(!agreed)}
               name="remember"
               color="primary"
-              data-testId="TnC"
+              data-testid="TnC"
               style={{}}
             />
           }
@@ -339,7 +339,7 @@ const SignupForm = () => {
           color="primary"
           fullWidth
           disabled={loading}
-          data-testId="signUpButton"
+          data-testid="signUpButton"
           onClick={onSubmit}
           style={{
             color: "white",

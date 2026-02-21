@@ -51,10 +51,10 @@ const Carousel = () => {
   };
 
   return (
-    <section className={classes.slides} data-testId="codeFeedCarousel">
+    <section className={classes.slides} data-testid="codeFeedCarousel">
       <ArrowBackIosIcon
         onClick={prevSlide}
-        data-testId="codefeedLeftarrow"
+        data-testid="codefeedLeftarrow"
         className={classes.arrow}
         style={{
           position: "absolute",
@@ -64,7 +64,7 @@ const Carousel = () => {
       />
       <ChevronRightIcon
         onClick={nextSlide}
-        data-testId="codefeedRightarrow"
+        data-testid="codefeedRightarrow"
         className={classes.arrow}
         style={{
           position: "absolute",
@@ -94,7 +94,7 @@ const Carousel = () => {
                       marginTop: 20
                     }}
                     onClick={() => history.push(`/org/${org.org_handle}`)}
-                    data-testId="codeFeedCarouselCard"
+                    data-testid="codeFeedCarouselCard"
                   >
                     <CardActionArea>
                       <CardMedia

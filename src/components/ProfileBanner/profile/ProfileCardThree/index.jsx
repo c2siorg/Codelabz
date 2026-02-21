@@ -16,7 +16,7 @@ export default function ProfileCardThree({
     <>
       <Box
         className={classes.profileRightTop}
-        data-testId="user_profile_card_three"
+        data-testid="user_profile_card_three"
       >
         <div className={classes.profileCover}>
           <div className={classes.profileInfo}>
@@ -26,13 +26,13 @@ export default function ProfileCardThree({
                   className={classes.profileUserImg}
                   src={profileImage}
                   alt="User Profile Avatar"
-                  data-testId="user_profile_card_three_avatar"
+                  data-testid="user_profile_card_three_avatar"
                 />
               </Grid>
               <Grid item>
                 <Typography
                   className={classes.profileInfoName}
-                  data-testId="user_profile_card_three_name"
+                  data-testid="user_profile_card_three_name"
                 >
                   {name}
                 </Typography>
@@ -43,7 +43,7 @@ export default function ProfileCardThree({
               <div className={classes.profileInfoText}>
                 <Typography
                   className={classes.profileInfoStory}
-                  data-testId="user_profile_card_three_story"
+                  data-testid="user_profile_card_three_story"
                 >
                   {story}
                 </Typography>
@@ -54,7 +54,7 @@ export default function ProfileCardThree({
                 </Typography>
                 <Typography
                   className={classes.profileInfoAboutInfo}
-                  data-testId="user_profile_card_three_workInfo"
+                  data-testid="user_profile_card_three_workInfo"
                 >
                   {work}
                 </Typography>
@@ -65,7 +65,7 @@ export default function ProfileCardThree({
                 </Typography>
                 <Typography
                   className={classes.profileInfoAboutInfo}
-                  data-testId="user_profile_card_three_locationInfo"
+                  data-testid="user_profile_card_three_locationInfo"
                 >
                   {location}
                 </Typography>
@@ -76,7 +76,7 @@ export default function ProfileCardThree({
                 </Typography>
                 <Typography
                   className={classes.profileInfoAboutInfo}
-                  data-testId="user_profile_card_three_joiningDateInfo"
+                  data-testid="user_profile_card_three_joiningDateInfo"
                 >
                   {joiningDate}
                 </Typography>

@@ -17,10 +17,10 @@ const MiniNavbar = ({ type }) => {
   return (
     <Headroom>
       <Grid
-        data-testId="miniNavbar"
+        data-testid="miniNavbar"
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
       >
         <Grid item>

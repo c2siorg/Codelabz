@@ -107,7 +107,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
       <section
         className={classes.wrapper}
         style={{ background: background }}
-        data-testId="homepage"
+        data-testid="homepage"
       >
         <Grid className={classes.contentPart}>
           <div className={classes.sideBody}>
@@ -134,7 +134,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
           <Grid
             item
             className={classes.mainBody}
-            data-testId="noitificationMainBody"
+            data-testid="notificationMainBody"
             xs={10}
           >
             <Typography
@@ -192,7 +192,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
               style={{
                 width: "100%"
               }}
-              data-testId="homepageUpcomingEvents"
+              data-testid="homepageUpcomingEvents"
             >
               <Grid item style={{ minWidth: "100%" }}>
                 <EventsCard title={"Upcoming Events"} events={upcomingEvents} />
@@ -205,7 +205,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
               style={{
                 width: "100%"
               }}
-              data-testId="homepageUsersToFollow"
+              data-testid="homepageUsersToFollow"
             >
               <Grid item style={{ minWidth: "100%" }}>
                 <UserCard title={"Who to Follow"} users={usersToFollow} />
@@ -219,7 +219,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
               style={{
                 width: "100%"
               }}
-              data-testId="homepagePopularEventSidebar"
+              data-testid="homepagePopularEventSidebar"
             >
               <Grid item style={{ minWidth: "100%" }}>
                 <EventsCard title={"Popular Events"} events={upcomingEvents} />

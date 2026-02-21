@@ -33,35 +33,35 @@ function Highlights(props) {
             className={classes.head}
             variant="h5"
             component="h2"
-            data-testId="HighlightsHeading"
+            data-testid="HighlightsHeading"
           >
             {props.Heading}
           </Typography>
           <Typography
             variant="body2"
             component="p"
-            data-testId="HighlightsCurrentJob"
+            data-testid="HighlightsCurrentJob"
           >
             {props.CurrentJob}
           </Typography>
           <Typography
             variant="body2"
             component="p"
-            data-testId="HighlightsEducation"
+            data-testid="HighlightsEducation"
           >
             {props.Education}
           </Typography>
           <Typography
             variant="body2"
             component="p"
-            data-testId="HighlightsLanguages"
+            data-testid="HighlightsLanguages"
           >
             {props.Languages}
           </Typography>
           <Typography
             variant="body2"
             component="p"
-            data-testId="HighlightsJoinedDate"
+            data-testid="HighlightsJoinedDate"
           >
             {props.JoinedDate}
           </Typography>

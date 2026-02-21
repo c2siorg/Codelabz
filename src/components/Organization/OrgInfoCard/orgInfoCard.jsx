@@ -207,8 +207,8 @@ const OrgInfoCard = () => {
                   fullWidth
                   maxWidth="sm"
                   open={showImageDialog}
-                  onClose={!showImageDialog}
-                  data-testId="changeOrgImgDialog"
+                  onClose={() => setShowImageDialog(false)}
+                  data-testid="changeOrgImgDialog"
                 >
                   <DialogTitle id="alert-dialog-title">
                     <span style={{ fontSize: "1.3em", fontWeight: "480" }}>
@@ -309,7 +309,7 @@ const OrgInfoCard = () => {
               md={16}
               lg={16}
               className="pl-24-d pt-24-m"
-              data-testId="orgInfoCard"
+              data-testid="orgInfoCard"
             >
               <p>
                 <span style={{ fontSize: "1.3em", fontWeight: "bold" }}>

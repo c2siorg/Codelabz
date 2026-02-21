@@ -17,7 +17,7 @@ const Tutorial = ({ steps }) => {
       <Card className={classes.container}>
         {steps?.map((step, i) => {
           return (
-            <Box id={step.id} key={step.id} data-testId="tutorialpageSteps">
+            <Box id={step.id} key={step.id} data-testid="tutorialpageSteps">
               <Typography sx={{ fontWeight: "600" }}>
                 {i + 1 + ". " + step.title}
               </Typography>

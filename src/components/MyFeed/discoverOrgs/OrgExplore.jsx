@@ -38,9 +38,7 @@ const OrgsExplore = () => {
           const fetchedTags = await getAllTags()(firebase,firestore);
           
           setTags(fetchedTags);
-          
-          console.log(tags);
-        }catch(Error){
+        }catch(error){
           console.error('Error fetching tags:', error);
   
         }
@@ -59,7 +57,7 @@ const OrgsExplore = () => {
         <Typography
           variant="h4"
           className={classes.heading}
-          data-testId="codefeedTitle"
+          data-testid="codefeedTitle"
         >
           Discover Organizations
         </Typography>
@@ -85,7 +83,7 @@ const OrgsExplore = () => {
           style={{
             width: "100%"
           }}
-          data-testId="explorePageTag"
+          data-testid="explorePageTag"
         >
           <Grid item>
             <TagCard tags={tags} sx={{ width: "100%" }}  />

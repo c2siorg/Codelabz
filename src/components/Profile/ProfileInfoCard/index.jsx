@@ -313,7 +313,7 @@ const ProfileInfoCard = () => {
               <p>
                 <span
                   style={{ fontSize: "1.3em", fontWeight: "bold" }}
-                  data-testId="profileName"
+                  data-testid="profileName"
                 >
                   {profileData.displayName}
                   <Box>

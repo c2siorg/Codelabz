@@ -53,16 +53,16 @@ const UserEmail = () => {
             <Input
               placeholder="email"
               className={classes.input}
-              data-testId="emailInput"
+              data-testid="emailInput"
             />
-            <Typography data-testId="addEmail">Add</Typography>
+            <Typography data-testid="addEmail">Add</Typography>
           </Box>
         </Box>
         <Box className={classes.email}>
           <Typography className={classes.text} style={{ marginRight: 30 }}>
             Primary email address
           </Typography>
-          <FormControl data-testId="primaryEmail">
+          <FormControl data-testid="primaryEmail">
             <Select
               value={profileData.email}
               onChange={handleChangePrimaryEmail}
@@ -72,7 +72,7 @@ const UserEmail = () => {
             >
               <MenuItem
                 value={profileData.email}
-                data-testId="primaryEmailItem"
+                data-testid="primaryEmailItem"
               >
                 {profileData.email}
               </MenuItem>
@@ -83,7 +83,7 @@ const UserEmail = () => {
           <Typography className={classes.text} style={{ marginRight: 30 }}>
             Backup email address
           </Typography>
-          <FormControl data-testId="backupEmail">
+          <FormControl data-testid="backupEmail">
             <Select
               value={backupEmail}
               onChange={handleChangeBackupEmail}
@@ -91,8 +91,8 @@ const UserEmail = () => {
               displayEmpty
               inputProps={{ "aria-label": "Without label" }}
             >
-              {data.backupEmailOptions.map(email => (
-                <MenuItem value={email} data-testId="backupEmailItem">
+              {data.backupEmailOptions.map((email, index) => (
+                <MenuItem key={email || `backup-${index}`} value={email} data-testid="backupEmailItem">
                   {email}
                 </MenuItem>
               ))}

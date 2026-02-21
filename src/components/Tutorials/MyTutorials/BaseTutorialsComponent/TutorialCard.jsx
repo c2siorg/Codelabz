@@ -16,7 +16,7 @@ const TutorialCard = ({
   loading
 }) => {
   return (
-    <Card style={{ height: "100%" }} data-testId="tutorialCard">
+    <Card style={{ height: "100%" }} data-testid="tutorialCard">
       <CardActionArea>
         <CardMedia
           component="img"

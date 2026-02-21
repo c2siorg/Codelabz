@@ -29,25 +29,25 @@ export default function Banner({
       <Paper
         className={classes.profileRightTop}
         elevation={0}
-        data-testId="orgprofilebanner"
+        data-testid="orgprofilebanner"
       >
         <div className={classes.profileCover}>
           <img
             className={classes.profileCoverImg}
             src={bannerImage}
             alt="Profile Banner"
-            data-testId="orgbannerimg"
+            data-testid="orgbannerimg"
           />
           <div className={classes.profileInfo}>
             <img
               className={classes.profileUserImg}
               src={profileImage}
               alt="Avatar"
-              data-testId="orgbanneravatar"
+              data-testid="orgbanneravatar"
             />
             <Typography
               className={classes.profileInfoName}
-              data-testId="orgbannername"
+              data-testid="orgbannername"
             >
               {name}
             </Typography>
@@ -64,7 +64,7 @@ export default function Banner({
                 <Grid item xs={12}>
                   <Typography
                     className={classes.profileInfoStory}
-                    data-testId="orgbannerstory"
+                    data-testid="orgbannerstory"
                   >
                     {story}
                   </Typography>
@@ -77,7 +77,7 @@ export default function Banner({
                         marginRight: "20px",
                         fontSize: 20
                       }}
-                      data-testId="orgbannercontributorCount"
+                      data-testid="orgbannercontributorCount"
                     >
                       {contributors} Contributors
                     </Typography>
@@ -89,7 +89,7 @@ export default function Banner({
                         marginRight: "20px",
                         fontSize: 20
                       }}
-                      data-testId="orgbannerfollowerCount"
+                      data-testid="orgbannerfollowerCount"
                     >
                       {followers} followers
                     </Typography>
@@ -101,7 +101,7 @@ export default function Banner({
                         marginRight: "20px",
                         fontSize: 20
                       }}
-                      data-testId="orgbannerfeedCount"
+                      data-testid="orgbannerfeedCount"
                     >
                       {feed} feeds in the last week
                     </Typography>
@@ -117,7 +117,7 @@ export default function Banner({
               >
                 {isOrgBelongsToUser ? (
                   <Link
-                    data-testId="orgbannereditButton"
+                    data-testid="orgbannereditButton"
                     to={"/org/settings/" + handle}
                   >
                     <Button
@@ -138,7 +138,7 @@ export default function Banner({
                       px: 2,
                       borderRadius: 5
                     }}
-                    data-testId="orgbannersubscribeButton"
+                    data-testid="orgbannersubscribeButton"
                     onClick={async () => {
                       setLoading(true);
                       await handleOrgSubscription();

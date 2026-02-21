@@ -78,7 +78,7 @@ const NotificationBox = ({ notification, onDelete }) => {
       <Avatar
         aria-label="recipe"
         className={classes.avatar}
-        data-testId="UserAvatar"
+        data-testid="UserAvatar"
         sx={{
           width: "60px",
           height: "60px"
@@ -113,7 +113,7 @@ const NotificationBox = ({ notification, onDelete }) => {
             setOpen(true);
           }}
           aria-label="share"
-          data-testId="MoreIcon"
+          data-testid="MoreIcon"
           style={{ position: "absolute", top: 0, right: 0 }}
         >
           <MoreHorizOutlinedIcon />

@@ -114,7 +114,7 @@ const Comment = ({ id }) => {
                 </Button>
               )}
               <CommentLikesDislikes comment_id={data.comment_id} />
-              <IconButton aria-label="share" data-testId="MoreIcon">
+              <IconButton aria-label="share" data-testid="MoreIcon">
                 <MoreVertOutlinedIcon />
               </IconButton>
             </CardActions>
