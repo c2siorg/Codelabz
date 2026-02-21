@@ -361,8 +361,10 @@ export const setCurrentStepContent =
       });
 
       dispatch({ type: actions.SET_EDITOR_DATA, payload: content });
+      return true;
     } catch (e) {
       console.log(e);
+      return false;
     }
   };
 

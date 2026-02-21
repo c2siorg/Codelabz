@@ -117,6 +117,14 @@ useEffect(() => {
     }) => displayName
   );
 
+  const userHandle = useSelector(
+    ({
+      firebase: {
+        profile: { handle }
+      }
+    }) => handle
+  );
+
   //This name should be replaced by displayName when implementing backend
   const sampleName = "User Name Here";
   const allowOrgs = organizations && organizations.length > 0;

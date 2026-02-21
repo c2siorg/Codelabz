@@ -16,6 +16,7 @@ Quill.register("modules/cursors", QuillCursors);
 
 const QuillEditor = ({ id, data, tutorial_id, textColor, bgColor }) => {
   const [allSaved, setAllSaved] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const editorRef = useRef(null);
   const containerRef = useRef(null);
   let noteID = id || "test_note";
@@ -45,14 +46,16 @@ const QuillEditor = ({ id, data, tutorial_id, textColor, bgColor }) => {
         ydoc = new Y.Doc();
 
         // on updating text in editor this gets triggered
-        ydoc.on("update", () => {
+        ydoc.on("update", async () => {
+          setIsSaving(true);
           // deltaText is quill editor's data structure to store text
           const deltaText = ydoc.getText("quill").toDelta();
           var config = {};
           var converter = new QuillDeltaToHtmlConverter(deltaText, config);
 
           var html = converter.convert();
-          setCurrentStepContent(tutorial_id, id, html)(firestore, dispatch);
+          await setCurrentStepContent(tutorial_id, id, html)(firestore, dispatch);
+          setIsSaving(false);
         });
         provider = new FirestoreProvider(onlineFirebaseApp, ydoc, basePath, {
           disableAwareness: true
@@ -128,7 +131,7 @@ const QuillEditor = ({ id, data, tutorial_id, textColor, bgColor }) => {
   return (
     <div style={{ flexGrow: 1 }}>
       <Prompt
-        when={!allSaved}
+        when={isSaving}
         message="You have unsaved changes, are you sure you want to leave?"
       />
       <div
