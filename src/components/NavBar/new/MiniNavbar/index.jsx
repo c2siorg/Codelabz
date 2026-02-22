@@ -151,13 +151,8 @@ function MiniNavbar() {
               <BrandName />
             </Grid>
             <Grid item className={classes.hamburger}>
-              <IconButton>
-                {window.innerWidth > 960 && (
-                  <MenuIcon onClick={() => toggleDrawer(true)} />
-                )}
-                {window.innerWidth <= 960 && (
-                  <MenuIcon onClick={() => toggleSlider()} />
-                )}
+              <IconButton onClick={toggleSlider} aria-label="Open navigation menu">
+                <MenuIcon />
               </IconButton>
             </Grid>
           </Grid>
@@ -229,8 +224,8 @@ function MiniNavbar() {
             direction="column"
           >
             <Grid item>
-              <IconButton>
-                <CloseIcon onClick={() => toggleDrawer(false)} />
+              <IconButton onClick={() => toggleDrawer(false)} aria-label="Close navigation drawer">
+                <CloseIcon />
               </IconButton>
             </Grid>
 

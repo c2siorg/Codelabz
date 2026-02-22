@@ -23,7 +23,7 @@ const SignUp = ({ background = "white" }) => {
     <Card
       raised
       className={classes.card}
-      data-testId="signUp"
+      data-testid="signUp"
       style={{
         background: background,
         maxWidth: "520px",
@@ -51,7 +51,7 @@ const SignUp = ({ background = "white" }) => {
           justify="center"
           alignItems="center"
           className="mt-24"
-          data-testId="signUpHaveAccount"
+          data-testid="signUpHaveAccount"
         >
           <Grid item={true} sm={12} className="center">
             Already have a{" "}

@@ -96,7 +96,7 @@ const StepList = ({
                   ? { background: "#d9f1fc", borderRadius: "100px" }
                   : {}
               }
-              data-testId={item?.dataTestId}
+              data-testid={item?.dataTestId}
             >
               {item.id && (
                 <HashLink
@@ -131,7 +131,7 @@ const StepList = ({
                       </ListItemIcon>
                     )}
                     <ListItemText
-                      data-testId={item.title}
+                      data-testid={item.title}
                       sx={{ whiteSpace: "pre-line" }}
                       style={{
                         fontWeight:
@@ -158,7 +158,7 @@ const StepList = ({
                   className={classes.menuItem}
                 >
                   <ListItemText
-                    data-testId={item.title}
+                    data-testid={item.title}
                     style={{
                       fontWeight:
                         item?.id && value === item?.id ? "bold" : "normal",

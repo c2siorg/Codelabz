@@ -122,7 +122,7 @@ const SideBar = ({
           open={open}
           anchor="right"
           onClose={toggleSlider}
-          data-testId="sidebar_mobile"
+          data-testid="sidebar_mobile"
           style={{ zIndex: 99999 }}
           classes={{
             root: classes.drawer,
@@ -145,7 +145,7 @@ const SideBar = ({
         </Drawer>
       ) : (
         <Card className={classes.card}>
-          <div data-testId="sidebar_desktop">
+          <div data-testid="sidebar_desktop">
             <SideList
               menuItems={menuItems || defaultMenu}
               value={value}

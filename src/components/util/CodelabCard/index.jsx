@@ -31,10 +31,10 @@ const CardComponent = ({
         maxWidth="sm"
         className={classes.card}
         style={{ background: background }}
-        data-testId="codelabzCard"
+        data-testid="codelabzCard"
       >
         <CardHeader
-          data-testId="codelabzCardHeader"
+          data-testid="codelabzCardHeader"
           className={classes.cardHeader}
           avatar={
             <Grid
@@ -87,7 +87,7 @@ const CardComponent = ({
           subheaderTypographyProps={{ align: "left" }}
         />
         <CardContent
-          data-testId="codelabzCardContent"
+          data-testid="codelabzCardContent"
           className={classes.cardContent}
           style={{ paddingBottom: "0rem" }}
         >
@@ -125,7 +125,7 @@ const CardComponent = ({
             xs={6}
             justify="left"
             direction="row"
-            data-testId="codelabzCardButtonGroup"
+            data-testid="codelabzCardButtonGroup"
           >
             <Grid item direction="row">
               {!org ? (

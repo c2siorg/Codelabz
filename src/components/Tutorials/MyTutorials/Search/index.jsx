@@ -62,7 +62,7 @@ const Header = () => {
     setVisibleModal(prev => !prev);
   };
   return (
-    <Grid container item justify="space-between" data-testId="tutorialSearch">
+    <Grid container item justify="space-between" data-testid="tutorialSearch">
       <Grid xs={12} md={3} className="col-pad-24">
         <Button
           variant="contained"
@@ -73,7 +73,7 @@ const Header = () => {
             color: "white"
           }}
           startIcon={<Add />}
-          data-testId="NewTutorialBtn"
+          data-testid="NewTutorialBtn"
         >
           Add New CodeLabz
         </Button>

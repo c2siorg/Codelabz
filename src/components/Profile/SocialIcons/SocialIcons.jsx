@@ -38,28 +38,28 @@ export default function SocialIcons(props) {
         <IconButton
           color="primary"
           aria-label="share"
-          data-testId="FacebookIcon"
+          data-testid="FacebookIcon"
         >
           <FacebookIcon className={classes.facebookIcon} />
         </IconButton>
         <IconButton
           color="primary"
           aria-label="share"
-          data-testId="LinkedInIcon"
+          data-testid="LinkedInIcon"
         >
           <LinkedInIcon className={classes.linkedInIcon} />
         </IconButton>
-        <IconButton aria-label="share" data-testId="GithubIcon">
+        <IconButton aria-label="share" data-testid="GithubIcon">
           <GitHubIcon className={classes.blackIcon} />
         </IconButton>
         <IconButton
           color="primary"
           aria-label="add to favorites"
-          data-testId="TwitterIcon"
+          data-testid="TwitterIcon"
         >
           <TwitterIcon className={classes.twitterIcon} />
         </IconButton>
-        <IconButton aria-label="share" data-testId="LinkIcon">
+        <IconButton aria-label="share" data-testid="LinkIcon">
           <LinkIcon className={classes.blackIcon} />
         </IconButton>
       </CardActions>

@@ -95,22 +95,6 @@ const RightMenu = ({ mode, onClick }) => {
 
   const allowOrgs = organizations && organizations.length > 0;
 
-  const orgList =
-    allowOrgs > 0
-      ? organizations.map((org, i) => {
-          return (
-            <Menu.Item key={`org:${i}`}>
-              <Link to={`/org/${org.org_handle}`}>
-                <Avatar src={org.org_image} size="small" className="mr-8 ml-0">
-                  {avatarName(org.org_name)}
-                </Avatar>{" "}
-                {org.org_name}
-              </Link>
-            </Menu.Item>
-          );
-        })
-      : null;
-
   const classes = useStyles();
 
   if (matches) {
@@ -169,7 +153,7 @@ const RightMenu = ({ mode, onClick }) => {
                   />
                   {allowOrgs > 0
                     ? organizations.map((org, i) => (
-                        <Grid item>
+                        <Grid item key={org.org_handle || i}>
                           <Link to={`/org/${org.org_handle}`}>
                             <Grid
                               container
@@ -258,7 +242,7 @@ const RightMenu = ({ mode, onClick }) => {
           )
         }
         onClick={handleClick}
-        data-testId="nav-user"
+        data-testid="nav-user"
       >
         {acronym}
       </Avatar>
@@ -317,7 +301,7 @@ const RightMenu = ({ mode, onClick }) => {
                 />
                 {allowOrgs > 0
                   ? organizations.map((org, i) => (
-                      <Grid item>
+                      <Grid item key={org.org_handle || i}>
                         <Link to={`/org/${org.org_handle}`}>
                           <Grid
                             container

@@ -62,7 +62,7 @@ const OrgsCarousel = () => {
         >
           {launchedOrgs.map((org, i) => {
             return org == 0 ? (
-              <SwiperSlide>
+              <SwiperSlide key={`skeleton-${i}`}>
                 <Paper variant="outlined" className={classes.root}>
                   <Skeleton
                     variant="rectangular"
@@ -75,7 +75,7 @@ const OrgsCarousel = () => {
                 </Paper>
               </SwiperSlide>
             ) : (
-              <SwiperSlide>
+              <SwiperSlide key={org?.org_handle || `org-${i}`}>
                 <Link to={`/org/${org?.org_handle}`}>
                   <Paper variant="outlined" className={classes.root}>
                     <CardActionArea>

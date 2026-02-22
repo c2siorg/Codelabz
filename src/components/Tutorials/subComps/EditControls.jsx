@@ -177,7 +177,7 @@ const EditControls = ({
                   className="ml-24"
                   onClick={() => setMode("edit")}
                   id="editorMode"
-                  data-testId="editorMode"
+                  data-testid="editorMode"
                 >
                   <EditIcon /> Editor mode
                 </Button>
@@ -187,7 +187,7 @@ const EditControls = ({
                   type="primary"
                   className="ml-24"
                   onClick={() => setMode("view")}
-                  data-testId="previewMode"
+                  data-testid="previewMode"
                 >
                   <FileCopyIcon /> Preview mode
                 </Button>

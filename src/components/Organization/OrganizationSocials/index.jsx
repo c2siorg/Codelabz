@@ -19,7 +19,7 @@ const OrganizationSocials = () => {
           <Box
             className={classes.link}
             sx={{ padding: { xs: "6px 0px", sm: "6px 5px" } }}
-            data-testId="facebookButton"
+            data-testid="facebookButton"
           >
             <FacebookIcon className={classes.fb}>
               <span className="sm-text">Facebook</span>
@@ -31,7 +31,7 @@ const OrganizationSocials = () => {
           <Box
             className={classes.link}
             sx={{ padding: { xs: "9px 0px", sm: "9px 5px" } }}
-            data-testId="githubButton"
+            data-testid="githubButton"
           >
             <GitHubIcon className={classes.git}>
               <span className="sm-text">Github</span>
@@ -45,7 +45,7 @@ const OrganizationSocials = () => {
           <Box
             className={classes.link}
             sx={{ padding: { xs: "9px 0px", sm: "9px 5px" } }}
-            data-testId="googleButton"
+            data-testid="googleButton"
           >
             <img src={GoogleImg} alt="google" className={classes.button} />
             <Typography className={classes.text}>
@@ -55,7 +55,7 @@ const OrganizationSocials = () => {
           <Box
             className={classes.link}
             sx={{ padding: { xs: "7px 0px", sm: "7px 5px" } }}
-            data-testId="twitterButton"
+            data-testid="twitterButton"
           >
             <TwitterIcon className={classes.tw}>
               <span className="sm-text">Twitter</span>

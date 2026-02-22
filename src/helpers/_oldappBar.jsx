@@ -150,14 +150,14 @@ function OldAppbar() {
 
   if (authed) {
     return (
-      <div className={classes.grow} data-testId="navbarloggedIn">
+      <div className={classes.grow} data-testid="navbarloggedIn">
         <AppBar position="static" color="white">
           <Toolbar className={classes.toolbar}>
             <Typography
               className={classes.title}
               variant="h6"
               noWrap
-              data-testId="navbarBrand"
+              data-testid="navbarBrand"
             >
               <Link to={"/"}>
                 <BrandName />
@@ -168,7 +168,7 @@ function OldAppbar() {
                 <SearchIcon />
               </div>
               <InputBase
-                data-testId="navbarSearch"
+                data-testid="navbarSearch"
                 placeholder="Search"
                 classes={{
                   root: classes.inputRoot,
@@ -197,7 +197,7 @@ function OldAppbar() {
               aria-label="appsIcon"
               className={classes.margin}
               onClick={handleMenuOpen}
-              data-testId="navbarAppMenu"
+              data-testid="navbarAppMenu"
             >
               <AppsIcon fontSize="large" />
             </IconButton>
@@ -215,14 +215,14 @@ function OldAppbar() {
   }
 
   return (
-    <div className={classes.grow} data-testId="navbarNonloggedIn">
+    <div className={classes.grow} data-testid="navbarNonloggedIn">
       <AppBar position="static" color="white">
         <Toolbar className={classes.toolbar}>
           <Typography
             className={classes.title}
             variant="h6"
             noWrap
-            data-testId="navbarBrand"
+            data-testid="navbarBrand"
           >
             <Link to={"/"}>
               <BrandName />
@@ -234,7 +234,7 @@ function OldAppbar() {
             </div>
 
             <InputBase
-              data-testId="navbarSearch"
+              data-testid="navbarSearch"
               placeholder="Search"
               classes={{
                 root: classes.inputRoot,
@@ -265,7 +265,7 @@ function OldAppbar() {
               variant="contained"
               color="primary"
               style={{ backgroundColor: "royalblue" }}
-              data-testId="navbarlogin"
+              data-testid="navbarlogin"
             >
               Log In
             </Button>

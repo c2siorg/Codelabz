@@ -34,14 +34,14 @@ function Description({ Heading, backgroundColor, Content }) {
             className={classes.head}
             variant="h5"
             component="h2"
-            data-testId="DescriptionHeading"
+            data-testid="DescriptionHeading"
           >
             {Heading}
           </Typography>
           <Typography
             variant="body2"
             component="p"
-            data-testId="DescriptionContent"
+            data-testid="DescriptionContent"
           >
             {Content}
           </Typography>

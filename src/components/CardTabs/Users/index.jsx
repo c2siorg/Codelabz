@@ -113,14 +113,14 @@ const UserCard = ({ title, userId }) => {
   }, [users, userId]);
 
   return (
-    <div className={classes.root} data-testId="UsersCard">
-      <Card sx={{ minWidth: 275 }} className={(classes.card, classes.root)}>
+    <div className={classes.root} data-testid="UsersCard">
+      <Card sx={{ minWidth: 275 }} className={`${classes.card} ${classes.root}`}>
         <CardContent className={classes.cardContent}>
           <Typography
             variant="h5"
             component="div"
             gutterBottom
-            data-testId="UsersCardTitle"
+            data-testid="UsersCardTitle"
           >
             {title}
           </Typography>

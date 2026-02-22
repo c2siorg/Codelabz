@@ -206,7 +206,7 @@ useEffect(() => {
       }}
     >
       <div
-        data-testId="tutorialNewModal"
+        data-testid="tutorialNewModal"
         style={{
           height: "auto",
           width: "auto",
@@ -228,7 +228,7 @@ useEffect(() => {
             width: "50%"
           }}
         >
-          <Typography>
+          <Box>
             <Select
               options={organizations?.map(org => ({
                 value: org.org_handle,
@@ -239,7 +239,7 @@ useEffect(() => {
               }}
               id="orgSelect"
             />
-          </Typography>
+          </Box>
         </Box>
 
         <form id="tutorialNewForm">
@@ -252,7 +252,7 @@ useEffect(() => {
             name="title"
             variant="outlined"
             fullWidth
-            data-testId="newTutorial_title"
+            data-testid="newTutorial_title"
             id="newTutorialTitle"
             style={{ marginBottom: "2rem" }}
             onChange={e => handleChange(e)}
@@ -268,7 +268,7 @@ useEffect(() => {
             placeholder="Summary of the Tutorial"
             autoComplete="summary"
             id="newTutorialSummary"
-            data-testId="newTutorial_summary"
+            data-testid="newTutorial_summary"
             onChange={e => handleChange(e)}
             style={{ marginBottom: "2rem" }}
           />
@@ -333,11 +333,9 @@ useEffect(() => {
               </Button>
               <Button
                 key="submit"
-                type="primary"
+                type="submit"
                 variant="contained"
                 color="secondary"
-                htmlType="submit"
-                loading={loading}
                 onClick={e => onSubmit(e)}
                 data-testid="newTutorialSubmit"
                 sx={{

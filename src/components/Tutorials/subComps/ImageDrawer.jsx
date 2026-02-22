@@ -141,7 +141,7 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
       destroyOnClose={true}
       maskClosable={false}
     >
-      <div className="col-pad-24" data-testId="tutorialImgUpload">
+      <div className="col-pad-24" data-testid="tutorialImgUpload">
         <Grid>
           <input
             id="file-upload"

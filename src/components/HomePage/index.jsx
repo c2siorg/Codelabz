@@ -99,9 +99,7 @@ function HomePage({ background = "white", textColor = "black" }) {
           const fetchedTags = await getAllTags()(firebase,firestore);
           
           setTags(fetchedTags);
-          
-          console.log(tags);
-        }catch(Error){
+        }catch(error){
           console.error('Error fetching tags:', error);
   
         }
@@ -207,7 +205,7 @@ function HomePage({ background = "white", textColor = "black" }) {
     <Card
       className={classes.wrapper}
       style={{ background: background }}
-      data-testId="homepage"
+      data-testid="homepage"
     >
       <Grid container justifyContent="center" className={classes.contentPart}>
         <Grid item xs={2} className={classes.sideBody}>
@@ -238,7 +236,7 @@ function HomePage({ background = "white", textColor = "black" }) {
         <Grid
           item
           className={classes.mainBody}
-          data-testId="homepageMainBody"
+          data-testid="homepageMainBody"
           xs={6}
         >
           <NewCodelabz setVisibleModal={setVisibleModal} />
@@ -249,18 +247,18 @@ function HomePage({ background = "white", textColor = "black" }) {
           <Card className={classes.card}>
             <Activity handleFeedChange={handleFeedChange} />
           </Card>
-          <Box item sx={{ display: { md: "none" } }}>
+          <Box sx={{ display: { md: "none" } }}>
           <TagCard 
     tags={tags} 
     onTagSelect={handleTagSelection}
   />
           </Box>
                     {tutorials?.length > 0 ? (
-            tutorials.map(tutorial => {
+            tutorials.map((tutorial, index) => {
               return !tutorial?.featured_image ? (
-                <CardWithoutPicture key={tutorial.id} tutorial={tutorial} />
+                <CardWithoutPicture key={tutorial.id || `tutorial-${index}`} tutorial={tutorial} />
               ) : (
-                <CardWithPicture key={tutorial.id} tutorial={tutorial} />
+                <CardWithPicture key={tutorial.id || `tutorial-${index}`} tutorial={tutorial} />
               );
             })
           ) : (
@@ -281,7 +279,7 @@ function HomePage({ background = "white", textColor = "black" }) {
               <Tabs
                 value={selectedTab}
                 onChange={handleTabChange}
-                scrollButtons="on"
+                scrollButtons="auto"
                 indicatorColor="primary"
                 textColor="primary"
                 aria-label="scrollable force tabs example"
@@ -336,7 +334,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             style={{
               width: "100%"
             }}
-            data-testId="homepageTagSidebar"
+            data-testid="homepageTagSidebar"
           >
             <Grid item style={{ minWidth: "100%" }}>
             <TagCard 
@@ -352,7 +350,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             style={{
               width: "100%"
             }}
-            data-testId="homepageUpcomingEvents"
+            data-testid="homepageUpcomingEvents"
           >
             <Grid item style={{ minWidth: "100%" }}>
               <EventsCard title={"Upcoming Events"} events={upcomingEvents} />
@@ -365,7 +363,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             style={{
               width: "100%"
             }}
-            data-testId="homepageUsersToFollow"
+            data-testid="homepageUsersToFollow"
           >
             <Grid item style={{ minWidth: "100%" }}>
               <UserCard title={"Who to Follow"} userId={profileData.uid} />
@@ -383,7 +381,7 @@ function HomePage({ background = "white", textColor = "black" }) {
               border: "none",
               boxShadow: "none"
             }}
-            data-testId="homepageContributors"
+            data-testid="homepageContributors"
           >
             <Grid item style={{ minWidth: "100%" }}>
               <UserCard title={"Contributors"} userId={profileData.uid} />
@@ -397,7 +395,7 @@ function HomePage({ background = "white", textColor = "black" }) {
             style={{
               width: "100%"
             }}
-            data-testId="homepagePopularEventSidebar"
+            data-testid="homepagePopularEventSidebar"
           >
             <Grid item style={{ minWidth: "100%" }}>
               <EventsCard title={"Popular Events"} events={upcomingEvents} />

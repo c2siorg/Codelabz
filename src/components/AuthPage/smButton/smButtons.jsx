@@ -17,7 +17,7 @@ const SmButtons = () => {
     <Grid
       container
       className={classes.root}
-      data-testId="smButtons"
+      data-testid="smButtons"
       style={{
         backgroundColor: "#EFF5F5",
         borderRadius: "30px",
@@ -26,11 +26,11 @@ const SmButtons = () => {
       }}
     >
       <Grid item>
-        <IconButton className={classes.button}>
-          <Icon
-            onClick={() => signInWithGoogle()(firebase, dispatch)}
-            className={classes.google}
-          >
+        <IconButton
+          onClick={() => signInWithGoogle()(firebase, dispatch)}
+          className={classes.button}
+        >
+          <Icon className={classes.google}>
             <img className={classes.imageIcon} src={GoogleImg} alt="google" />
           </Icon>
         </IconButton>

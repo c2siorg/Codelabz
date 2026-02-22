@@ -115,11 +115,11 @@ function UserDashboard() {
             <Avatar
               aria-label="recipe"
               className={classes.avatar}
-              data-testId="UserAvatar"
+              data-testid="UserAvatar"
             >
               {name.charAt(0).toUpperCase()}
             </Avatar>
-            <Box marginLeft={1} data-testId="switchAccount">
+            <Box marginLeft={1} data-testid="switchAccount">
               <Typography className={classes.name}>{name}</Typography>
               <Box style={{ display: "flex", alignItems: "center" }}>
                 <Typography className={classes.account}>
@@ -128,7 +128,7 @@ function UserDashboard() {
                 <img src={SwitchImg} className={classes.image} alt="profile" />
                 <Typography
                   className={classes.account}
-                  data-testId="switchAccount_switch"
+                  data-testid="switchAccount_switch"
                 >
                   Switch
                 </Typography>
@@ -142,14 +142,14 @@ function UserDashboard() {
       </Box>
       <Grid
         container
-        data-testId="homepage"
+        data-testid="homepage"
         spacing={2}
         sx={{
           p: 2
         }}
       >
         {windowSize.width <= 960 && (
-          <div data-testId="homepageSidebarSmall">
+          <div data-testid="homepageSidebarSmall">
             <SideBar
               open={openMenu}
               menuItems={navLinks}

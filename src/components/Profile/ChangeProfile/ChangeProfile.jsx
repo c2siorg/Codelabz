@@ -110,7 +110,7 @@ export default function ChangeProfile({ open, saveImage, onClose }) {
       maxWidth="md"
       open={open}
       onClose={onClose}
-      data-testId="changeOrgImgDialog"
+      data-testid="changeOrgImgDialog"
     >
       <DialogTitle id="alert-dialog-title">
         <span

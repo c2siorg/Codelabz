@@ -97,7 +97,7 @@ const User = ({ id, timestamp, size }) => {
               fontSize: size == "sm" ? "14px" : "16px"
             }}
           >
-            <span className={classes.bold} data-testId="tutorialpageAuthorName">
+            <span className={classes.bold} data-testid="tutorialpageAuthorName">
               {user?.displayName}
             </span>
           </Typography>

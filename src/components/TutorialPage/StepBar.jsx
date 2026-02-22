@@ -56,7 +56,7 @@ const StepsBar = ({
           open={open}
           anchor="right"
           onClose={toggleSlider}
-          data-testId="sidebar_mobile"
+          data-testid="sidebar_mobile"
           style={{ zIndex: 99999 }}
           classes={{
             root: classes.drawer,
@@ -78,8 +78,8 @@ const StepsBar = ({
           </StepList>
         </Drawer>
       ) : (
-        <Card className={classes.card} data-testId="tutorialpageStepsBar">
-          <div data-testId="sidebar_desktop">
+        <Card className={classes.card} data-testid="tutorialpageStepsBar">
+          <div data-testid="sidebar_desktop">
             <Typography sx={{ fontWeight: "800", textAlign: "center" }}>
               STEPS
             </Typography>

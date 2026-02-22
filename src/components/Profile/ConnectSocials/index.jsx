@@ -55,7 +55,7 @@ const ConnectSocials = () => {
       .catch(console.error);
 
   return (
-    <Card className={classes.root} data-testId="socialMediaPage">
+    <Card className={classes.root} data-testid="socialMediaPage">
       <CardContent className={classes.content}>
         <Box className={classes.row} sx={{ marginBottom: 15 }}>
           <SocialButton
@@ -69,7 +69,7 @@ const ConnectSocials = () => {
                 <span className={classes.text}>Facebook</span>
               </>
             }
-            data-testId="facebookButton"
+            data-testid="facebookButton"
           />
 
           <SocialButton
@@ -83,7 +83,7 @@ const ConnectSocials = () => {
                 <span className={classes.text}>Github</span>
               </>
             }
-            data-testId="githubButton"
+            data-testid="githubButton"
           />
         </Box>
         <Box className={classes.row}>
@@ -98,7 +98,7 @@ const ConnectSocials = () => {
                 <span className={classes.text}>Google</span>
               </>
             }
-            data-testId="googleButton"
+            data-testid="googleButton"
           />
           <SocialButton
             isLinked={isProviderLinked("twitter")}
@@ -112,7 +112,7 @@ const ConnectSocials = () => {
                 <span className={classes.text}>Twitter</span>
               </>
             }
-            data-testId="twitterButton"
+            data-testid="twitterButton"
           />
         </Box>
       </CardContent>

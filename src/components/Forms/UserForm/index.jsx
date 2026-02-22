@@ -112,7 +112,7 @@ const UserForm = () => {
       <MenuItem
         key={countryList[i].code}
         value={countryList[i].name}
-        data-testId="selectCountryItem"
+        data-testid="selectCountryItem"
       >
         {countryList[i].name}
       </MenuItem>
@@ -191,7 +191,7 @@ const UserForm = () => {
   }, [firebase, firestore, dispatch, handle]);
 
   return (
-    <Card className={classes.root} data-testId="profilePage">
+    <Card className={classes.root} data-testid="profilePage">
       <Box
         component="form"
         noValidate
@@ -218,7 +218,7 @@ const UserForm = () => {
               value={name}
               id="bootstrap-input"
               className={classes.input}
-              data-testId="name"
+              data-testid="name"
               onChange={event => onChangeName(event.target.value)}
               helperText={nameValidateError ? nameValidateErrorMessage : null}
             />
@@ -239,7 +239,7 @@ const UserForm = () => {
               Country of residence
             </InputLabel>
             <FormControl
-              data-testId="selectCountry"
+              data-testid="selectCountry"
               style={{ marginTop: "3px" }}
             >
               <Select
@@ -270,7 +270,7 @@ const UserForm = () => {
               value={website}
               id="bootstrap-input"
               className={classes.input}
-              data-testId="website"
+              data-testid="website"
               onChange={event => onChangeOrgWebsite(event.target.value)}
             />
             <Typography className={classes.errorMessage}>
@@ -289,7 +289,7 @@ const UserForm = () => {
               value={description}
               id="bootstrap-input"
               className={classes.input}
-              data-testId="description"
+              data-testid="description"
               onChange={event => onChangeDescription(event.target.value)}
             />
             <Typography className={classes.errorMessage}>
@@ -303,7 +303,7 @@ const UserForm = () => {
             variant="outlined"
             placeholder="username"
             value={facebook}
-            data-testId="editProfileFacebook"
+            data-testid="editProfileFacebook"
             onChange={event => onChangeFacebook(event.target.value)}
             fullWidth
             autoComplete="handle"
@@ -328,7 +328,7 @@ const UserForm = () => {
             variant="outlined"
             value={twitter}
             placeholder="username"
-            data-testId="editProfileTwitter"
+            data-testid="editProfileTwitter"
             onChange={event => onChangeTwitter(event.target.value)}
             fullWidth
             autoComplete="handle"
@@ -353,7 +353,7 @@ const UserForm = () => {
             label="LinkedIn"
             variant="outlined"
             value={linkedin}
-            data-testId="editProfileLinkedin"
+            data-testid="editProfileLinkedin"
             placeholder="username"
             onChange={event => onChangeLinkedin(event.target.value)}
             fullWidth
@@ -382,7 +382,7 @@ const UserForm = () => {
             placeholder="username"
             onChange={event => onChangeGithub(event.target.value)}
             fullWidth
-            data-testId="editProfileGithub"
+            data-testid="editProfileGithub"
             autoComplete="handle"
             style={{ marginBottom: "15px" }}
             InputProps={{
@@ -409,7 +409,7 @@ const UserForm = () => {
           backgroundColor: "SeaGreen",
           marginTop: 15
         }}
-        data-testId="editProfileSave"
+        data-testid="editProfileSave"
         onClick={onSubmit}
       >
         {loading ? "Saving..." : "Save"}

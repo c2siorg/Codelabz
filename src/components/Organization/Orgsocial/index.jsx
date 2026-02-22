@@ -51,7 +51,7 @@ const Orgsocial = props => {
                 ? openSocialMedialLink(OrgData.org_link_facebook)
                 : console.log("clicked")
             }
-            data-testId="facebookButton"
+            data-testid="facebookButton"
           >
             <FacebookIcon className={classes.fb}>
               <span className="sm-text">Facebook</span>
@@ -69,7 +69,7 @@ const Orgsocial = props => {
                 ? openSocialMedialLink(OrgData.org_link_github)
                 : console.log("clicked")
             }
-            data-testId="githubButton"
+            data-testid="githubButton"
           >
             <GitHubIcon className={classes.git}>
               <span className="sm-text">Github</span>
@@ -88,7 +88,7 @@ const Orgsocial = props => {
                 ? openSocialMedialLink(OrgData.org_link_linkedin)
                 : console.log("clicked")
             }
-            data-testId="googleButton"
+            data-testid="googleButton"
           >
             <img src={GoogleImg} alt="google" className={classes.button} />
             <Typography className={classes.text}>
@@ -103,7 +103,7 @@ const Orgsocial = props => {
                 ? openSocialMedialLink(OrgData.org_link_twitter)
                 : console.log("clicked")
             }
-            data-testId="twitterButton"
+            data-testid="twitterButton"
           >
             <TwitterIcon className={classes.tw}>
               <span className="sm-text">Twitter</span>
