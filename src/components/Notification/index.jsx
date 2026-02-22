@@ -5,7 +5,7 @@ import UserCard from "../CardTabs/Users";
 import IconButton from "@mui/material/IconButton";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import useStyles from "./styles";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
@@ -14,16 +14,11 @@ import Box from "@mui/material/Box";
 import CardWithoutPicture from "../Card/CardWithoutPicture";
 import { MoreVertOutlined } from "@mui/icons-material";
 import NotificationBox from "./NotificationBox";
-import { useSelector, useDispatch } from "react-redux";
-import { getNotificationData } from "../../store/actions";
-import { useFirebase, useFirestore } from "react-redux-firebase";
+import { useSelector } from "react-redux";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
 const Notification = ({ background = "white", textColor = "black" }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const firebase = useFirebase();
-  const firestore = useFirestore();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
     setOpen(!openMenu);
@@ -82,25 +77,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
   const notifications = useSelector(
     state => state.notifications.data.notifications
   );
-  const [localNotifications, setLocalNotifications] = useState(notifications);
-
-  // for instant UI update
-  const handleNotificationDelete = id => {
-    setLocalNotifications(
-      localNotifications.filter(
-        notification => notification.notification_id !== id
-      )
-    );
-  };
-
-  useEffect(() => {
-    const getNotifications = async () => {
-      await getNotificationData()(firebase, firestore, dispatch);
-    };
-
-    getNotifications();
-    setLocalNotifications(notifications);
-  }, [firebase, firestore, dispatch]);
+  const loading = useSelector(state => state.notifications.data.loading);
 
   return (
     <>
@@ -146,16 +123,15 @@ const Notification = ({ background = "white", textColor = "black" }) => {
                 justifyContent: "center"
               }}
             >
-              {localNotifications.length > 0 ? "Notifications" : ""}
+              {notifications.length > 0 ? "Notifications" : ""}
             </Typography>
 
             <div className={classes.container}>
-              {localNotifications.length > 0 ? (
-                localNotifications.map(notification => (
+              {notifications.length > 0 ? (
+                notifications.map(notification => (
                   <NotificationBox
                     key={notification.notification_id}
                     notification={notification}
-                    onDelete={handleNotificationDelete}
                   />
                 ))
               ) : (

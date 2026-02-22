@@ -13,7 +13,7 @@ import { readNotification, deleteNotification } from "../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useDispatch } from "react-redux";
 
-const NotificationBox = ({ notification, onDelete }) => {
+const NotificationBox = ({ notification }) => {
   const classes = useStyles();
   const anchorRef = useRef();
   const firebase = useFirebase();
@@ -38,7 +38,6 @@ const NotificationBox = ({ notification, onDelete }) => {
       firestore,
       dispatch
     );
-    await onDelete(notification.notification_id);
   };
 
   const getRelativeTime = timestamp => {

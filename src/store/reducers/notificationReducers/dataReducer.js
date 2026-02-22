@@ -3,7 +3,9 @@ import * as actions from "../../actions/actionTypes";
 const initialState = {
   notifications: [],
   loading: false,
-  error: null
+  error: null,
+  listenerActive: false,
+  unsubscribe: null
 };
 
 const NotificationsDataReducer = (state = initialState, { type, payload }) => {
@@ -47,9 +49,27 @@ const NotificationsDataReducer = (state = initialState, { type, payload }) => {
         )
       };
 
+    case actions.NOTIFICATION_LISTENER_SET:
+      return {
+        ...state,
+        listenerActive: true,
+        unsubscribe: payload
+      };
+
+    case actions.NOTIFICATION_LISTENER_UNSUBSCRIBED:
+      return {
+        ...state,
+        listenerActive: false,
+        unsubscribe: null,
+        notifications: [],
+        loading: false,
+        error: null
+      };
+
     default:
       return state;
   }
 };
 
 export default NotificationsDataReducer;
+

@@ -33,7 +33,11 @@ import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
 import SearchResultsComponent from "./components/Tutorials/MyTutorials/Search/SearchResultsComponent";
-import { getProfileData } from "./store/actions";
+import {
+  getProfileData,
+  subscribeToNotifications,
+  unsubscribeFromNotifications
+} from "./store/actions";
 
 const AuthIsLoaded = ({ children }) => {
   const firebase = useFirebase();
@@ -43,6 +47,12 @@ const AuthIsLoaded = ({ children }) => {
   const profile = useSelector(({ firebase: { profile } }) => profile);
   const data = useSelector(({ profile: { data } }) => data);
   const general = useSelector(({ org: { general } }) => general);
+  const listenerActive = useSelector(
+    ({ notifications: { data: notifData } }) => notifData.listenerActive
+  );
+  const unsubscribe = useSelector(
+    ({ notifications: { data: notifData } }) => notifData.unsubscribe
+  );
 
   useEffect(() => {
     if (isLoaded(profile) && isLoaded(data) && isLoaded(general)) {
@@ -50,6 +60,21 @@ const AuthIsLoaded = ({ children }) => {
     }
     getProfileData()(firebase, firestore, dispatch);
   }, [profile, firestore, firebase, dispatch]);
+
+  // Real-time notification listener
+  useEffect(() => {
+    // Subscribe when user is authenticated and listener is not active
+    if (isLoaded(profile) && !isEmpty(profile) && !listenerActive) {
+      subscribeToNotifications()(firebase, firestore, dispatch);
+    }
+
+    // Cleanup: unsubscribe on logout or unmount
+    return () => {
+      if (unsubscribe) {
+        unsubscribeFromNotifications(unsubscribe)(dispatch);
+      }
+    };
+  }, [isLoaded(profile) && !isEmpty(profile)]);
 
   //case for not logged in user
   if (

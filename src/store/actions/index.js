@@ -14,7 +14,7 @@ export {
   signUp,
   verifyEmail,
   verifyPasswordResetCode
-  
+
 } from "./authActions";
 export {
   addFollower,
@@ -52,7 +52,7 @@ export {
   uploadProfileImage,
   getUserFeedIdArray,
   getUserFeedData,
-  
+
 } from "./profileActions";
 export {
   getTutorialFeedIdArray,
@@ -96,5 +96,9 @@ export {
 } from "./tutorialsActions";
 export {
   getRecommendedTutorials,
-  getAllTags,getFilteredTutorials
+  getAllTags, getFilteredTutorials
 } from "./tutorialPageActions";
+export {
+  subscribeToNotifications,
+  unsubscribeFromNotifications
+} from "./realtimeNotificationActions";
