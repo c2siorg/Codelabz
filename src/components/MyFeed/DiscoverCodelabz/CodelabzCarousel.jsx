@@ -72,7 +72,7 @@ const CodelabzCarousel = ({ sortBy }) => {
     };
     getFeed();
     return () => {};
-  }, [firestore, dispatch]);
+  }, [firebase, firestore, dispatch, profileData.uid]);
 
   useEffect(() => {
     handleFeedChange(sortBy);

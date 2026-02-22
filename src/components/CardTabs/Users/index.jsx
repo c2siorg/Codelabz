@@ -89,7 +89,7 @@ const UserCard = ({ title, userId }) => {
     };
 
     getUserFeed();
-  }, []);
+  }, [userId, firebase, firestore, dispatch]);
 
   useEffect(() => {
     const updatedUsersToFollow = users

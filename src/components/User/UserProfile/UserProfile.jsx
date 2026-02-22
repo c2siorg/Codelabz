@@ -97,7 +97,7 @@ function UserProfile(props) {
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
     getFeed();
-  }, []);
+  }, [firebase, firestore, dispatch, profileData.uid]);
 
   const tutorials = useSelector(
     ({
