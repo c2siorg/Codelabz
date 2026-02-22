@@ -46,7 +46,7 @@ const PostDetails = ({ details }) => {
 
   useEffect(() => {
     getUserProfileData(details.user)(firebase, firestore, dispatch);
-  }, [details]);
+  }, [details, details.user, firebase, firestore, dispatch]);
 
   const user = useSelector(
     ({
