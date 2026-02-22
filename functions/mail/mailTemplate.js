@@ -1,5 +1,34 @@
+function escapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function validateLink(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 module.exports = {
   verificationEmail: (verificationLink) => {
+    if (!verificationLink || typeof verificationLink !== 'string') {
+      throw new Error('verificationLink is required and must be a string');
+    }
+
+    if (!validateLink(verificationLink)) {
+      throw new Error('verificationLink must be a valid HTTP or HTTPS URL');
+    }
+
+    const safeLink = escapeHtml(verificationLink);
+
     return `
       <!DOCTYPE html>
       <html>
@@ -89,18 +118,18 @@ module.exports = {
               </div>
               
               <div class="content">
-                <p>Welcome to CodeLabz! 👋</p>
+                <p>Welcome to CodeLabz!</p>
                 <p>We're excited to have you join our community of learners and creators. To get started with your coding journey, please verify your email address by clicking the button below:</p>
                 
                 <center>
-                  <a href="${verificationLink}" class="verification-button">
+                  <a href="${safeLink}" class="verification-button">
                     Verify Email Address
                   </a>
                 </center>
                 
                 <p class="alternate-link">
                   If the button doesn't work, you can also copy and paste this link into your browser:<br>
-                  ${verificationLink}
+                  ${safeLink}
                 </p>
               </div>
               
@@ -120,8 +149,13 @@ module.exports = {
     `;
   },
 
-  // Template for welcome email after verification
   welcomeEmail: (username) => {
+    if (!username || typeof username !== 'string') {
+      throw new Error('username is required and must be a string');
+    }
+
+    const safeUsername = escapeHtml(username);
+
     return `
       <!DOCTYPE html>
       <html>
@@ -130,7 +164,71 @@ module.exports = {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Welcome to CodeLabz!</title>
           <style>
-            /* Same styles as above */
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              line-height: 1.6;
+              margin: 0;
+              padding: 0;
+              background-color: #f5f5f5;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .email-wrapper {
+              background-color: #ffffff;
+              border-radius: 8px;
+              padding: 40px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .logo {
+              font-size: 28px;
+              font-weight: bold;
+              color: #2563eb;
+              margin-bottom: 10px;
+            }
+            .title {
+              font-size: 24px;
+              color: #1f2937;
+              margin-bottom: 20px;
+            }
+            .content {
+              color: #4b5563;
+              margin-bottom: 30px;
+            }
+            .verification-button {
+              display: inline-block;
+              background-color: #2563eb;
+              color: #ffffff;
+              padding: 12px 24px;
+              border-radius: 6px;
+              text-decoration: none;
+              font-weight: 500;
+              margin-bottom: 20px;
+            }
+            .verification-button:hover {
+              background-color: #1d4ed8;
+              color: #ffffff;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              color: #6b7280;
+              font-size: 14px;
+            }
+            .social-links {
+              margin-top: 20px;
+            }
+            .social-links a {
+              color: #2563eb;
+              text-decoration: none;
+              margin: 0 10px;
+            }
           </style>
         </head>
         <body>
@@ -142,7 +240,7 @@ module.exports = {
               </div>
               
               <div class="content">
-                <p>Hi ${username}! 🎉</p>
+                <p>Hi ${safeUsername}!</p>
                 <p>Thank you for verifying your email address. Your CodeLabz account is now active and ready to use.</p>
                 
                 <p>Here's what you can do next:</p>
