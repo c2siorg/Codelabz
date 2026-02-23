@@ -17,5 +17,6 @@ module.exports = {
     react: {
       version: "detect"
     }
-  }
+  },
+  ignorePatterns: ["src/dataconnect-generated/"]
 };
