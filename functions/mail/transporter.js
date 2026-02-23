@@ -1,19 +1,30 @@
 const nodemailer = require('nodemailer');
 
-// For production, use environment variables or Firebase Function config for credentials.
-// Example: functions.config().email.user, functions.config().email.pass
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+const smtpHost = process.env.SMTP_HOST;
+const smtpPort = process.env.SMTP_PORT;
 
+if (!emailUser || !emailPass) {
+  console.error('Email credentials not configured. Please set EMAIL_USER and EMAIL_PASS environment variables.');
+}
 
-const emailUser = process.env.EMAIL_USER || 'your-email@gmail.com';
-const emailPass = process.env.EMAIL_PASS || 'your-password-or-app-password';
-
-const transporter = nodemailer.createTransport({
-  service: process.env.SMTP_SERVER, // or "SMTP", or a custom service if you have your own SMTP server
+const transporterConfig = smtpHost ? {
+  host: smtpHost,
+  port: parseInt(smtpPort) || 587,
+  secure: parseInt(smtpPort) === 465,
   auth: {
     user: emailUser,
     pass: emailPass,
   },
-});
+} : {
+  service: 'gmail',
+  auth: {
+    user: emailUser,
+    pass: emailPass,
+  },
+};
 
-// Export the transporter to be used in other files
+const transporter = nodemailer.createTransport(transporterConfig);
+
 module.exports = transporter;
