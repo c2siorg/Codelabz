@@ -277,7 +277,7 @@ export const getAllTags = () => async (firebase, firestore) => {
 };
 
 
-export const getFilteredTutorials = (selectedTags = []) => async (firebase, firestore, dispatch) => {
+export const getFilteredTutorials = (selectedTags = []) => async (firebase, firestore) => {
   try {
     const tutorialsRef = firestore.collection("tutorials");
     let query = tutorialsRef;

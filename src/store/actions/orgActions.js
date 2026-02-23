@@ -427,7 +427,7 @@ export const deleteOrganization =
     }
   };
 
-  export const getAllOrganizations = () => async (firebase, firestore, dispatch) => {
+  export const getAllOrganizations = () => async (firebase, firestore) => {
     try {
       const orgDocs = await firestore
         .collection("cl_org_general")
