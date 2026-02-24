@@ -213,7 +213,7 @@ const ViewOrganization = () => {
                       <p>
                         <a
                           href={
-                            "https://twitter.com/" +
+                            "https://x.com/" +
                             currentOrgData.org_link_twitter
                           }
                           target="_blank"
@@ -227,7 +227,7 @@ const ViewOrganization = () => {
                           >
                             <TwitterIcon
                               fontSize="small"
-                              className="twitter-color"
+                              className="X-color"
                             />{" "}
                             {currentOrgData.org_link_twitter}
                           </div>

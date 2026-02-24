@@ -350,7 +350,7 @@ const EditProfileDetailsModal = ({ profileData, modelCloseCallback }) => {
               <InputAdornment position="start">
                 <TwitterIcon style={{ color: "rgba(0,0,0,.25)" }} />
                 <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                  twitter.com/
+                  x.com/
                 </p>
               </InputAdornment>
             )

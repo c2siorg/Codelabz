@@ -169,10 +169,10 @@ const ProfileView = () => {
       label: "Facebook"
     },
     {
-      icon: <TwitterIcon className="twitter-color" />,
+      icon: <TwitterIcon className="X-color" />,
       link: profileData.link_twitter,
-      baseUrl: "https://twitter.com/",
-      label: "Twitter"
+      baseUrl: "https://x.com/",
+      label: "X"
     },
     {
       icon: <GitHubIcon className="github-color" />,

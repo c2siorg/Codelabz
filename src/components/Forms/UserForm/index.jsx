@@ -32,7 +32,7 @@ import {
   validateOrgWebsite
 } from "../../../helpers/validations";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
@@ -336,11 +336,11 @@ const UserForm = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <TwitterIcon className={classes.tw}>
-                    <span className="sm-text">Twitter</span>
-                  </TwitterIcon>
+                  <XIcon className={classes.tw}>
+                    <span className="sm-text">X</span>
+                  </XIcon>
                   <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    twitter.com/
+                    x.com/
                   </p>
                 </InputAdornment>
               )
@@ -363,7 +363,7 @@ const UserForm = () => {
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
                   <LinkedInIcon className={classes.li}>
-                    <span className="sm-text">Twitter</span>
+                    <span className="sm-text">X</span>
                   </LinkedInIcon>
                   <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
                     linkedin.com/in/

@@ -11,7 +11,7 @@ import AppsIcon from "@mui/icons-material/Apps";
 import LanguageIcon from "@mui/icons-material/Language";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
 const EditOrgDetailsModal = ({ currentOrgData, modelCloseCallback }) => {
@@ -181,7 +181,7 @@ const EditOrgDetailsModal = ({ currentOrgData, modelCloseCallback }) => {
             startAdornment: (
               <InputAdornment position="start">
                 <>
-                  <TwitterIcon className="twitter-color mr-4" /> twitter.com/
+                  <XIcon className="X-color mr-4" /> x.com/
                 </>
               </InputAdornment>
             )

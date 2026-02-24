@@ -8,7 +8,7 @@ import { compose } from "redux";
 
 const locationHelper = locationHelperBuilder({});
 const browserHistory = createHistory();
-const unverifiedProviders = ["facebook.com", "github.com", "twitter.com"];
+const unverifiedProviders = ["facebook.com", "github.com", "x.com"];
 const verifiedProviders = ["google.com", "password"];
 
 /**
