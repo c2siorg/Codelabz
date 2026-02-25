@@ -226,8 +226,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
       if (showOrgForm) {
         validateHandle(
           checkOrgHandleExists,
-          firebase,
-          dispatch,
+          firestore,
           orgHandle,
           setOrgHandleValidateError,
           setOrgHandleValidateErrorMessage,
@@ -264,14 +263,12 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
     });
   };
 
-  //If display Name is present then show that as value inside user name input
   useEffect(() => {
     if (displayName) {
       setName(displayName);
     }
   }, [displayName]);
 
-  //OnChange
   const onChangeName = name => setName(name);
   const onChangeOrgName = orgName => setOrgName(orgName);
   const onChangeHandle = handle => setHandle(handle);
@@ -452,7 +449,6 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                 </Box>
               </Card>
             </Grid>
-            {/* col-pad-24 pr-12 pt-8 pb-24 div-transition */}
             <Grid
               xs={showOrgForm ? 12 : null}
               md={showOrgForm ? 6 : null}
@@ -635,7 +631,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
             sm={12}
             md={showOrgForm ? 4 : 6}
             className="col-pad-24 sm-hidden 
-          pl-12 pt-8" /* sm-hidden css code is writen on codelabz.css*/
+          pl-12 pt-8"
             item={true}
           >
             <Fade right={true} when={showImage}>
