@@ -108,7 +108,7 @@ const Routes = () => {
         <CodeLabzAppBar />
         {/* <Navbar /> */}
         <Switch>
-          <Route exact path={"/"} component={HomePage} />
+          <Route exact path={"/"} component={UserIsAllowedUserDashboard(HomePage)} />
           <Route
             exact
             path={"/login"}
