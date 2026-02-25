@@ -7,10 +7,8 @@ import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { Alert, Box, Chip } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import Divider from "@mui/material/Divider";
 import { IconButton } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import Avatar from "@mui/material/Avatar";
 import { makeStyles } from "@mui/styles";
 import { deepPurple } from "@mui/material/colors";
 import { Typography } from "@mui/material";
@@ -109,30 +107,13 @@ useEffect(() => {
   }
 }, [firestore, firebase, dispatch, organizations, isEmpty]);
 
-  const displayName = useSelector(
+  const userHandle = useSelector(
     ({
       firebase: {
-        profile: { displayName }
+        profile: { handle }
       }
-    }) => displayName
+    }) => handle
   );
-
-  //This name should be replaced by displayName when implementing backend
-  const sampleName = "User Name Here";
-  const allowOrgs = organizations && organizations.length > 0;
-
-  const orgList =
-    allowOrgs > 0
-      ? organizations
-          .map((org, i) => {
-            if (org.permissions.includes(3) || org.permissions.includes(2)) {
-              return org;
-            } else {
-              return null;
-            }
-          })
-          .filter(Boolean)
-      : null;
 
   useEffect(() => {
     setTags([]);

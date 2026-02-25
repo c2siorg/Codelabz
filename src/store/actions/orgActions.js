@@ -427,7 +427,7 @@ export const deleteOrganization =
     }
   };
 
-  export const getAllOrganizations = () => async (firebase, firestore, dispatch) => {
+  export const getAllOrganizations = () => async (firebase, firestore) => {
     try {
       const orgDocs = await firestore
         .collection("cl_org_general")
@@ -435,8 +435,8 @@ export const deleteOrganization =
   
       const organizations = orgDocs.docs.map(doc => ({
         name: doc.data().org_name,
-        img: [OrgUser], // Using the same default image
-        date: '' // Optional: Add if you want to show date
+        img: [OrgUser],
+        date: ''
       }));
   
       return organizations;
