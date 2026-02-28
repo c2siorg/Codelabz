@@ -1,0 +1,103 @@
+FROM node:18
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Install JDK 21 (required by firebase-tools for emulators)
+# Uses the modern signed-by= approach instead of deprecated apt-key add
+RUN apt-get update && apt-get install -y --no-install-recommends wget apt-transport-https gnupg bash && \
+    wget -O /usr/share/keyrings/adoptium.asc https://packages.adoptium.net/artifactory/api/gpg/key/public && \
+    echo "deb [signed-by=/usr/share/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print $2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+  apt-get update && apt-get install -y --no-install-recommends temurin-21-jdk && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Firebase CLI globally (pinned for reproducibility — update intentionally)
+RUN npm install -g firebase-tools@13.29.0
+
+# Pre-download Firebase Emulator JARs so first startup is fast
+RUN firebase setup:emulators:firestore && \
+    firebase setup:emulators:storage && \
+    firebase setup:emulators:database && \
+    firebase setup:emulators:pubsub && \
+    firebase setup:emulators:ui
+
+# Copy package manifests first (leverages Docker layer cache)
+COPY package*.json ./
+COPY ./functions/package*.json ./functions/
+
+# Install frontend dependencies
+# --legacy-peer-deps required: @mui/styles declares react@^17 peer dep
+# while project uses react@18 (known upstream issue, works fine at runtime)
+RUN npm install --legacy-peer-deps
+
+# Install Cloud Functions dependencies
+RUN cd functions && npm install --legacy-peer-deps && cd ..
+
+# Copy the rest of the project
+COPY . .
+
+# Expose Vite dev server
+EXPOSE 5173
+
+# Expose Firebase Emulator ports
+EXPOSE 4000
+EXPOSE 5000
+EXPOSE 5001
+EXPOSE 8080
+EXPOSE 8085
+EXPOSE 9000
+EXPOSE 9099
+EXPOSE 9199
+EXPOSE 4400
+
+# Create startup entrypoint outside /app to avoid volume-mount masking.
+# Uses signal trapping + port polling instead of a fixed sleep so that
+# docker stop shuts down cleanly and startup is not timing-dependent.
+RUN printf '#!/bin/sh\n\
+set -eu\n\
+EMULATOR_PID=""\n\
+VITE_PID=""\n\
+terminate() {\n\
+  echo "==> Caught termination signal, shutting down..."\n\
+  if [ -n "$VITE_PID" ]; then\n\
+    kill "$VITE_PID" 2>/dev/null || true\n\
+    wait "$VITE_PID" 2>/dev/null || true\n\
+  fi\n\
+  if [ -n "$EMULATOR_PID" ]; then\n\
+    kill "$EMULATOR_PID" 2>/dev/null || true\n\
+    wait "$EMULATOR_PID" 2>/dev/null || true\n\
+  fi\n\
+  exit 0\n\
+}\n\
+trap terminate INT TERM\n\
+echo "==> Starting Firebase Emulators..."\n\
+IMPORT_ARGS=""\n\
+if [ -d "/app/testdata" ]; then\n\
+  echo "==> Using emulator import data from /app/testdata"\n\
+  IMPORT_ARGS="--import=testdata"\n\
+else\n\
+  echo "==> /app/testdata not found; starting emulators without import data"\n\
+fi\n\
+FIREBASE_CONFIG_ARGS=""\n\
+if [ -f "/app/firebase.json" ]; then\n\
+  echo "==> Creating Docker Firebase config with emulator host 0.0.0.0..."\n\
+  sed "s/\"host\"[[:space:]]*:[[:space:]]*\"127\\.0\\.0\\.1\"/\"host\": \"0.0.0.0\"/g" /app/firebase.json | sed "/\"ui\"[[:space:]]*:/,/}/{s/\"enabled\"[[:space:]]*:[[:space:]]*true/\"enabled\": true,\\n      \"host\": \"0.0.0.0\"/}" > /app/firebase.docker.json\n\
+  FIREBASE_CONFIG_ARGS="--config /app/firebase.docker.json"\n\
+fi\n\
+firebase $FIREBASE_CONFIG_ARGS emulators:start $IMPORT_ARGS --project codelabz-local-test &\n\
+EMULATOR_PID=$!\n\
+echo "==> Waiting for Firestore Emulator on :8080..."\n\
+until wget -qO- http://localhost:8080 >/dev/null 2>&1; do\n\
+  if [ -n "$EMULATOR_PID" ] && ! kill -0 "$EMULATOR_PID" 2>/dev/null; then\n\
+    echo "==> Firebase Emulators process exited unexpectedly; aborting startup."\n\
+    exit 1\n\
+  fi\n\
+  sleep 1\n\
+done\n\
+echo "==> Starting Vite Dev Server..."\n\
+npm run dev -- --host &\n\
+VITE_PID=$!\n\
+wait "$VITE_PID"\n' > /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+
+CMD ["/usr/local/bin/entrypoint.sh"]

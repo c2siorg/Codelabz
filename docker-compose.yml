@@ -1,28 +1,58 @@
-version: "3.3"
-
 services:
-  app:
+  # ─────────────────────────────────────────────────────────────
+  # PRODUCTION — multi-stage build, nginx on port 80
+  # Usage: docker compose --profile prod up --build
+  #
+  # VITE_APP_* vars are baked into the bundle at build time.
+  # Copy .env.sample → .env and fill in your real Firebase values
+  # before running. docker-compose reads the .env file automatically.
+  # ─────────────────────────────────────────────────────────────
+  app-prod:
+    profiles: ["prod"]
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_APP_FIREBASE_API_KEY: ${VITE_APP_FIREBASE_API_KEY}
+        VITE_APP_AUTH_DOMAIN: ${VITE_APP_AUTH_DOMAIN}
+        VITE_APP_FIREBASE_PROJECT_ID: ${VITE_APP_FIREBASE_PROJECT_ID}
+        VITE_APP_FIREBASE_MESSAGING_SENDER_ID: ${VITE_APP_FIREBASE_MESSAGING_SENDER_ID}
+        VITE_APP_FIREBASE_APP_ID: ${VITE_APP_FIREBASE_APP_ID}
+        VITE_APP_FIREBASE_MEASUREMENTID: ${VITE_APP_FIREBASE_MEASUREMENTID}
+        VITE_APP_DATABASE_URL: ${VITE_APP_DATABASE_URL}
+        VITE_APP_FIREBASE_STORAGE_BUCKET: ${VITE_APP_FIREBASE_STORAGE_BUCKET}
+        VITE_APP_FIREBASE_FCM_VAPID_KEY: ${VITE_APP_FIREBASE_FCM_VAPID_KEY}
+        VITE_APP_USE_EMULATOR: ${VITE_APP_USE_EMULATOR:-false}
     ports:
-      - 5173:5173
-    volumes:
-      - .:/app
+      - "${APP_PROD_PORT:-8080}:80"
     networks:
       - main
-  emulator:
-    image: spine3/firebase-emulator
-    environment:
-      ENABLE_UI: true
-      GCP_PROJECT: demo-sampark
+
+  # ─────────────────────────────────────────────────────────────
+  # DEVELOPMENT — Firebase emulators + Vite hot-reload dev server
+  # Usage: docker compose --profile dev up --build
+  # ─────────────────────────────────────────────────────────────
+  app-dev:
+    profiles: ["dev"]
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
-      - 5001:5001
-      - 9000:9000
-      - 8080:8080
-      - 8085:8085
-      - 5000:5000
-      - 4000:4000
+      - "5173:5173" # Vite Dev Server
+      - "4000:4000" # Firebase Emulator UI
+      - "5000:5000" # Firebase Hosting Emulator
+      - "5001:5001" # Cloud Functions Emulator
+      - "8080:8080" # Firestore Emulator
+      - "8085:8085" # Pub/Sub Emulator
+      - "9000:9000" # Realtime Database Emulator
+      - "9099:9099" # Auth Emulator
+      - "9199:9199" # Storage Emulator
+      - "4400:4400" # Emulator Hub
+    volumes:
+      - .:/app
+      # Prevent host node_modules from masking the containers installed ones
+      - /app/node_modules
+      - /app/functions/node_modules
     networks:
       - main
 
