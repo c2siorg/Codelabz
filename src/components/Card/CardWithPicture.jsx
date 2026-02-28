@@ -115,7 +115,7 @@ export default function CardWithPicture({ tutorial }) {
           <React.Fragment>
             <Typography
               component="span"
-              variant="h7"
+              variant="subtitle2"
               className={classes.inline}
               color="textPrimary"
               data-testId="UserName"
@@ -127,7 +127,7 @@ export default function CardWithPicture({ tutorial }) {
                 {" for "}
                 <Typography
                   component="span"
-                  variant="h7"
+                  variant="subtitle2"
                   className={classes.inline}
                   color="textPrimary"
                   data-testId="UserOrgName"
