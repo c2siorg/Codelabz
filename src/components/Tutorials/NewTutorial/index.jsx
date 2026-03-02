@@ -46,6 +46,12 @@ const useStyles = makeStyles(theme => ({
   button: {
     marginLeft: theme.spacing(1),
     padding: "0.4rem 0.4rem"
+  },
+  closeButton : {
+    position: "absolute",
+    top: "-10px",
+    right: "-10px",
+    background: "#9a999910"
   }
 }));
 
@@ -59,10 +65,13 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [error, setError] = useState(false);
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
+  const [showImage, setShowImage] = useState(false)
+  const [largeImage, setLargeImage] = useState(false)
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
     owner: "",
+    featured_image : null,
     tags: []
   });
 
@@ -192,6 +201,30 @@ useEffect(() => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const imageFile = e.target.files[0]
+    setformValue(prev => ({
+      ...prev,
+      featured_image : imageFile
+    }))
+  }
+
+  const handleRemoveImage = () => {
+    setformValue(prev => ({
+      ...prev,
+      featured_image : null
+    }))
+  }
+
+  const toggleShowImage = () => {
+    setShowImage(!showImage)
+  }
+
+  const handleAvatarClick = () => {
+    setLargeImage(URL.createObjectURL(formValue.featured_image))
+    toggleShowImage();
+  }
+
   const classes = useStyles();
   return (
     <Modal
@@ -302,7 +335,19 @@ useEffect(() => {
             ))}
           </div>
 
-          <IconButton>
+          <IconButton
+            component = "label"
+            htmlFor="fileInput"
+            title="Upload Tutorial Image"
+          >
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/*"
+              onChange={e=>handleImageChange(e)}
+              disableUnderline
+              style={{display : "none"}}
+              />
             <ImageIcon />
           </IconButton>
           <IconButton>
@@ -312,6 +357,67 @@ useEffect(() => {
             <DescriptionIcon />
           </IconButton>
 
+          {formValue.featured_image && (
+            <div>
+              <div
+                style={{
+                  position : "relative",
+                  marginTop : "1.5rem",
+                  display : "inline-block"
+                }}
+                >
+                  <Avatar 
+                  src={URL.createObjectURL(formValue.featured_image)} 
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    border: "0.8px solid #ccc",
+                    cursor: "pointer"
+                  }}
+                  title="Tutorial Image"
+                  onClick={handleAvatarClick} 
+                  />
+                  <IconButton
+                    className={classes.closeButton}
+                    onClick={handleRemoveImage}
+                    title="Remove Image"
+                  >
+                    <CloseIcon sx={{color : "#000", fontSize : 16}}/>
+                  </IconButton>
+                </div>
+            </div>)}
+
+            {showImage && (
+              <Modal 
+                open={showImage}
+                onClose={toggleShowImage}
+                aria-labelledby="view-tutorial-image"
+                aria-describedby="view-tutorial-image-by-clicking-on-the-avatar"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+                >
+                  <div
+                    style={{
+                      background: "white",
+                      width: "auto",
+                      height: "80%"
+                    }}
+                  >
+                    <img
+                      src={largeImage}
+                      alt="Large Tutorial Image"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain"
+                      }}
+                    />
+                  </div>
+                </Modal>
+            )}
           <div className="mb-0">
             <div style={{ float: "right" }}>
               <Button

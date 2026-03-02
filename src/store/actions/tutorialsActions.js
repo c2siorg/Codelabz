@@ -144,13 +144,27 @@ export const createTutorial =
   tutorialData => async (firebase, firestore, dispatch, history) => {
     try {
       dispatch({ type: actions.CREATE_TUTORIAL_START });
-      const { title, summary, owner, created_by, is_org, tags } = tutorialData;
+      const { title, summary, owner, created_by, is_org, tags, featured_image } = tutorialData;
 
       const setData = async () => {
         const document = firestore.collection("tutorials").doc();
 
         const documentID = document.id;
         const step_id = `${documentID}_${new Date().getTime()}`;
+
+        let imageURL = "";
+        if (featured_image) {
+          try {
+            const storageRef = firebase.storage().ref();
+            const imageRef = storageRef.child(
+              `tutorial/${documentID}_${featured_image.name}/images`
+            );
+            await imageRef.put(featured_image);
+            imageURL = await imageRef.getDownloadURL();
+          } catch (error) {
+            console.error("Error uploading image to Firebase Storage:", error);
+          }
+        }
 
         await document.set({
           created_by,
@@ -160,7 +174,7 @@ export const createTutorial =
           summary,
           title,
           tutorial_id: documentID,
-          featured_image: "",
+          featured_image: imageURL,
           icon: "",
           tut_tags: tags,
           url: "",
