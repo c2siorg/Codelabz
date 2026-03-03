@@ -1,0 +1,43 @@
+# Docker Compose for Codelabz Development Environment
+# Usage: docker compose -f docker-compose.dev.yml up --build
+
+version: '3.9'
+
+services:
+  dev:
+    image: codelabz:dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: codelabz-development
+    ports:
+      - "5173:5173"   # Vite dev server
+      - "4000:4000"   # Firebase Emulator Suite UI
+      - "5000:5000"   # Firebase Hosting Emulator
+      - "5001:5001"   # Cloud Functions Emulator
+      - "8080:8080"   # Firestore Emulator
+      - "9000:9000"   # Realtime Database Emulator
+      - "8085:8085"   # Pub/Sub Emulator
+      - "9099:9099"   # Auth Emulator
+      - "9199:9199"   # Storage Emulator
+      - "4400:4400"   # Emulator Hub
+    volumes:
+      # Mount project directory for hot reload
+      - .:/app
+      # Anonymous volumes to prevent node_modules overwrite
+      - /app/node_modules
+      - /app/functions/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_HOST=0.0.0.0
+      - FIREBASE_PROJECT=demo-sampark
+    restart: unless-stopped
+    networks:
+      - codelabz-dev-network
+    labels:
+      - "com.codelabz.description=Codelabz Development Environment"
+      - "com.codelabz.environment=development"
+
+networks:
+  codelabz-dev-network:
+    driver: bridge
