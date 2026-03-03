@@ -23,8 +23,7 @@ cypress/videos
 cypress/screenshots
 testdata
 
-# Environment
-.env
+# Environment (keep .env for Vite build-time variable injection)
 .env.local
 .env.development
 .env.test

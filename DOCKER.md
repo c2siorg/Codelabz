@@ -19,7 +19,7 @@ The production `Dockerfile` uses a **2-stage multi-stage build** for optimizatio
 2. **Stage 2 (Production)**: Serves the built app using Nginx Alpine
 
 **Benefits:**
-- Small final image size (~30MB vs ~1.2GB)
+- Reduced final image size (~103MB vs ~1.2GB single-stage build)
 - No dev dependencies in production
 - Optimized Nginx configuration with gzip, caching, and security headers
 - Health checks included
@@ -36,6 +36,8 @@ The `Dockerfile.dev` is designed for local development with Firebase emulators:
 
 ## Quick Start
 
+> **Important:** Since this is a Vite-based frontend application, environment variables (prefixed with `VITE_APP_`) must be available **at build time** (during `docker build`), not at runtime. Ensure your `.env` file is present in the project root before building the production image. The `.env` file is intentionally **not** listed in `.dockerignore` so that Vite can read it during the build step.
+
 ### Production Deployment
 
 #### Option 1: Using Docker Compose (Recommended)
@@ -51,7 +53,7 @@ docker compose logs -f
 docker compose down
 ```
 
-The application will be available at: **http://localhost**
+The application will be available at: **http://localhost:8080**
 
 #### Option 2: Using Docker Commands
 
@@ -168,7 +170,7 @@ server {
 | Build Type | Image Size | Build Time |
 |-----------|-----------|------------|
 | Single-stage (old) | ~1.2 GB | ~3 minutes |
-| Multi-stage (new) | ~30 MB | ~2 minutes |
+| Multi-stage (new) | ~103 MB | ~2 minutes |
 
 ## Advanced Usage
 
@@ -369,5 +371,3 @@ docker system prune -a
 ```
 
 ---
-
-**Need Help?** Check the [CONTRIBUTING.md](CONTRIBUTING.md) for more information or open an issue on GitHub.
