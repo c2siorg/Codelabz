@@ -1,9 +1,9 @@
-FROM node:14
+FROM node:18
 
 # Set the working directory in the container
 WORKDIR /app
 
-RUN apt update -y && apt install -y openjdk-11-jdk bash
+RUN apt update -y && apt install -y openjdk-17-jdk bash
 
 RUN npm install -g firebase-tools@11
 
@@ -19,8 +19,8 @@ COPY package*.json ./
 COPY ./functions/package*.json ./functions/
 
 # Install the project dependencies
-RUN npm install
-RUN cd functions && npm install && cd ..
+RUN npm install --legacy-peer-deps
+RUN cd functions && npm install --legacy-peer-deps && cd ..
 
 # Copy the entire project directory to the container
 COPY . .
