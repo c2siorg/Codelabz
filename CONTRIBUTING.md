@@ -1,182 +1,186 @@
-# Table of Content
+# Contributing to Codelabz
 
-- [Table of Content](#table-of-content)
-- [User Guide](#user-guide)
-  - [Prerequisites](#prerequisites)
-  - [Project Setup](#project-setup)
-    - [Using Docker-Compose](#using-docker-compose)
-  - [Firebase Setup](#firebase-setup)
-    - [Run Firebase Emulator](#run-firebase-emulator)
-  - [Run the Project](#run-the-project)
-  - [Run the Storybook](#run-the-storybook)
-  - [Run the tests](#run-the-tests)
+Thank you for considering contributing to Codelabz! We value your time and effort. The following guidelines will help you contribute effectively and collaboratively.
 
-# User Guide
-
-## Prerequisites
-
-- Node.js version 14.
-- Java JDK version 11 or higher. (For running emulators)
-- make command line tool. ( optional )
-  > 📝**NOTE** : `make` is optional here. You can open `Makefile` and type the associated command manually also, but it is recommended to use `make` so you don't need to run multiple commands.
-
-## Project Setup
-
-> 📝**NOTE**: Make sure that you are using version 14 of node.
-
-> ⚡**Tip**: You can use nvm (node version manager) tool to install multiple node versions and can switch between them easily.
-
-1. Fork the repo as your own copy.
-2. Click on `Code` button and then copy HTTPs link. ( it will look like this `https://github.com/<YOUR_USERNAME>/Codelabz.git`)
-3. Clone the repo by running `git clone https://github.com/<YOUR_USERNAME>/Codelabz.git`
-4. Go to the folder `cd Codelabz`.
-5. Run `npm install` or `make install`( this will install all the dependencies in your project)
-6. Create a `.env` file in root of directory.
-7. Setup firebase and get your own set of keys. ( follow steps in [Firebase Setup](#firebase-setup) section to setup firebase )
-8. Copy all the key fields from `.env.sample` and place your own set of values there.
-9. Run `npm run dev`.
-10. Visit [http://127.0.0.1:5173/](http://127.0.0.1:5173/) in your preferred browser.
-
-> 📝**NOTE** : Above steps are enough for you to get started with the Codelabz app. If you want to access the database you need to start the emulators.For setup husky follow [Husky Setup](#husky-setup)
-
-### Using Docker-Compose
-
-You can also use docker-compose to setup your project. Simply create your `.env` file and run
-
-```
-docker-compose up
-```
-
-This will setup your project along with firebase emulator in a docker environment.
+> **Looking for setup instructions?** See [INSTALLATION.md](INSTALLATION.md).
+> 
+> **Note:** For detailed background and rationale behind these processes, see the [Contribution Guidelines discussion (#284)](https://github.com/c2siorg/Codelabz/issues/284).
 
 ---
 
-## Firebase Setup
+## Table of Contents
 
-1. Sign in to https://console.firebase.google.com/.
-2. Click **Add Project** and necessary information about the project.(Below mentioned the Steps to add project to firebase)
-   - To add Firebase resources to an existing Google Cloud project, enter its project name or select it from the dropdown menu.
-   - To create a new project, enter the desired project name. You can also optionally edit the project ID displayed below the project name
-   - Firebase generates a unique ID for your Firebase project based upon the name you give it. If you want to edit this project ID, you must do it now as it cannot be altered after Firebase provisions resources for your project. Visit Understand Firebase Projects to learn about how Firebase uses the project ID.
-3. Agree to the terms and click **Create Project**.
-4. After creating the project, click **Add Firebase to your web app**.
-   - In the center of the Firebase console's project overview page, click the Web icon to launch the setup workflow.
-   - If you've already added an app to your Firebase project, click Add app to display the platform options.
-   - Enter your app's nickname.
-   - This nickname is an internal, convenience identifier and is only visible to you in the Firebase console.
-   - Click Register app.
-5. Copy the firebase configuration.
-6. Follow the below steps to setup firebase functions
-   - Go to functions directory (`cd functions`) and install dependencies (`npm install`)
-   - Create a folder `private` inside functions directory
-   - Then you have to generate a private key file for your service account. Follow the below steps to get private key:
-     1. In the Firebase console, open Settings > Service Accounts.
-     2. Click Generate New Private Key, then confirm by clicking Generate Key.
-     3. Securely store the JSON file containing the key and rename it to `cl-dev-pk.json`
-     4. Move the `cl-dev-pk.json` to `Codelabz/functions/private`
-7. Paste the configuration `.env` file. **(this will be found in the project settings section of firebase cloud)**
-8. You can find your `<FIREBASE_DATABASE_URL>` in the Realtime Database section of the Firebase console. Depending on the location of the database, the database URL will be in one of the following forms:
-   - `https://DATABASE_NAME.firebaseio.com` **(for databases in us-central1)**
-   - `https://DATABASE_NAME.REGION.firebasedatabase.app`**(for databases in all other locations)**
-9. You can get your `<FIREBASE_VAPID_KEY>` from Cloud-Messaging tab
-   - navigate to the setting of your project Open the Cloud Messaging tab.
-   - scroll to the Web configuration section.
-   - In the Web Push certificates tab, click Generate Key Pair. The console displays a notice that the key pair was generated. You get your Vapid key form there.
-10. As you're using emulator, set `<USE_EMULATOR>` to "true"
-11. You can get your `<CYPRESS_PROJECT_ID>` as cypress project id from [cypress cloud](https://cloud.cypress.io)
-
-You should fill in these values in their relevant fields in the `.env` file.
-
-### Firebase Emulator Setup
-
-1. Refer this site [https://firebase.google.com/docs/emulator-suite/install_and_configure]
-2. Make sure you have the correct jdk version installed
-3. Make sure you are in the parent directory
-4. Now lets connect your local firebase to cloub by running command (`firebase login`)
-5. Then authenticate your firebase using browser and set the selected web app for codelabz
-6. Then run the command (`firebase init`)
-7. Select all the emulator necessitites by pressing a or selecting them manually and pressing space
-8. Answer the commands
-9. Lets set up your credentials of test data
-10. Run your firebase emulator by running the following command.
-
-```shell
-make emulator
-
-```
-
-11. If make command isn't installed then run command
-
-```shell
-firebase emulators:start --import=testdata
-
-```
-
-12. If you want to start without any testdata , use the following command
-
-```shell
-make emulator
-
-```
-
-14.If make command isn't installed then run
-
-```shell
- firebase emulator:start
-```
-
-You will observe 3 terminals opening
-
-### Run Firebase Emulator
-
-Run your firebase emulator by running the following command.
-
-```shell
-make emulator-import
-```
-
-This will run the emulator with the `testdata`. Check out [TESTDATA.md](./TESTDATA.md) for more info.
-
-if you don't want to import testdata, run
-
-```
-make emulator
-```
-
-If you want to export the emulator, run
-
-```
-make emulator-export
-```
+- [Code of Conduct](#1-code-of-conduct)
+- [Project Governance & Branching Strategy](#2-project-governance--branching-strategy)
+- [Finding an Issue to Work On](#3-finding-an-issue-to-work-on)
+- [Contribution Workflow](#4-contribution-workflow)
+- [Branch Naming Conventions](#5-branch-naming-conventions)
+- [Commit Message Guidelines](#6-commit-message-guidelines)
+- [Pull Request Guidelines](#7-pull-request-guidelines)
+- [Review Process & Expectations](#8-review-process--expectations)
+- [Inactivity & Reassignment Policy](#9-inactivity--reassignment-policy)
+- [Common Reasons PRs Are Closed or Skipped](#10-common-reasons-prs-are-closed-or-skipped)
+- [Questions & Discussions](#11-questions--discussions)
 
 ---
 
-## Run the Project
+## 1. Code of Conduct
 
-To run the project
-`npm run dev`
+All contributors must adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-If you failed to run the project do the following steps :
+We are committed to maintaining a respectful, inclusive, and collaborative environment. Unacceptable behavior will not be tolerated.
 
-- delete node modules
-- delete package-lock.json
-- re run `npm install `
-  If error still exists add `SKIP_PREFLIGHT_CHECK=true` in your .env file
+## 2. Project Governance & Branching Strategy
 
-## Run the Storybook
+To maintain stability and production safety, Codelabz follows a strict branching model:
 
-To run storybook :
-` npm run storybook`
-It will redirect to 6006 port. Find detailed information [here](https://storybook.js.org/docs/react/get-started/introduction)
+| Branch    | Purpose                                                        |
+| --------- | -------------------------------------------------------------- |
+| `develop` | Active development. All features, fixes, and contributor PRs **must target this branch**. |
+| `main`    | Production-ready. Reserved for stable releases and deployment. |
+
+> Pull Requests opened against `main` will be requested to retarget `develop`.
+
+## 3. Finding an Issue to Work On
+
+Before starting any work:
+
+- Check [existing issues](https://github.com/c2siorg/Codelabz/issues) to avoid duplication.
+- Look for issues with these labels:
+  - `good first issue`
+  - `help wanted`
+  - `bug`
+  - `feature`
+- Discuss ideas in [GitHub Discussions](https://github.com/c2siorg/Codelabz/discussions) or in the issue comments.
+
+**Do not start working on an issue without being officially assigned.**
+
+## 4. Contribution Workflow
+
+We follow a structured process to ensure fairness and quality:
+
+### Step 1 — Discuss
+
+Discuss your idea or confirm the issue scope in [Discussions](https://github.com/c2siorg/Codelabz/discussions) or issue comments.
+
+### Step 2 — Assignment
+
+- Comment on the issue requesting assignment.
+- Issues are assigned on a **First-Come, First-Served (FCFS)** basis.
+- Only assigned contributors may submit PRs for that issue.
+
+### Step 3 — Development
+
+1. Fork the repository.
+2. Create a new branch from `develop` (see [naming conventions](#5-branch-naming-conventions)).
+3. Keep your branch up-to-date with `develop`.
+
+### Step 4 — Prepare Your Pull Request
+
+Before opening a PR, ensure:
+
+- [x] Your branch is rebased or merged with the latest `develop`.
+- [x] No merge conflicts remain.
+- [x] All CI checks pass (`npm run lint`, `npm run build`).
+- [x] Code follows project style (`npm run format`).
+- [x] Relevant tests are added or updated (`npm run cy:run`).
+- [x] The PR is linked to the assigned issue.
+
+> **Tip:** You are encouraged to open a **Draft PR** early for feedback before finalizing your implementation.
+
+## 5. Branch Naming Conventions
+
+Branches must follow this format:
+
+| Prefix       | Use Case                          | Example                          |
+| ------------ | --------------------------------- | -------------------------------- |
+| `feature/`   | New features                      | `feature/user-dashboard`         |
+| `fix/`       | Bug fixes                         | `fix/login-validation-error`     |
+| `docs/`      | Documentation updates             | `docs/update-contributing-guide` |
+| `chore/`     | Maintenance and housekeeping      | `chore/update-dependencies`      |
+
+Keep names short, lowercase, and hyphen-separated.
+
+## 6. Commit Message Guidelines
+
+Follow professional commit conventions:
+
+- **Use imperative tense:**
+  - Example: `Add user authentication`
+- Keep the first line concise (50–72 characters recommended).
+- Add context in the body if necessary.
+- Reference related issue numbers:
+  - `Closes #123`
+  - `Fixes #456`
+- **Avoid vague messages** like `update`, `changes`, or `fix stuff`.
+
+## 7. Pull Request Guidelines
+
+Each Pull Request should:
+
+- Address **one issue only**.
+- Be focused and minimal — avoid unrelated changes.
+- Fill out the [PR template](.github/PULL_REQUEST_TEMPLATE.md) completely, including:
+  - **What** was changed
+  - **Why** it was changed
+  - **How** it was tested
+- Include **screenshots** for UI changes.
+- Include **reproduction steps** for bug fixes.
+
+**Link your PR to the relevant issue using [GitHub closing keywords](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests) (e.g., `Closes #123`, `Fixes #456`). This ensures the issue is automatically closed when your PR is merged.**
+
+### PR Checklist
+
+Before submitting, confirm:
+
+- [ ] Target branch is `develop`
+- [ ] Linked to assigned issue
+- [ ] CI checks passing (`npm run lint`, `npm run build`)
+- [ ] No merge conflicts
+- [ ] Tests added or updated (if applicable)
+- [ ] No unrelated changes included
+
+## 8. Review Process & Expectations
+
+Code review is collaborative, not adversarial. Please:
+
+- Be respectful and professional.
+- Address **all** review comments before requesting re-review.
+- Avoid introducing new, unrelated changes during review.
+- Keep discussions technical and constructive.
+- Be mindful of reviewers' time.
+
+Maintainers may request changes before approval.
+
+## 9. Inactivity & Reassignment Policy
+
+To keep the project moving:
+
+- If no meaningful progress is shown within **7 days**, the issue may be reassigned.
+- Issues with no activity for **30 days** are automatically marked as stale, and closed after **14 additional days** of inactivity.
+- If you need more time, **communicate clearly** in the issue thread.
+
+## 10. Common Reasons PRs Are Closed or Skipped
+
+To avoid delays, ensure your PR does not fall into these pitfalls:
+
+- PR targets `main` instead of `develop`.
+- Contributor was not assigned to the issue.
+- PR not linked to any issue.
+- CI, lint, or build failures.
+- Large, unfocused PRs spanning multiple unrelated issues.
+- Unaddressed review comments.
+- Duplicate work or work started without prior discussion.
+
+## 11. Questions & Discussions
+
+We welcome ideas and improvements. For feature proposals or structural changes:
+
+1. Start a [GitHub Discussion](https://github.com/c2siorg/Codelabz/discussions) first.
+2. Align with maintainers before implementation begins.
+
+This ensures clarity and prevents wasted effort.
 
 ---
 
-## Run the tests
-
-To run cypress tests:
-`npm run cy:run`
-It will open a prompt displaying all the tests. You can find detailed information [here](https://docs.cypress.io/guides/guides/command-line#How-to-run-commands)
-
-**Instead, if you want to open the cypress app**. You can run,
-
-`npm run cy:open`
+*Following these guidelines ensures fair contribution distribution, a stable development workflow, and high code quality. Thank you for helping improve Codelabz!*
