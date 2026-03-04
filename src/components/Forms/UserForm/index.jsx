@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
 import {
   alpha,
@@ -13,7 +13,8 @@ import {
   Select,
   MenuItem,
   Button,
-  InputAdornment
+  InputAdornment,
+  CircularProgress
 } from "@mui/material";
 import useStyles from "./styles";
 import { useParams } from "react-router-dom";
@@ -41,133 +42,133 @@ const Input = styled(InputBase)(({ theme }) => ({
     marginTop: theme.spacing(3)
   },
   "& .MuiInputBase-input": {
-    borderRadius: 4,
+    borderRadius: "5px",
     position: "relative",
-    backgroundColor: theme.palette.mode === "light" ? "#fcfcfb" : "#fff",
+    backgroundColor: theme.palette.mode === "light" ? "#f3f3f3" : "#fff",
     border: "1px solid #ced4da",
     fontSize: 16,
-    width: "auto",
-    padding: "10px 12px",
+    width: "100%",
+    padding: "8px 6px",
     transition: theme.transitions.create([
       "border-color",
       "background-color",
       "box-shadow"
     ]),
-    // Use the system font instead of the default Roboto font.
     fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"].join(","),
     "&:focus": {
       boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
-      borderColor: theme.palette.primary.main
+      borderColor: theme.palette.primary.main,
+      backgroundColor: "#fcfcfc"
     }
   }
 }));
 
 const UserForm = () => {
   const classes = useStyles();
-
   const { handle } = useParams();
   const firestore = useFirestore();
   const firebase = useFirebase();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [saved, setSaved] = useState(null);
 
-  const getData = prop => (Boolean(prop) ? prop : "");
+  const getData = prop => prop ?? "";
   const profileData = useSelector(({ firebase: { profile } }) => profile);
-  const [name, setName] = useState(getData(profileData.displayName));
-  const [nameValidateError, setNameValidateError] = useState(false);
-  const [nameValidateErrorMessage, setNameValidateErrorMessage] = useState("");
-  const [country, setCountry] = useState(getData(profileData.country));
-  const [countryValidateError, setCountryValidateError] = useState(false);
-  const [website, setWebsite] = useState(getData(profileData.website));
-  const [websiteValidateError, setWebsiteValidateError] = useState(false);
-  const [websiteValidateErrorMessage, setWebsiteValidateErrorMessage] =
-    useState("");
-  const [description, setDescription] = useState(
-    getData(profileData.description)
+
+  const [form, setForm] = useState({
+    name: getData(profileData.displayName),
+    country: getData(profileData.country),
+    website: getData(profileData.website),
+    description: getData(profileData.description),
+    facebook: getData(profileData.link_facebook),
+    twitter: getData(profileData.link_twitter),
+    linkedin: getData(profileData.link_linkedin),
+    github: getData(profileData.link_github)
+  });
+
+  const [errors, setErrors] = useState({
+    name: { error: false, message: "" },
+    country: { error: false, message: "" },
+    website: { error: false, message: "" },
+    description: { error: false, message: "" }
+  });
+
+  const handleChange = useCallback(
+    field => e => {
+      setForm(prev => ({ ...prev, [field]: e.target.value }));
+      setErrors(prev => ({ ...prev, [field]: { error: false, message: "" } }));
+    },
+    []
   );
-  const [descriptionValidateError, setDescriptionValidateError] =
-    useState(false);
-  const [descriptionValidateErrorMessage, setDescriptionValidateErrorMessage] =
-    useState("");
-  const [facebook, setFacebook] = useState(getData(profileData.link_facebook));
-  const [facebookValidateError, setFacebookValidateError] = useState(false);
-  const [facebookValidateErrorMessage, setFacebookValidateErrorMessage] =
-    useState("");
-  const [twitter, setTwitter] = useState(getData(profileData.link_twitter));
-  const [twitterValidateError, setTwitterValidateError] = useState(false);
-  const [twitterValidateErrorMessage, setTwitterValidateErrorMessage] =
-    useState("");
-  const [linkedin, setLinkedin] = useState(getData(profileData.link_linkedin));
-  const [linkedinValidateError, setLinkedinValidateError] = useState(false);
-  const [linkedinValidateErrorMessage, setLinkedinValidateErrorMessage] =
-    useState("");
-  const [github, setGithub] = useState(getData(profileData.link_github));
-  const [githubValidateError, setGithubValidateError] = useState(false);
-  const [githubValidateErrorMessage, setGithubValidateErrorMessage] =
-    useState("");
 
-  const children = [];
-  for (let i = 0; i < countryList.length; i++) {
-    children.push(
-      <MenuItem
-        key={countryList[i].code}
-        value={countryList[i].name}
-        data-testId="selectCountryItem"
-      >
-        {countryList[i].name}
-      </MenuItem>
-    );
-  }
-
-  const onChangeName = name => setName(name);
-  const onChangeCountry = country => setCountry(country);
-  const onChangeOrgWebsite = website => setWebsite(website);
-  const onChangeDescription = description => setDescription(description);
-  const onChangeFacebook = facebook => setFacebook(facebook);
-  const onChangeTwitter = twitter => setTwitter(twitter);
-  const onChangeLinkedin = linkedin => setLinkedin(linkedin);
-  const onChangeGithub = github => setGithub(github);
+  const countryOptions = useMemo(
+    () =>
+      countryList.map(({ code, name }) => (
+        <MenuItem key={code} value={name} data-testId="selectCountryItem">
+          {name}
+        </MenuItem>
+      )),
+    []
+  );
 
   const validated = () => {
-    const countryValid = validateCountry(country, setCountryValidateError);
-    const orgWebsiteValid = validateOrgWebsite(
-      website,
-      setWebsiteValidateError,
-      setWebsiteValidateErrorMessage
-    );
     const nameValid = validateName(
-      name,
-      setNameValidateError,
-      setNameValidateErrorMessage,
+      form.name,
+      val =>
+        setErrors(prev => ({ ...prev, name: { ...prev.name, error: val } })),
+      val =>
+        setErrors(prev => ({ ...prev, name: { ...prev.name, message: val } })),
       "Please enter your name",
       "Please enter a real name"
     );
+    const countryValid = validateCountry(form.country, val =>
+      setErrors(prev => ({ ...prev, country: { ...prev.country, error: val } }))
+    );
+    const orgWebsiteValid = validateOrgWebsite(
+      form.website,
+      val =>
+        setErrors(prev => ({
+          ...prev,
+          website: { ...prev.website, error: val }
+        })),
+      val =>
+        setErrors(prev => ({
+          ...prev,
+          website: { ...prev.website, message: val }
+        }))
+    );
     const descriptionValid = validateIsEmpty(
-      description,
-      setDescriptionValidateError,
-      setDescriptionValidateErrorMessage,
+      form.description,
+      val =>
+        setErrors(prev => ({
+          ...prev,
+          description: { ...prev.description, error: val }
+        })),
+      val =>
+        setErrors(prev => ({
+          ...prev,
+          description: { ...prev.description, message: val }
+        })),
       "Please enter a description"
     );
-
-    if (nameValid && countryValid && orgWebsiteValid && descriptionValid) {
-      return true;
-    } else {
-      return false;
-    }
+    return nameValid && countryValid && orgWebsiteValid && descriptionValid;
   };
 
   const onSubmit = () => {
     if (validated()) {
       updateUserProfile({
-        displayName: name,
-        website,
-        link_facebook: facebook,
-        link_github: github,
-        link_linkedin: linkedin,
-        link_twitter: twitter,
-        description,
-        country
+        displayName: form.name,
+        website: form.website,
+        link_facebook: form.facebook,
+        link_github: form.github,
+        link_linkedin: form.linkedin,
+        link_twitter: form.twitter,
+        description: form.description,
+        country: form.country
       })(firebase, firestore, dispatch);
+      setSaved(true);
+    } else {
+      setSaved(false);
     }
   };
 
@@ -190,6 +191,13 @@ const UserForm = () => {
     };
   }, [firebase, firestore, dispatch, handle]);
 
+  useEffect(() => {
+    if (saved !== null) {
+      const timer = setTimeout(() => setSaved(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [saved])
+
   return (
     <Card className={classes.root} data-testId="profilePage">
       <Box
@@ -197,61 +205,68 @@ const UserForm = () => {
         noValidate
         sx={{
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Box>
           <FormControl
             variant="standard"
-            style={{ marginRight: 25, marginBottom: 10 }}
+            style={{ marginRight: 25, marginTop: 20 }}
           >
             <InputLabel
               shrink
               htmlFor="bootstrap-input"
               style={{ color: "#000", fontSize: "20px" }}
-              error={nameValidateError}
-              helperText={nameValidateError ? nameValidateErrorMessage : null}
+              error={errors.name.error}
+              sx={{
+                width: "250px"
+              }}
             >
               Name
             </InputLabel>
             <Input
-              value={name}
+              value={form.name}
               id="bootstrap-input"
               className={classes.input}
+              placeholder="John Doe"
               data-testId="name"
-              onChange={event => onChangeName(event.target.value)}
-              helperText={nameValidateError ? nameValidateErrorMessage : null}
+              onChange={handleChange("name")}
             />
             <Typography className={classes.errorMessage}>
-              {nameValidateErrorMessage}
+              {errors.name.message}
             </Typography>
           </FormControl>
           <Box
             variant="standard"
-            style={{ display: "inline-flex", flexDirection: "column" }}
+            style={{
+              display: "inline-flex",
+              flexDirection: "column",
+              marginTop: 20
+            }}
           >
             <InputLabel
               shrink
               htmlFor="bootstrap-input"
               style={{ color: "#000", fontSize: "20px" }}
-              error={countryValidateError}
+              error={errors.country.error}
             >
               Country of residence
             </InputLabel>
-            <FormControl
-              data-testId="selectCountry"
-              style={{ marginTop: "3px" }}
+            <Select
+              value={form.country}
+              onChange={handleChange("country")}
+              displayEmpty
+              sx={{
+                width: "288px",
+                height: "56px",
+                marginTop: "-5px"
+              }}
+              inputProps={{ "aria-label": "Without label" }}
             >
-              <Select
-                value={country}
-                onChange={event => onChangeCountry(event.target.value)}
-                input={<OutlinedInput style={{ height: 40, width: 250 }} />}
-                displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                {children}
-              </Select>
-            </FormControl>
+              {countryOptions}
+            </Select>
           </Box>
         </Box>
         <Box>
@@ -263,58 +278,67 @@ const UserForm = () => {
               shrink
               htmlFor="bootstrap-input"
               style={{ color: "#000", fontSize: "20px" }}
+              sx={{
+                width: "250px"
+              }}
             >
               Website
             </InputLabel>
             <Input
-              value={website}
+              value={form.website}
               id="bootstrap-input"
               className={classes.input}
+              placeholder="https://CodeLabz.com"
               data-testId="website"
-              onChange={event => onChangeOrgWebsite(event.target.value)}
+              onChange={handleChange("website")}
             />
             <Typography className={classes.errorMessage}>
-              {websiteValidateErrorMessage}
+              {errors.website.message}
             </Typography>
           </FormControl>
-          <FormControl variant="standard" style={{ marginTop: "13px" }}>
+          <FormControl variant="standard" style={{ marginTop: "15px" }}>
             <InputLabel
               shrink
               htmlFor="bootstrap-input"
+              sx={{
+                width: "250px"
+              }}
               style={{ color: "#000", fontSize: "20px" }}
             >
               Description
             </InputLabel>
             <Input
-              value={description}
+              value={form.description}
               id="bootstrap-input"
               className={classes.input}
+              placeholder="Tell us about yourself"
               data-testId="description"
-              onChange={event => onChangeDescription(event.target.value)}
+              onChange={handleChange("description")}
             />
             <Typography className={classes.errorMessage}>
-              {descriptionValidateErrorMessage}
+              {errors.description.message}
             </Typography>
           </FormControl>
         </Box>
-        <Box style={{ marginTop: 30 }}>
+        <Box style={{ marginTop: 30, width: "100%", maxWidth: 600 }}>
           <TextField
             label="Facebook"
             variant="outlined"
             placeholder="username"
-            value={facebook}
+            value={form.facebook}
             data-testId="editProfileFacebook"
-            onChange={event => onChangeFacebook(event.target.value)}
-            fullWidth
+            onChange={handleChange("facebook")}
             autoComplete="handle"
             style={{ marginBottom: "15px" }}
+            sx={{
+              width: "100%",
+              maxWidth: "600px"
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <FacebookIcon className={classes.fb}>
-                    <span className="sm-text">Facebook</span>
-                  </FacebookIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
+                  <FacebookIcon className={classes.fb} />
+                  <p style={{ margin: "15px 0px 15px 8px", color: "#555" }}>
                     facebook.com/
                   </p>
                 </InputAdornment>
@@ -322,24 +346,25 @@ const UserForm = () => {
             }}
           />
         </Box>
-        <Box style={{ marginTop: 15 }}>
+        <Box style={{ marginTop: 15, width: "100%", maxWidth: 600 }}>
           <TextField
             label="Twitter"
             variant="outlined"
-            value={twitter}
+            value={form.twitter}
             placeholder="username"
             data-testId="editProfileTwitter"
-            onChange={event => onChangeTwitter(event.target.value)}
-            fullWidth
+            onChange={handleChange("twitter")}
             autoComplete="handle"
             style={{ marginBottom: "15px" }}
+            sx={{
+              width: "100%",
+              maxWidth: "600px"
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <TwitterIcon className={classes.tw}>
-                    <span className="sm-text">Twitter</span>
-                  </TwitterIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
+                  <TwitterIcon className={classes.tw} />
+                  <p style={{ margin: "15px 0px 15px 8px", color: "#555" }}>
                     twitter.com/
                   </p>
                 </InputAdornment>
@@ -347,25 +372,25 @@ const UserForm = () => {
             }}
           />
         </Box>
-
-        <Box style={{ marginTop: 15 }}>
+        <Box style={{ marginTop: 15, width: "100%", maxWidth: 600 }}>
           <TextField
             label="LinkedIn"
             variant="outlined"
-            value={linkedin}
+            value={form.linkedin}
             data-testId="editProfileLinkedin"
             placeholder="username"
-            onChange={event => onChangeLinkedin(event.target.value)}
-            fullWidth
+            onChange={handleChange("linkedin")}
             autoComplete="handle"
             style={{ marginBottom: "15px" }}
+            sx={{
+              width: "100%",
+              maxWidth: "600px"
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <LinkedInIcon className={classes.li}>
-                    <span className="sm-text">Twitter</span>
-                  </LinkedInIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
+                  <LinkedInIcon className={classes.li} />
+                  <p style={{ margin: "15px 0px 15px 8px", color: "#555" }}>
                     linkedin.com/in/
                   </p>
                 </InputAdornment>
@@ -373,25 +398,24 @@ const UserForm = () => {
             }}
           />
         </Box>
-
-        <Box style={{ marginTop: 15 }}>
+        <Box style={{ marginTop: 15, width: "100%", maxWidth: 600 }}>
           <TextField
             label="GitHub"
             variant="outlined"
-            value={github}
+            value={form.github}
             placeholder="username"
-            onChange={event => onChangeGithub(event.target.value)}
-            fullWidth
+            onChange={handleChange("github")}
             data-testId="editProfileGithub"
             autoComplete="handle"
             style={{ marginBottom: "15px" }}
+            sx={{
+              width: "100%"
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <GitHubIcon className={classes.git}>
-                    <span className="sm-text">Github</span>
-                  </GitHubIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
+                  <GitHubIcon className={classes.git} />
+                  <p style={{ margin: "15px 0px 15px 8px", color: "#555" }}>
                     github.com/
                   </p>
                 </InputAdornment>
@@ -399,21 +423,42 @@ const UserForm = () => {
             }}
           />
         </Box>
+        <Button
+          size="large"
+          variant="contained"
+          color="primary"
+          style={{
+            backgroundColor: "#1DB954",
+            marginTop: 15
+          }}
+          sx={{
+            width: "100%",
+            maxWidth: "600px",
+            borderRadius: "5px",
+            boxShadow: "none",
+            transition: "all ease-in 200ms",
+            "&:hover": {
+              backgroundColor: "#18a84a !important",
+              boxShadow: "0px 4px 12px rgba(46,139,87,0.4) !important",
+              transform: "translateY(-1px)"
+            }
+          }}
+          data-testId="editProfileSave"
+          onClick={onSubmit}
+        >
+          {loading ? (
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <CircularProgress size={20} color="inherit" />
+              <span>Saving...</span>
+            </div>
+          ) : "Save"}
+        </Button>
+        {saved !== null && (
+          <Typography className="saveTxt">
+            {saved? "Your information has been saved successfully!":"Something went wrong!"}
+          </Typography>
+        )}
       </Box>
-      <Button
-        fullWidth
-        size="small"
-        variant="contained"
-        color="primary"
-        style={{
-          backgroundColor: "SeaGreen",
-          marginTop: 15
-        }}
-        data-testId="editProfileSave"
-        onClick={onSubmit}
-      >
-        {loading ? "Saving..." : "Save"}
-      </Button>
     </Card>
   );
 };

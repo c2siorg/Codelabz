@@ -3,20 +3,22 @@ import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles(theme => ({
   root: {
     marginBottom: 20,
-    boxShadow: "none",
     padding: "20px 30px",
     border: "1px solid #e8e8e8",
     borderRadius: 15,
-    width: "95%",
+    width: "80%",
+    overflow: "visible",
+    margin: "0 auto",
+    boxShadow: "0 2px 16px rgba(0,0,0,0.07) !important",
     "@media (max-width: 960px)": {
-      width: "100%",
       padding: "15px 20px"
     }
   },
   input: {
     "& input": {
       padding: "18px !important",
-      width: "250px !important"
+      width: "250px !important",
+      height: "18px",
     }
   },
   errorMessage: {
@@ -59,6 +61,13 @@ const useStyles = makeStyles(theme => ({
       marginRight: 7,
       fontSize: 19
     }
+  },
+  saveTxt: {
+    fontSize: "14px",
+    color: "#0c8523",
+    fontWeight: 500,
+    marginTop: "8px",
+    textAlign: "center",
   }
 }));
 
