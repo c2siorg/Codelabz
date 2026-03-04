@@ -156,7 +156,7 @@ docker build \
 ```
 
 #### Available variables
-0
+
 ```env
 # Firebase Configuration
 VITE_FIREBASE_API_KEY=your_api_key
