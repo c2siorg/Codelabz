@@ -27,7 +27,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "jss-plugin-global": "jss-plugin-rule-value-function"
+      "jss-plugin-{}": "jss-plugin-rule-value-function"
     }
   }
 });

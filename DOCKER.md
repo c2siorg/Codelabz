@@ -122,26 +122,53 @@ docker run -d \
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+> **Security note:** `.env` is excluded from the Docker build context via `.dockerignore`.
+> Firebase API keys and other `VITE_*` secrets are passed as **build arguments** instead of being
+> copied into an image layer. This prevents them from being extracted via `docker history`.
 
+Copy the provided template and fill in your Firebase project values:
+
+```bash
+cp .env.example .env
+```
+
+#### Using Docker Compose (Recommended)
+
+Docker Compose automatically reads `.env` from the project root and substitutes the `${VAR}` references in `docker-compose.yml`. Just run:
+
+```bash
+docker compose up -d
+```
+
+#### Using Docker CLI directly
+
+Pass each variable explicitly as a `--build-arg`:
+
+```bash
+docker build \
+  --build-arg VITE_FIREBASE_API_KEY=your_api_key \
+  --build-arg VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain \
+  --build-arg VITE_FIREBASE_PROJECT_ID=your_project_id \
+  --build-arg VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket \
+  --build-arg VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id \
+  --build-arg VITE_FIREBASE_APP_ID=your_app_id \
+  -t codelabz:production .
+```
+
+#### Available variables
+0
 ```env
 # Firebase Configuration
 VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_domain
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
 VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 
 # Optional: Firebase Emulator Configuration (Development)
 FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
 FIRESTORE_EMULATOR_HOST=localhost:8080
-```
-
-Pass environment file to Docker:
-
-```bash
-docker run --env-file .env -p 80:80 codelabz:production
 ```
 
 ### Custom Nginx Configuration

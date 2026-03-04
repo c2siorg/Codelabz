@@ -17,6 +17,16 @@ COPY package*.json ./
 RUN npm install --legacy-peer-deps --ignore-scripts && \
     npm cache clean --force
 
+# Build-time variables for Vite — passed via --build-arg or Compose args:
+# these are declared here so Vite sees them as env vars during the build.
+# They are NOT persisted as image environment variables.
+ARG VITE_FIREBASE_API_KEY
+ARG VITE_FIREBASE_AUTH_DOMAIN
+ARG VITE_FIREBASE_PROJECT_ID
+ARG VITE_FIREBASE_STORAGE_BUCKET
+ARG VITE_FIREBASE_MESSAGING_SENDER_ID
+ARG VITE_FIREBASE_APP_ID
+
 # Copy application source
 COPY . .
 

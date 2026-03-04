@@ -23,7 +23,8 @@ cypress/videos
 cypress/screenshots
 testdata
 
-# Environment (keep .env for Vite build-time variable injection)
+# Environment — never copy secrets into the image; pass VITE_* vars as build args instead
+.env
 .env.local
 .env.development
 .env.test

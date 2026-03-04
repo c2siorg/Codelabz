@@ -1,8 +1,6 @@
 # Docker Compose for Codelabz Development Environment
 # Usage: docker compose -f docker-compose.dev.yml up --build
 
-version: '3.9'
-
 services:
   dev:
     image: codelabz:dev
