@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   tw: {
-    color: "#03A9F4",
+    color: "#000000",
     fontSize: 30,
     marginRight: 5,
     "@media (max-width: 500px)": {
