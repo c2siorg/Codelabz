@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
+const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active ,profile}) => {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
@@ -148,6 +148,7 @@ useEffect(() => {
 
   const onSubmit = formData => {
     formData.preventDefault();
+    const userHandle = profile?.handle || "";
     const tutorialData = {
       ...formValue,
       created_by: userHandle,
