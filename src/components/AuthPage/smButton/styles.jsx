@@ -18,9 +18,9 @@ const useStyles = makeStyles(theme => ({
     fontSize: "42px",
     color: "#5269a4"
   },
-  tw: {
-    color: "#7194ef",
-    fontSize: "40px"
+  x: {
+    color: "#000000",
+    fontSize: "35px"
   },
   git: {
     fontSize: "35px"

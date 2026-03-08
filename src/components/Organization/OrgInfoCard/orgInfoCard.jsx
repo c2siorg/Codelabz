@@ -340,12 +340,12 @@ const OrgInfoCard = () => {
                 <p>
                   <a
                     href={
-                      "https://twitter.com/" + currentOrgData.org_link_twitter
+                      "https://x.com/" + currentOrgData.org_link_twitter
                     }
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <TwitterIcon className="twitter-color" />{" "}
+                    <TwitterIcon className="X-color" />{" "}
                     {currentOrgData.org_link_twitter}
                   </a>
                 </p>

@@ -47,7 +47,7 @@ const ProfileInfoCard = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [facebookURI] = useState("https://www.facebook.com/");
-  const [twitterURI] = useState("https://twitter.com/");
+  const [twitterURI] = useState("https://x.com/");
   const [githubURI] = useState("https://github.com/");
   const [linkedinURI] = useState("https://www.linkedin.com/in/");
   const [googleURI] = useState("https://www.google.com/search?q=");
@@ -380,7 +380,7 @@ const ProfileInfoCard = () => {
                       <Box mr={1}>
                         <TwitterIcon
                           fontSize="small"
-                          className="twitter-color"
+                          className="X-color"
                         />{" "}
                       </Box>
                       {profileData.link_twitter}

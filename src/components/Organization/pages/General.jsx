@@ -317,10 +317,10 @@ function General() {
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography>Twitter URL</Typography>
+              <Typography>X URL</Typography>
               <InputBase
                 className={classes.input}
-                placeholder="https://Twitter URL"
+                placeholder="https://X URL"
                 value={OrgData.org_link_twitter}
                 onChange={handleChange("org_link_twitter")}
               />

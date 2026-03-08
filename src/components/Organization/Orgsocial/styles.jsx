@@ -78,7 +78,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   tw: {
-    color: "#03A9F4",
+    color: "#000",
     fontSize: 30,
     marginLeft: -3,
     marginRight: 18,
@@ -98,6 +98,7 @@ const useStyles = makeStyles(theme => ({
   text: {
     fontFamily: "Poppins",
     color: "#000",
+    width : 250,
     "@media (max-width: 500px)": {
       fontSize: "4vmin",
       marginRight: 19

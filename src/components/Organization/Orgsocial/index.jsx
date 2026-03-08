@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import GoogleImg from "../../../assets/orgs/google.png";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import useStyles from "./styles";
 import { signInWithGoogle, signInWithProviderID } from "../../../store/actions";
@@ -105,11 +105,11 @@ const Orgsocial = props => {
             }
             data-testId="twitterButton"
           >
-            <TwitterIcon className={classes.tw}>
-              <span className="sm-text">Twitter</span>
-            </TwitterIcon>
+            <XIcon className={classes.tw}>
+              <span className="sm-text">X</span>
+            </XIcon>
             <Typography className={classes.text}>
-              Organization's Twitter Account
+              Organization's X Account
             </Typography>
           </Grid>
         </Box>
