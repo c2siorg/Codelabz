@@ -18,6 +18,8 @@ const StepsTitle = ({ owner, tutorial_id }) => {
   const [newStepTitle, setNewStepTitle] = useState(step_title);
   const [newStepTime, setNewStepTime] = useState(step_time);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const current_step_no = useSelector(
     ({
       tutorials: {
@@ -53,103 +55,89 @@ const StepsTitle = ({ owner, tutorial_id }) => {
     current_step_no
   ]);
 
-  const setStepTitle = () => {
+  const showSnackbar = message => {
+    setSnackbarOpen(true);
+    setSnackbarMessage(message);
+  };
+  const setStepTitle = async () => {
     if (step_title !== newStepTitle && newStepTitle.length > 0) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message="Updating....."
-      />;
-      updateStepTitle(
+      await updateStepTitle(
         owner,
         tutorial_id,
         step_id,
         newStepTitle
       )(firebase, firestore, dispatch).then(() => (
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={true}
-          autoHideDuration={6000}
-          message="Updated...."
-        />
+        showSnackbar("Updated....")
       ));
     }
   };
 
-  const setStepTime = () => {
+  const setStepTime = async () => {
     if (step_time !== newStepTime) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message="Updating....."
-      />;
-      updateStepTime(
+      await updateStepTime(
         owner,
         tutorial_id,
         step_id,
         newStepTime
       )(firebase, firestore, dispatch).then(() => (
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={true}
-          autoHideDuration={6000}
-          message="Updated...."
-        />
+        showSnackbar("Updated....")
       ));
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+    setSnackbarMessage("")
+  };
+
   return (
-    <Grid>
-      <Grid xs={24}>
-        <form>
-          <Grid style={{ width: "100%" }}>
-            <Grid xs={24} md={19}>
-              <Input
-                onChange={e => setNewStepTitle(e.target.value)}
-                value={newStepTitle}
-                onBlur={setStepTitle}
-                placeholder="Title of the step"
-                className="tutorial-title-input"
-                size="large"
-                prefix={current_step_no + 1 + "."}
-                type="text"
-                data-testid={"stepTitleInput"}
-              />
+    <>
+      <Grid>
+        <Grid xs={24}>
+          <form>
+            <Grid style={{ width: "100%" }}>
+              <Grid xs={24} md={19}>
+                <Input
+                  onChange={e => setNewStepTitle(e.target.value)}
+                  value={newStepTitle}
+                  onBlur={setStepTitle}
+                  placeholder="Title of the step"
+                  className="tutorial-title-input"
+                  size="large"
+                  prefix={current_step_no + 1 + "."}
+                  type="text"
+                  data-testid={"stepTitleInput"}
+                />
+              </Grid>
+              <Grid xs={24} md={5}>
+                <Input
+                  onChange={e => setNewStepTime(parseInt(e.target.value) || 1)}
+                  value={newStepTime}
+                  onBlur={setStepTime}
+                  placeholder="Time"
+                  style={{ width: "100%" }}
+                  className="tutorial-title-input"
+                  size="large"
+                  type="number"
+                  suffix="minutes"
+                  name="step_time"
+                  data-testid={"stepTimeInput"}
+                />
+              </Grid>
             </Grid>
-            <Grid xs={24} md={5}>
-              <Input
-                onChange={e => setNewStepTime(parseInt(e.target.value) || 1)}
-                value={newStepTime}
-                onBlur={setStepTime}
-                placeholder="Time"
-                style={{ width: "100%" }}
-                className="tutorial-title-input"
-                size="large"
-                type="number"
-                suffix="minutes"
-                name="step_time"
-                data-testid={"stepTimeInput"}
-              />
-            </Grid>
-          </Grid>
-        </form>
+          </form>
+        </Grid>
       </Grid>
-    </Grid>
+      <Snackbar
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left"
+      }}
+      open={snackbarOpen}
+      autoHideDuration={6000}
+      onClose={handleSnackbarClose}
+      message={snackbarMessage}
+  /></>
   );
 };
 
