@@ -282,7 +282,7 @@ const ViewTutorial = () => {
                         />
 
                         <QuillEditor
-                          data={stepsData[currentStep].content}
+                          data={currentStepContent}
                           tutorial_id={tutorialData.tutorial_id}
                           bgColor={tutorialData.background_color || "#ffffff"}
                           textColor={tutorialData.text_color || "#000000"}
