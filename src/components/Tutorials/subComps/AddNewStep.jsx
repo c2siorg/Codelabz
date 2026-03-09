@@ -89,6 +89,7 @@ const AddNewStepModal = ({
 
   const handleCancel = () => {
     setVisible(false);
+    viewCallback();
   };
 
   return (
