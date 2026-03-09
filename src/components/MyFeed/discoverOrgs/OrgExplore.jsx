@@ -71,7 +71,7 @@ const OrgsExplore = () => {
           value={selectedTab}
           onChange={handleTabChange}
         >
-          <Tab label="All" />
+          <Tab label="All" />/
           <Tab label="Design" />
           <Tab label="JavaScript" />
           <Tab label="Web Development" />
