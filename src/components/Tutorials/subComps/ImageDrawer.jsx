@@ -171,7 +171,7 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
           imageURLs.map((image, i) => (
             <Grid className="mb-24" key={i}>
               <Grid xs={24} md={8}>
-                <img src={image.url} alt="" />
+                <img src={image.url} alt={image.name || "Uploaded tutorial image"} />
               </Grid>
               <Grid xs={24} md={16} className="pl-8" style={{}}>
                 <h4 className="pb-8">{image.name}</h4>
