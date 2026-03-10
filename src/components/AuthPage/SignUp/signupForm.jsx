@@ -91,9 +91,9 @@ const SignupForm = () => {
       setEmailValidateErrorMessage("Please Enter your Email!");
       return false;
     }
-    if (!validator.isEmail(email)) {
+    if (!validator.isEmail(email.trim())) {
       setEmailValidateError(true);
-      setEmailValidateErrorMessage("Please enter an valid email!");
+      setEmailValidateErrorMessage("Please enter a valid email!");
       return false;
     }
     return true;
