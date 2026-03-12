@@ -99,6 +99,11 @@ const Login = ({
   const onSubmit = async e => {
     e.preventDefault();
     setError("");
+    // Clear previous validation errors so only current errors are shown
+    setEmailValidateError(false);
+    setEmailValidateErrorMessage("");
+    setPasswordValidateError(false);
+    setPasswordValidateErrorMessage("");
     if (validateEmail() && validatePassword()) {
       await signIn({ email: email, password: password })(firebase, dispatch);
     }
