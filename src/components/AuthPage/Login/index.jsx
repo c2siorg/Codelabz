@@ -104,9 +104,18 @@ const Login = ({
     setEmailValidateErrorMessage("");
     setPasswordValidateError(false);
     setPasswordValidateErrorMessage("");
-    if (validateEmail() && validatePassword()) {
-      await signIn({ email: email, password: password })(firebase, dispatch);
+
+    const isEmailValid = validateEmail();
+    if (!isEmailValid) {
+      return;
     }
+
+    const isPasswordValid = validatePassword();
+    if (!isPasswordValid) {
+      return;
+    }
+
+    await signIn({ email: email, password: password })(firebase, dispatch);
   };
 
   const onFocusEmail = () => {
