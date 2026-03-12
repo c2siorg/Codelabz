@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NavLink, useHistory, useLocation } from "react-router-dom";
 import {
   MenuItem,

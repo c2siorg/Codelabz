@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Drawer } from "@mui/material";
 import SideList from "../SideBar/sidelist";
 import Home from "./../../assets/images/home.svg";
