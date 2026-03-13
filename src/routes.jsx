@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   isEmpty,
@@ -39,17 +39,30 @@ const AuthIsLoaded = ({ children }) => {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
+  const hasFetchedRef = useRef(false);
 
+  const auth = useSelector(({ firebase: { auth } }) => auth);
   const profile = useSelector(({ firebase: { profile } }) => profile);
   const data = useSelector(({ profile: { data } }) => data);
   const general = useSelector(({ org: { general } }) => general);
 
   useEffect(() => {
-    if (isLoaded(profile) && isLoaded(data) && isLoaded(general)) {
-      return; // Avoid fetching if data is already loaded
-    }
+    // skip if we already fetched or auth hasn't loaded yet
+    if (hasFetchedRef.current || !isLoaded(auth)) return;
+
+    // no need to fetch profile data for unauthenticated users
+    if (isEmpty(auth)) return;
+
+    hasFetchedRef.current = true;
     getProfileData()(firebase, firestore, dispatch);
-  }, [profile, firestore, firebase, dispatch]);
+  }, [auth, firebase, firestore, dispatch]);
+
+  // reset the flag if user logs out so we re-fetch on next login
+  useEffect(() => {
+    if (isLoaded(auth) && isEmpty(auth)) {
+      hasFetchedRef.current = false;
+    }
+  }, [auth]);
 
   //case for not logged in user
   if (
