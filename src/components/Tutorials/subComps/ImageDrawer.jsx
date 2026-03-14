@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Drawer from "@mui/material/Drawer";
 import Grid from "@mui/material/Grid";
@@ -11,12 +11,12 @@ import {
   remoteTutorialImages,
   uploadTutorialImages
 } from "../../../store/actions";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 
 const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
+  const [uploadingMediaKind, setUploadingMediaKind] = useState("image");
 
   const uploading = useSelector(
     ({
@@ -52,49 +52,17 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
 
   useEffect(() => {
     if (uploading === false && uploading_error === false) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message="Image Uploaded successfully...."
-      />;
+      // Preserve existing behavior (no-op Snackbar side effect)
     } else if (uploading === false && uploading_error) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message={uploading_error}
-      />;
+      // Preserve existing behavior (no-op Snackbar side effect)
     }
   }, [uploading, uploading_error]);
 
   useEffect(() => {
     if (deleting === false && deleting_error === false) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message="Deleted Succefully...."
-      />;
+      // Preserve existing behavior (no-op Snackbar side effect)
     } else if (deleting === false && deleting_error) {
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={true}
-        autoHideDuration={6000}
-        message={deleting_error}
-      />;
+      // Preserve existing behavior (no-op Snackbar side effect)
     }
   }, [deleting, deleting_error]);
 
@@ -105,17 +73,24 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
     };
   }, [dispatch]);
 
-  const props = {
-    name: "file",
-    multiple: true,
-    beforeUpload(file, files) {
-      uploadTutorialImages(owner, tutorial_id, files)(
-        firebase,
-        firestore,
-        dispatch
-      );
-      return false;
+  const handleFileChange = e => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) {
+      return;
     }
+
+    const hasVideo = files.some(
+      currentFile => currentFile.type && currentFile.type.startsWith("video/")
+    );
+    setUploadingMediaKind(hasVideo ? "video" : "image");
+
+    uploadTutorialImages(owner, tutorial_id, files)(
+      firebase,
+      firestore,
+      dispatch
+    );
+
+    e.target.value = "";
   };
 
   const deleteFile = (name, url) =>
@@ -146,14 +121,19 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
           <input
             id="file-upload"
             fullWidth
-            accept="image/*"
+            accept="image/*,video/*"
             type="file"
-            {...props}
+            multiple
+            onChange={handleFileChange}
           />
           {uploading ? (
             <>
               <LoadingOutlined /> Please wait...
-              <p className="ant-upload-hint mt-8">Uploading image(s)...</p>
+              <p className="ant-upload-hint mt-8">
+                {uploadingMediaKind === "video"
+                  ? "Uploading video(s)..."
+                  : "Uploading image(s)..."}
+              </p>
             </>
           ) : (
             <>
@@ -161,7 +141,7 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
                 <InboxOutlined />
               </p>
               <p className="ant-upload-text">
-                Click or drag images to here to upload
+                Click or drag images/videos here to upload
               </p>
             </>
           )}
@@ -171,36 +151,32 @@ const ImageDrawer = ({ onClose, visible, owner, tutorial_id, imageURLs }) => {
           imageURLs.map((image, i) => (
             <Grid className="mb-24" key={i}>
               <Grid xs={24} md={8}>
-                <img src={image.url} alt="" />
+                {image?.type && image.type.startsWith("video/") ? (
+                  <video
+                    src={image.url}
+                    controls
+                    style={{
+                      width: "100%",
+                      maxHeight: "150px",
+                      objectFit: "cover",
+                      marginBottom: "8px"
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    style={{
+                      width: "100%",
+                      maxHeight: "150px",
+                      objectFit: "cover",
+                      marginBottom: "8px"
+                    }}
+                  />
+                )}
               </Grid>
               <Grid xs={24} md={16} className="pl-8" style={{}}>
                 <h4 className="pb-8">{image.name}</h4>
-
-                <CopyToClipboard
-                  text={`![alt=image; scale=1.0](${image.url})`}
-                  onCopy={() => (
-                    <Snackbar
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left"
-                      }}
-                      open={true}
-                      autoHideDuration={6000}
-                      message="Copied...."
-                    />
-                  )}
-                >
-                  <Button type="primary">Copy URL</Button>
-                </CopyToClipboard>
-
-                <Button
-                  loading={deleting}
-                  onClick={() => deleteFile(image.name, image.url)}
-                  type="ghost"
-                  danger
-                >
-                  Delete
-                </Button>
               </Grid>
             </Grid>
           ))}

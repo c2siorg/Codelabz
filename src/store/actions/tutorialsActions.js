@@ -469,10 +469,15 @@ export const uploadTutorialImages =
       const dbPath = `tutorials`;
       await firebase.uploadFiles(storagePath, files, dbPath, {
         metadataFactory: (uploadRes, firebase, metadata, downloadURL) => {
+          const matchedFile = Array.from(files).find(
+            currentFile => currentFile.name === metadata.name
+          );
           return {
             imageURLs: firebase.firestore.FieldValue.arrayUnion({
               name: metadata.name,
-              url: downloadURL
+              url: downloadURL,
+              type: matchedFile?.type || metadata?.contentType,
+              uploadedAt: new Date().toISOString()
             })
           };
         },
