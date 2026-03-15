@@ -45,3 +45,5 @@ jobs:
           projectId: ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}
           channelId: pr-${{ github.event.pull_request.number }}
           expires: 7d
+          # Pinned to 13.35.1 as it is the last version that supports Node 18.
+          firebaseToolsVersion: 13.35.1

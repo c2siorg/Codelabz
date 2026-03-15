@@ -41,3 +41,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}
           channelId: live
           projectId: ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}
+          # Pinned to 13.35.1 as it is the last version that supports Node 18.
+          firebaseToolsVersion: 13.35.1
