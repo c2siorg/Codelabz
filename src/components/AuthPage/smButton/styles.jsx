@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     color: "#5269a4"
   },
   tw: {
-    color: "#7194ef",
+    color: "#000000",
     fontSize: "40px"
   },
   git: {
