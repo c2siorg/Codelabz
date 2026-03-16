@@ -28,9 +28,6 @@ jobs:
           echo "VITE_APP_FIREBASE_APP_ID=${{ secrets.VITE_APP_FIREBASE_APP_ID }}" >> .env
           echo "VITE_APP_FIREBASE_MEASUREMENTID=${{ secrets.VITE_APP_FIREBASE_MEASUREMENTID }}" >> .env
           echo "VITE_APP_FIREBASE_FCM_VAPID_KEY=${{ secrets.VITE_APP_FIREBASE_FCM_VAPID_KEY }}" >> .env
-          echo "VITE_APP_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_APP_FIREBASE_STORAGE_BUCKET }}" >> .env
-          echo "VITE_APP_CLOUDINARY_CLOUD_NAME=${{ secrets.VITE_APP_CLOUDINARY_CLOUD_NAME }}" >> .env
-          echo "VITE_APP_CLOUDINARY_UPLOAD_PRESET=${{ secrets.VITE_APP_CLOUDINARY_UPLOAD_PRESET }}" >> .env
           echo "VITE_APP_AUTH_DOMAIN=${{ secrets.VITE_APP_AUTH_DOMAIN }}" >> .env
           echo "VITE_APP_DATABASE_URL=${{ secrets.VITE_APP_DATABASE_URL }}" >> .env
           echo "VITE_APP_USE_EMULATOR=false" >> .env
@@ -44,7 +41,7 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ_2CD64 }}
-          projectId: codelabz-2cd64
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: codelabz-dev-5789f
           channelId: pr-${{ github.event.pull_request.number }}
           expires: 7d
