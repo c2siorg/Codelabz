@@ -49,7 +49,7 @@ export {
   updateUserProfile,
   uploadProfileImage,
   getUserFeedIdArray,
-  getUserFeedData,
+  getUserFeedData
 } from "./profileActions";
 export {
   getTutorialFeedIdArray,
@@ -59,7 +59,7 @@ export {
   getCommentData,
   getCommentReply,
   addComment
-} from "./tutorialPageActions"
+} from "./tutorialPageActions";
 export {
   addNewTutorialStep,
   addNotification,
@@ -91,6 +91,4 @@ export {
   updateTagFrequencies,
   uploadTutorialImages
 } from "./tutorialsActions";
-export {
-  getRecommendedTutorials,
-} from "./tutorialPageActions";
+export { getRecommendedTutorials } from "./tutorialPageActions";

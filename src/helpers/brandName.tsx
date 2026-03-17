@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "../assets/images/logo.png";
 
-const BrandName: React.FC = () => {
+function BrandName(): React.ReactElement {
   return (
     <>
       <img
@@ -14,6 +14,6 @@ const BrandName: React.FC = () => {
       />
     </>
   );
-};
+}
 
 export default BrandName;

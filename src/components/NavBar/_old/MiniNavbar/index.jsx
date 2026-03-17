@@ -68,8 +68,8 @@ const MiniNavbar = ({ type }) => {
                       type && type === "/signup"
                         ? "primary"
                         : type && type === "/login"
-                        ? "link"
-                        : "dashed"
+                          ? "link"
+                          : "dashed"
                     }
                   >
                     <Link to={"/signup"}>Sign Up</Link>
