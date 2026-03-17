@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import { useMediaQuery } from "react-responsive";
+import { Box, useMediaQuery } from "@mui/material";
 import StepsPanel from "./subComps/StepsPanel";
-import ReactMarkdown from "react-markdown";
 import { TutorialTimeRemaining } from "../../helpers/tutorialTime";
 import ControlButtons from "./subComps/ControlButtons";
 import TutorialHeading from "./subComps/TutorialTitle";
 import EditControls from "./subComps/EditControls";
-import Editor from "../Editor";
 import ImageDrawer from "./subComps/ImageDrawer";
 import StepsTitle from "./subComps/StepsTitle";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,13 +21,17 @@ import AddNewStepModal from "./subComps/AddNewStep";
 import QuillEditor from "../Editor/QuillEditor";
 import HtmlTextRenderer from "./subComps/HtmlTextRenderer";
 import { Collapse, Button } from "@mui/material";
+import Drawer from "@mui/material/Drawer";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles(theme => ({
   flexRow: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column"
+    }
   },
   collapseContainer: {
     minWidth: "100%",
@@ -44,9 +46,21 @@ const useStyles = makeStyles(theme => ({
     transition: theme.transitions.create(["width"])
   },
   expandButton: {
-    display: "flex",
-    alignItems: "start",
-    paddingTop: "15px"
+    position: "fixed",
+    left: "10px",
+    top: "100px",
+    zIndex: 1100,
+    backgroundColor: "white",
+    boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
+    borderRadius: "50%",
+    padding: "8px",
+    minWidth: "auto",
+    "&:hover": {
+      backgroundColor: "#f5f5f5"
+    },
+    [theme.breakpoints.up("md")]: {
+      display: "none"
+    }
   },
   rotateChildren: {
     display: "flex",
@@ -57,13 +71,21 @@ const useStyles = makeStyles(theme => ({
     })
   },
   ExpandIcon: {
-    fontSize: 50
+    fontSize: 24,
+    color: "#03AAFA"
   },
   editorContainer: {
-    width: "100%",
-    padding: "0 10px 10px 10px",
+    flexGrow: 1,
+    padding: "16px",
+    [theme.breakpoints.down("md")]: {
+      padding: "12px"
+    },
+    [theme.breakpoints.down("sm")]: {
+      padding: "20px 8px"
+    },
     overflow: "hidden",
-    background: "white"
+    background: "white",
+    position: "relative"
   }
 }));
 
@@ -98,9 +120,7 @@ const ViewTutorial = () => {
   const [stepsData, setStepData] = useState(null);
   const [tutorialData, setTutorialData] = useState(null);
   const [expand, setExpand] = useState(true);
-  const isDesktop = useMediaQuery({
-    query: "(min-device-width: 767px)"
-  });
+  const isDesktop = useMediaQuery("(min-width: 900px)");
   const { owner, tutorial_id } = useParams();
   const classes = useStyles();
 
@@ -174,88 +194,132 @@ const ViewTutorial = () => {
   if (tutorialData) {
     window.scrollTo(0, 0);
     return (
-      <Grid className="row-footer-below">
+      <Grid container className="row-footer-below">
         {allowEdit && (
-          <Grid>
-            <Grid xs={24} sm={24} md={24}>
-              <EditControls
-                isPublished={tutorialData.isPublished}
-                stepPanelVisible={stepPanelVisible}
-                isDesktop={isDesktop}
-                noteID={stepsData[currentStep].id}
-                setMode={mode => setMode(mode)}
-                mode={mode}
-                toggleImageDrawer={() => setImageDrawerVisible(true)}
-                tutorial_id={tutorialData.tutorial_id}
-                toggleAddNewStep={() =>
-                  setAddNewStepModalVisible(!addNewStepModalVisible)
-                }
-                visibility={stepsData[currentStep].visibility}
-                owner={owner}
-                currentStep={currentStep}
-                step_length={stepsData.length}
-              />
-            </Grid>
+          <Grid item xs={12}>
+            <EditControls
+              isPublished={tutorialData.isPublished}
+              stepPanelVisible={stepPanelVisible}
+              expand={expand}
+              isDesktop={isDesktop}
+              noteID={stepsData[currentStep].id}
+              setMode={mode => setMode(mode)}
+              mode={mode}
+              toggleImageDrawer={() => setImageDrawerVisible(true)}
+              tutorial_id={tutorialData.tutorial_id}
+              toggleAddNewStep={() =>
+                setAddNewStepModalVisible(!addNewStepModalVisible)
+              }
+              visibility={stepsData[currentStep].visibility}
+              owner={owner}
+              currentStep={currentStep}
+              step_length={stepsData.length}
+            />
           </Grid>
         )}
 
-        <Grid>
-          <Grid xs={24} sm={24} md={24}>
-            <TutorialHeading
-              stepPanelVisible={stepPanelVisible}
-              isDesktop={isDesktop}
-              setStepPanelVisible={setStepPanelVisible}
-              tutorialData={tutorialData}
-              timeRemaining={timeRemaining}
-            />
-          </Grid>
+        <Grid item xs={12}>
+          <TutorialHeading
+            stepPanelVisible={stepPanelVisible}
+            isDesktop={isDesktop}
+            setStepPanelVisible={setStepPanelVisible}
+            tutorialData={tutorialData}
+            timeRemaining={timeRemaining}
+          />
         </Grid>
-        <Grid className={classes.flexRow}>
-          <ExpandMore
-            data-testid="tutorial-collapse-button"
-            expand={expand}
-            onClick={() => {
-              setExpand(prev => !prev);
-              setStepPanelVisible(prev => !prev);
-            }}
-            aria-expanded={expand}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon className={classes.ExpandIcon} />
-          </ExpandMore>
+        <Grid
+          item
+          xs={12}
+          className={classes.flexRow}
+          sx={{ position: "relative" }}
+        >
+          {!isDesktop && (
+            <ExpandMore
+              data-testid="tutorial-collapse-button"
+              expand={expand}
+              onClick={() => {
+                setExpand(prev => !prev);
+                setStepPanelVisible(prev => !prev);
+              }}
+              aria-expanded={expand}
+              aria-label="show more"
+            >
+              <ExpandMoreIcon className={classes.ExpandIcon} />
+            </ExpandMore>
+          )}
 
-          <Grid
-            width={stepPanelVisible ? (isDesktop ? "55%" : "100%") : "0"}
-            padding={stepPanelVisible ? "0 2rem" : "0"}
-            className={classes.widthTransition}
-          >
-            <Collapse
-              data-testid="tutorial-steps-list"
-              in={expand}
-              timeout="auto"
-              unmountOnExit
-              orientation="horizontal"
-              className={classes.collapseContainer}
+          {isDesktop ? (
+            <Grid
+              item
+              sx={{
+                width: stepPanelVisible
+                  ? isDesktop
+                    ? "max(20%, 250px)"
+                    : "100%"
+                  : "0",
+                minWidth: stepPanelVisible
+                  ? isDesktop
+                    ? "250px"
+                    : "100%"
+                  : "0",
+                padding: stepPanelVisible ? "0" : "0",
+                display: stepPanelVisible ? "block" : "none",
+                overflow: "hidden",
+                transition: "width 0.3s"
+              }}
+              className={classes.widthTransition}
+            >
+              <Collapse
+                data-testid="tutorial-steps-list"
+                in={expand}
+                timeout="auto"
+                unmountOnExit
+                orientation="horizontal"
+                className={classes.collapseContainer}
+              >
+                <StepsPanel
+                  currentStep={currentStep}
+                  onChange={onChange}
+                  stepsData={stepsData}
+                  onClick={() => setStepPanelVisible(false)}
+                  hideButton={isDesktop}
+                  setCurrentStep={setCurrentStep}
+                  setStepData={setStepData}
+                />
+              </Collapse>
+            </Grid>
+          ) : (
+            <Drawer
+              anchor="left"
+              open={stepPanelVisible}
+              onClose={() => setStepPanelVisible(false)}
+              PaperProps={{
+                sx: { width: "80%", maxWidth: "300px" }
+              }}
             >
               <StepsPanel
                 currentStep={currentStep}
                 onChange={onChange}
                 stepsData={stepsData}
                 onClick={() => setStepPanelVisible(false)}
-                hideButton={isDesktop}
+                hideButton={false}
                 setCurrentStep={setCurrentStep}
                 setStepData={setStepData}
               />
-            </Collapse>
-          </Grid>
+            </Drawer>
+          )}
 
-          <Grid className={classes.editorContainer}>
-            <Grid className="tutorial-content" justify="center" container>
+          <Grid item sx={{ flexGrow: 1, overflow: "hidden" }}>
+            <Grid
+              className="tutorial-content"
+              justifyContent="center"
+              container
+            >
               <Grid
-                xs={24}
-                sm={24}
-                md={20}
-                lg={18}
+                item
+                xs={12}
+                md={10}
+                lg={9}
                 className="col-pad-24-s mt-24-od tutorial-paper"
                 style={{
                   display: "flex",
@@ -295,6 +359,15 @@ const ViewTutorial = () => {
                     )}
                   </>
                 )}
+                <Box sx={{ mt: 4, pt: 2, borderTop: "1px solid #eee" }}>
+                  <ControlButtons
+                    currentStep={currentStep}
+                    setCurrentStep={setCurrentStep}
+                    stepsData={stepsData}
+                    setStepData={setStepData}
+                    hide={false}
+                  />
+                </Box>
               </Grid>
               {imageDrawerVisible && (
                 <ImageDrawer

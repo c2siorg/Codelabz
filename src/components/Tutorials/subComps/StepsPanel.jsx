@@ -12,12 +12,25 @@ import ControlButtons from "./ControlButtons";
 
 const useStyles = makeStyles({
   stepperContainer: {
-    width: "90%"
+    width: "100%",
+    padding: "20px 0"
   },
   stepButtonStyle: {
-    padding: "8px 16px",
-    borderRadius: 20,
-    backgroundColor: grey[100]
+    padding: "12px 20px",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    border: "1px solid #e8e8e8",
+    "&:hover": {
+      backgroundColor: grey[50],
+      borderColor: "#2894ff"
+    },
+    width: "100%",
+    textAlign: "left",
+    justifyContent: "flex-start",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
+  },
+  stepItem: {
+    marginBottom: "16px"
   }
 });
 
@@ -33,15 +46,9 @@ const StepsPanel = ({
   const classes = useStyles();
   return (
     <Box className="tutorial-steps-sider" sx={theme => ({ p: 1 })}>
-      <Grid>
-        <Grid xs={24} sm={24} md={24} className="col-pad-24-s">
-          <ControlButtons
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
-            stepsData={stepsData}
-            setStepData={setStepData}
-            hide={!hideButton}
-          />
+      <Grid container>
+        <Grid item xs={12} className="col-pad-24-s">
+          {/* ControlButtons moved to main content area */}
         </Grid>
       </Grid>
       {!hideButton &&
@@ -67,7 +74,11 @@ const StepsPanel = ({
         {stepsData &&
           stepsData.map((step, index) => {
             return (
-              <Step key={"step" + step.id} completed={step.completed}>
+              <Step
+                key={"step" + step.id}
+                completed={step.completed}
+                className={classes.stepItem}
+              >
                 <StepButton
                   className={classes.stepButtonStyle}
                   onClick={() => {
@@ -75,7 +86,6 @@ const StepsPanel = ({
                   }}
                 >
                   {step.title}
-                  {step.visibility}
                 </StepButton>
               </Step>
             );

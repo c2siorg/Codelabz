@@ -1,4 +1,11 @@
-import { Grid, IconButton, InputBase, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  InputBase,
+  Paper,
+  Typography
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import Headroom from "react-headroom";
@@ -8,7 +15,6 @@ import RightMenu from "./RightMenu";
 import LeftMenu from "./LeftMenu";
 import { useHistory } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
 import { useSelector } from "react-redux";
 import SideBar from "../../../SideBar/index";
 import useWindowSize from "../../../../helpers/customHooks/useWindowSize";
@@ -28,7 +34,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.grey[50],
     padding: "2px",
     border: "1px solid #ced4da",
-    borderRadius: "0.8rem"
+    borderRadius: "0.8rem",
+    [theme.breakpoints.between("sm", "md")]: {
+      maxWidth: "60%",
+      margin: "0 auto"
+    }
   },
   icon: {
     padding: "2px",
@@ -38,7 +48,8 @@ const useStyles = makeStyles(theme => ({
     width: "auto",
     "& > *": {},
     [theme.breakpoints.down("sm")]: {
-      display: "none"
+      justifyContent: "center",
+      marginTop: theme.spacing(1)
     }
   },
   button: {
@@ -94,38 +105,42 @@ function MainNavbar() {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          sx={{ px: { xs: 1, sm: 2 } }}
         >
-          <Grid item container xs={12} md={2} alignItems="center">
-            <Grid
+          <Grid item xs="auto" sx={{ display: "flex", alignItems: "center" }}>
+            <div
+              onClick={() => {
+                history.push("/");
+              }}
+              data-testid="navbarBrand"
               style={{
-                flexGrow: "1"
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center"
               }}
             >
-              <div
-                onClick={() => {
-                  history.push("/");
-                }}
-                data-testid="navbarBrand"
-              >
-                <BrandName />
-              </div>
-            </Grid>
-            <Grid item className={classes.hamburger}>
-              <IconButton
-                onClick={() => {
-                  toggleSlider();
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            </Grid>
+              <BrandName />
+            </div>
           </Grid>
-          <Grid item xs={12} md={5}>
+
+          <Grid
+            item
+            xs
+            sx={{
+              display: { xs: "none", md: "flex" },
+              justifyContent: "center"
+            }}
+          >
             <Paper
               component={"form"}
               className={classes.root}
               elevation={0}
               onSubmit={handleSearch}
+              sx={{
+                maxWidth: "600px",
+                width: "100%",
+                mx: "2rem"
+              }}
             >
               <IconButton
                 type="button"
@@ -145,19 +160,76 @@ function MainNavbar() {
               />
             </Paper>
           </Grid>
+
           <Grid
             item
-            container
-            direction="row"
-            alignItems="center"
-            className={classes.grid}
+            xs="auto"
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: 1
+            }}
           >
-            <Grid item justifyContent="center">
+            <Box
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                alignItems: "center",
+                gap: 1
+              }}
+            >
               <LeftMenu />
-            </Grid>
-            <Grid item>
-              <RightMenu />
-            </Grid>
+            </Box>
+            <RightMenu nav={true} />
+            <Box className={classes.hamburger}>
+              <IconButton
+                onClick={() => {
+                  toggleSlider();
+                }}
+                sx={{ ml: 0.5 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Box>
+          </Grid>
+
+          {/* Mobile/Tablet Search Row (Below Logo/Menu) */}
+          <Grid
+            item
+            xs={12}
+            sx={{ display: { xs: "flex", md: "none" }, mt: 2, pb: 1 }}
+          >
+            <Paper
+              component={"form"}
+              className={classes.root}
+              elevation={0}
+              onSubmit={handleSearch}
+              sx={{
+                width: "100%",
+                borderRadius: "2rem",
+                display: "flex",
+                alignItems: "center",
+                px: 1
+              }}
+            >
+              <IconButton
+                type="button"
+                aria-label="search"
+                disableRipple
+                className={classes.icon}
+                data-testid="navbarSearch"
+                onClick={handleSearch}
+              >
+                <SearchIcon />
+              </IconButton>
+              <InputBase
+                className={classes.input}
+                value={searchQuery}
+                placeholder="Search tutorials..."
+                onChange={handleSearchChange}
+                sx={{ width: "100%", ml: 1 }}
+              />
+            </Paper>
           </Grid>
         </Grid>
         {windowSize.width <= 960 && (

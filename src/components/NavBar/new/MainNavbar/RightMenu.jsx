@@ -22,7 +22,8 @@ import {
   AccordionSummary,
   List,
   ListItem,
-  Typography
+  Typography,
+  Box
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -46,7 +47,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const RightMenu = ({ mode, onClick }) => {
+const RightMenu = ({ mode, onClick, nav }) => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const { pathname } = useLocation();
@@ -95,25 +96,9 @@ const RightMenu = ({ mode, onClick }) => {
 
   const allowOrgs = organizations && organizations.length > 0;
 
-  const orgList =
-    allowOrgs > 0
-      ? organizations.map((org, i) => {
-          return (
-            <Menu.Item key={`org:${i}`}>
-              <Link to={`/org/${org.org_handle}`}>
-                <Avatar src={org.org_image} size="small" className="mr-8 ml-0">
-                  {avatarName(org.org_name)}
-                </Avatar>{" "}
-                {org.org_name}
-              </Link>
-            </Menu.Item>
-          );
-        })
-      : null;
-
   const classes = useStyles();
 
-  if (matches) {
+  if (matches && !nav) {
     return (
       <React.Fragment>
         <List>
@@ -232,10 +217,11 @@ const RightMenu = ({ mode, onClick }) => {
   }
 
   return (
-    <Grid
-      container
-      style={{
-        marginRight: "2rem"
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        ml: { xs: 0, sm: 2 }
       }}
     >
       <Avatar
@@ -244,8 +230,6 @@ const RightMenu = ({ mode, onClick }) => {
             profile.photoURL && profile.photoURL.length > 0
               ? "#fffff"
               : "#3AAFA9",
-          marginLeft: "1rem",
-          marginBottom: ".2rem",
           cursor: "pointer"
         }}
         size={mode === "inline" ? "default" : "medium"}
@@ -375,7 +359,7 @@ const RightMenu = ({ mode, onClick }) => {
           </Typography>
         </MenuItem>
       </Menu>
-    </Grid>
+    </Box>
   );
 };
 

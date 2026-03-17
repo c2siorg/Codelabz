@@ -21,11 +21,28 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useDispatch } from "react-redux";
 import RemoveStepModal from "./RemoveStepModal";
 import ColorPickerModal from "./ColorPickerModal";
-import { Box, Stack } from "@mui/system";
+import { Box, Stack, IconButton } from "@mui/material";
+
+const actionButtonSx = {
+  minWidth: {
+    xs: "100%",
+    sm: "120px"
+  },
+  fontSize: {
+    xs: "0.85rem",
+    sm: "0.875rem"
+  },
+  whiteSpace: "nowrap",
+  textTransform: "none",
+  flexShrink: 0,
+  flexGrow: 1,
+  py: { xs: 1.5, sm: 1 }
+};
 
 const EditControls = ({
   isPublished,
   stepPanelVisible,
+  expand,
   isDesktop,
   setMode,
   noteID,
@@ -115,42 +132,67 @@ const EditControls = ({
 
   return (
     <>
-      <Stack
-        direction={"row"}
+      <Box
         sx={{
-          px: 2
+          display: "flex",
+          flexDirection: {
+            xs: "column",
+            sm: "row"
+          },
+          gap: 2,
+          px: 2,
+          py: 3,
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          borderBottom: "1px solid #f0f0f0",
+          backgroundColor: "#fff"
         }}
       >
         <Button
-          color="info"
+          color="primary"
           data-testid="addNewStep"
           variant="contained"
           sx={{
             boxShadow: "none",
-            borderRadius: 1
+            borderRadius: 1,
+            ...actionButtonSx,
+            width: { xs: "100%", sm: "auto" }
           }}
           onClick={() => toggleAddNewStep()}
+          startIcon={<AddIcon />}
         >
-          <AddIcon /> Add New Step
+          Add New Step
         </Button>
         <Button
-          className="ml-24"
           color="warning"
+          variant="outlined"
           onClick={() => toggleImageDrawer()}
           id="tutorialAddImg"
           startIcon={<InsertDriveFileIcon />}
+          sx={{
+            ...actionButtonSx,
+            width: { xs: "100%", sm: "auto" }
+          }}
         >
           Add images
         </Button>
-
         <Button
-          danger
+          variant="outlined"
+          sx={{
+            color: "rgba(0, 0, 0, 0.45)",
+            borderColor: "rgba(0, 0, 0, 0.15)",
+            ...actionButtonSx,
+            width: { xs: "100%", sm: "auto" }
+          }}
           onClick={() => {
             setViewRemoveStepModal(!viewRemoveStepModal);
           }}
           disabled={step_length === 1}
+          startIcon={<DeleteIcon />}
         >
-          <DeleteIcon /> Remove step
+          Remove step
           <RemoveStepModal
             owner={owner}
             tutorial_id={tutorial_id}
@@ -160,51 +202,61 @@ const EditControls = ({
             step_length={step_length}
           />
         </Button>
-        <Box
+
+        {mode === "edit" && (
+          <UserList tutorial_id={tutorial_id} noteID={noteID} />
+        )}
+
+        {mode === "view" ? (
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => setMode("edit")}
+            id="editorMode"
+            data-testId="editorMode"
+            startIcon={<EditIcon />}
+            sx={{
+              ...actionButtonSx,
+              boxShadow: "none",
+              width: { xs: "100%", sm: "auto" }
+            }}
+          >
+            Editor mode
+          </Button>
+        ) : (
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() => setMode("view")}
+            data-testId="previewMode"
+            startIcon={<FileCopyIcon />}
+            sx={{
+              ...actionButtonSx,
+              boxShadow: "none",
+              width: { xs: "100%", sm: "auto" }
+            }}
+          >
+            Preview mode
+          </Button>
+        )}
+
+        <Button
+          data-testid="publishTutorial"
+          onClick={handlePublishTutorial}
+          variant="outlined"
+          color="primary"
+          disabled={publishLoad}
+          startIcon={<FileCopyIcon />}
           sx={{
-            flexGrow: 1
+            ...actionButtonSx,
+            width: { xs: "100%", sm: "auto" }
           }}
-        />
-        <div>
-          {!isDesktop && stepPanelVisible ? null : (
-            <>
-              {mode === "edit" && (
-                <UserList tutorial_id={tutorial_id} noteID={noteID} />
-              )}
-              {mode === "view" && (
-                <Button
-                  type="primary"
-                  className="ml-24"
-                  onClick={() => setMode("edit")}
-                  id="editorMode"
-                  data-testId="editorMode"
-                >
-                  <EditIcon /> Editor mode
-                </Button>
-              )}
-              {mode === "edit" && (
-                <Button
-                  type="primary"
-                  className="ml-24"
-                  onClick={() => setMode("view")}
-                  data-testId="previewMode"
-                >
-                  <FileCopyIcon /> Preview mode
-                </Button>
-              )}
-              <Button
-                data-testid="publishTutorial"
-                onClick={handlePublishTutorial}
-                type="dashed"
-                disabled={publishLoad}
-              >
-                <FileCopyIcon /> {isPublished ? "Unpublish" : "Publish"}
-              </Button>
-              <DropdownMenu key="more" />
-            </>
-          )}
-        </div>
-      </Stack>
+        >
+          {isPublished ? "Unpublish" : "Publish"}
+        </Button>
+
+        <DropdownMenu key="more" />
+      </Box>
       <ColorPickerModal
         visible={viewColorPickerModal}
         visibleCallback={e => setViewColorPickerModal(e)}

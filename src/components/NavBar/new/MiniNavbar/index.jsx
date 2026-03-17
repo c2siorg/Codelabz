@@ -33,7 +33,11 @@ const useStyles = makeStyles(theme => ({
     padding: "2px",
     border: "1px solid #ced4da",
     borderRadius: "0.8rem",
-    width: "100%"
+    width: "100%",
+    [theme.breakpoints.between("sm", "md")]: {
+      maxWidth: "60%",
+      margin: "0 auto"
+    }
   },
   icon: {
     padding: "2px",
@@ -137,7 +141,14 @@ function MiniNavbar() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Grid item xs={12} md={3} container alignItems="center">
+          <Grid
+            item
+            xs={12}
+            md={3}
+            container
+            alignItems="center"
+            sx={{ mb: { xs: 1, md: 0 } }}
+          >
             <Grid
               item
               style={{
@@ -286,53 +297,53 @@ function MiniNavbar() {
           toggleSlider={toggleSlider}
           notificationCount={notificationCount}
         >
-          {window.innerWidth <= 960 && (
-            <>
-              <Grid
-                item
+          {window.innerWidth <= 960 && [
+            <Grid
+              item
+              key="login-btn"
+              style={{
+                padding: 10
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
                 style={{
-                  padding: 10
+                  boxShadow: "none",
+                  color: "white"
+                }}
+                className={classes.button}
+                onClick={() => {
+                  toggleSlider();
+                  history.push("/login");
                 }}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    boxShadow: "none",
-                    color: "white"
-                  }}
-                  className={classes.button}
-                  onClick={() => {
-                    toggleSlider();
-                    history.push("/login");
-                  }}
-                >
-                  Login
-                </Button>
-              </Grid>
-              <Grid
-                item
+                Login
+              </Button>
+            </Grid>,
+            <Grid
+              item
+              key="signup-btn"
+              style={{
+                padding: 10
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
                 style={{
-                  padding: 10
+                  boxShadow: "none"
+                }}
+                className={classes.button}
+                onClick={() => {
+                  toggleSlider();
+                  history.push("/signup");
                 }}
               >
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  style={{
-                    boxShadow: "none"
-                  }}
-                  className={classes.button}
-                  onClick={() => {
-                    toggleSlider();
-                    history.push("/signup");
-                  }}
-                >
-                  Sign Up
-                </Button>
-              </Grid>
-            </>
-          )}
+                Sign Up
+              </Button>
+            </Grid>
+          ]}
         </SideBar>
       )}
     </Headroom>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createTutorial, getProfileData } from "../../../store/actions";
@@ -20,6 +20,15 @@ import MovieIcon from "@mui/icons-material/Movie";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
+import {
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,6 +74,10 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     owner: "",
     tags: []
   });
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = React.useRef(null);
 
   const loadingProp = useSelector(
     ({
@@ -150,22 +163,66 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     setformValue({
       title: "",
       summary: "",
-      owner: "",
+      owner: userHandle || "",
       tags: []
     });
+    setMediaFiles([]);
     setVisible(viewModal);
-  }, [viewModal]);
+  }, [viewModal, userHandle]);
 
   const onSubmit = formData => {
     formData.preventDefault();
     const tutorialData = {
       ...formValue,
+      owner: formValue.owner || userHandle,
       created_by: userHandle,
       is_org: userHandle !== formValue.owner,
-      completed: false
+      completed: false,
+      mediaFiles: mediaFiles
     };
     console.log(tutorialData);
     createTutorial(tutorialData)(firebase, firestore, dispatch, history);
+  };
+
+  const handleFileUpload = async event => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    const storagePath = `tutorials/media/${Date.now()}_${file.name}`;
+    const storageRef = firebase.storage().ref(storagePath);
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on(
+      "state_changed",
+      snapshot => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
+      },
+      error => {
+        console.error("Upload failed", error);
+        setUploading(false);
+      },
+      async () => {
+        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+        const newMedia = {
+          name: file.name,
+          url: downloadURL,
+          type: file.type,
+          path: storagePath
+        };
+        setMediaFiles(prev => [...prev, newMedia]);
+        setUploading(false);
+        setUploadProgress(0);
+      }
+    );
+  };
+
+  const removeMedia = index => {
+    setMediaFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const onOwnerChange = value => {
@@ -203,6 +260,27 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   };
 
   const classes = useStyles();
+  const ownerOptions = useMemo(() => {
+    const options = [];
+    if (userHandle) {
+      options.push({
+        value: userHandle,
+        label: displayName || userHandle
+      });
+    }
+
+    if (orgList && orgList.length > 0) {
+      orgList.forEach(org => {
+        options.push({
+          value: org.org_handle,
+          label: org.org_name
+        });
+      });
+    }
+
+    return options;
+  }, [userHandle, displayName, orgList]);
+
   return (
     <Modal
       open={visible}
@@ -219,11 +297,12 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
         data-testId="tutorialNewModal"
         style={{
           height: "auto",
-          width: "auto",
+          width: "min(40rem, 92vw)",
           background: "white",
           padding: "2rem",
           paddingTop: "1rem",
-          maxWidth: "40%"
+          maxHeight: "90vh",
+          overflowY: "auto"
         }}
       >
         {error && (
@@ -240,10 +319,11 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
         >
           <Typography>
             <Select
-              options={organizations?.map(org => ({
-                value: org.org_handle,
-                label: org.org_name
-              }))}
+              options={ownerOptions}
+              value={
+                ownerOptions.find(option => option.value === formValue.owner) ||
+                null
+              }
               onChange={data => {
                 onOwnerChange(data.value);
               }}
@@ -312,15 +392,76 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             ))}
           </div>
 
-          <IconButton>
+          <input
+            type="file"
+            multiple={false}
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileUpload}
+          />
+
+          <IconButton onClick={() => fileInputRef.current.click()}>
             <ImageIcon />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => fileInputRef.current.click()}>
             <MovieIcon />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => fileInputRef.current.click()}>
             <DescriptionIcon />
           </IconButton>
+
+          {uploading && (
+            <Box sx={{ width: "100%", mt: 1 }}>
+              <LinearProgress variant="determinate" value={uploadProgress} />
+            </Box>
+          )}
+
+          <List>
+            {mediaFiles.map((file, index) => (
+              <ListItem key={index}>
+                <Avatar sx={{ mr: 2 }}>
+                  {file.type.startsWith("image/") ? (
+                    <ImageIcon />
+                  ) : file.type.startsWith("video/") ? (
+                    <MovieIcon />
+                  ) : (
+                    <InsertDriveFileIcon />
+                  )}
+                </Avatar>
+                <ListItemText
+                  primary={file.name}
+                  secondary={file.type}
+                  primaryTypographyProps={{ noWrap: true }}
+                />
+                <Box sx={{ mr: 2, maxWidth: "120px" }}>
+                  {file.type.startsWith("image/") && (
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      style={{ width: "100%", borderRadius: "6px" }}
+                    />
+                  )}
+                  {file.type.startsWith("video/") && (
+                    <video
+                      src={file.url}
+                      controls
+                      style={{ width: "100%", borderRadius: "6px" }}
+                    />
+                  )}
+                  {file.type === "application/pdf" && (
+                    <a href={file.url} target="_blank" rel="noreferrer">
+                      Preview PDF
+                    </a>
+                  )}
+                </Box>
+                <ListItemSecondaryAction>
+                  <IconButton edge="end" onClick={() => removeMedia(index)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
 
           <div className="mb-0">
             <div style={{ float: "right" }}>
@@ -333,7 +474,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
                   setformValue({
                     title: "",
                     summary: "",
-                    owner: "",
+                    owner: userHandle || "",
                     tags: []
                   });
                 }}
@@ -361,7 +502,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
                 disabled={
                   formValue.title === "" ||
                   formValue.summary === "" ||
-                  formValue.owner === ""
+                  (formValue.owner === "" && !userHandle)
                 }
               >
                 {loading ? "Creating..." : "Create"}
