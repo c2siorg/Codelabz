@@ -1,28 +1,37 @@
-version: "3.3"
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_APP_FIREBASE_API_KEY: AIzaSyAunhVtyOESro68vlI0v0BKEJpVahUiKr4
+        VITE_APP_AUTH_DOMAIN: codelabz-bd43c.firebaseapp.com
+        VITE_APP_FIREBASE_PROJECT_ID: codelabz-bd43c
+        VITE_APP_FIREBASE_MESSAGING_SENDER_ID: 1043796312735
+        VITE_APP_FIREBASE_APP_ID: 1:1043796312735:web:5bdc20c9df24615baa98aa
+        VITE_APP_FIREBASE_MEASUREMENTID: G-MW6624Z3XC
+        VITE_APP_DATABASE_URL: https://codelabz-bd43c-default-rtdb.firebaseio.com
+        VITE_APP_FIREBASE_STORAGE_BUCKET: codelabz-bd43c.firebasestorage.app
+        VITE_APP_FIREBASE_FCM_VAPID_KEY: BM9kKCZyqDfDBrCowOCu0Db2HuBx5JTRX-zKloDIydsJWdH5Ye7WaPYkYwcY4eFt8lpfk9dIHQEzv4vLJ9P8sls
+        VITE_APP_USE_EMULATOR: "true"
     ports:
-      - 5173:5173
-    volumes:
-      - .:/app
+      - "80:80"
+    depends_on:
+      - emulator
     networks:
       - main
+
   emulator:
-    image: spine3/firebase-emulator
-    environment:
-      ENABLE_UI: true
-      GCP_PROJECT: demo-sampark
+    image: andreysenov/firebase-tools
+    command: firebase emulators:start --project codelabz-bd43c --import=/data --only auth,firestore,database,hosting
     ports:
-      - 5001:5001
-      - 9000:9000
-      - 8080:8080
-      - 8085:8085
-      - 5000:5000
-      - 4000:4000
+      - "9099:9099"
+      - "8090:8090"
+      - "9001:9001"
+      - "5000:5000"
+      - "4000:4000"
+    volumes:
+      - ./testdata:/data
     networks:
       - main
 
