@@ -1,11 +1,10 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
-import Typography from "@mui/material/Typography";
-import React, { useEffect } from "react";
+import React from "react";
 import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: any) => ({
   root: {
     display: "flex",
     justifyContent: "center",
@@ -26,24 +25,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FooterLinks = props => {
+interface FooterLinkElement {
+  name: string;
+  link: string;
+}
+
+interface FooterLinksProps {
+  elements: FooterLinkElement[];
+}
+
+const FooterLinks: React.FC<FooterLinksProps> = ({ elements }) => {
   const classes = useStyles();
 
   return (
     <Card className={classes.root}>
       <CardContent>
-        {props.elements.map(function (el, index) {
-          return (
-            <a href={el.link}>
-              <Chip
-                size="small"
-                label={el.name}
-                id={index}
-                className={classes.chip}
-              />
-            </a>
-          );
-        })}
+        {elements.map((el, index) => (
+          <a key={`${el.link}-${index}`} href={el.link}>
+            <Chip
+              size="small"
+              label={el.name}
+              id={`${index}`}
+              className={classes.chip}
+            />
+          </a>
+        ))}
       </CardContent>
     </Card>
   );
