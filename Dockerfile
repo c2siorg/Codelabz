@@ -1,19 +1,16 @@
-FROM node:14
-
-# Set the working directory in the container
+# Stage 1: Build the React/Vite App
+FROM node:18-alpine as builder
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the container
 COPY package*.json ./
-
-# Install the project dependencies
-RUN npm install
-
-# Copy the entire project directory to the container
+RUN npm install --legacy-peer-deps 
 COPY . .
+RUN npm run build
 
-# Expose the desired port for the Node.js server
-EXPOSE 5173
+# Stage 2: Serve with NGINX
+FROM nginx:alpine
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Run the Node.js server
-CMD [ "npm", "run", "dev", "--host" ]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
