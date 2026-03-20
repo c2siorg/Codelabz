@@ -199,29 +199,17 @@ const Login = ({
               )
             }}
           />
-          <Grid container alignItems="center" justify="space-between">
-            <Grid>
-              <FormGroup row>
-                <FormControlLabel
-                  control={<Checkbox name="remember" color="primary" />}
-                  label="Remember me"
-                />
-              </FormGroup>
-            </Grid>
-            <Grid
-              style={{ fontFamily: "Arial, sans-serif", fontSize: "1.5vh" }}
-            >
-              <Link
-                data-testId="forgotPassoword"
-                to="/forgotpassword"
-                className="login-form-forgot"
-                style={{ float: "right" }}
-              >
-                Forgot password
-              </Link>
-            </Grid>
-          </Grid>
-
+          <div className={classes.rememberForgotRow}>
+            <FormGroup row>
+              <FormControlLabel
+                control={<Checkbox name="remember" color="primary" />}
+                label="Remember me"
+              />
+            </FormGroup>
+            <Link to="/forgotpassword" className={classes.forgotLink} data-testId="forgotPassword">
+              Forgot password
+            </Link>
+          </div>
           <Button
             variant="contained"
             color="primary"
@@ -229,17 +217,12 @@ const Login = ({
             onClick={onSubmit}
             disabled={loading}
             data-testId="loginButton"
-            className="loginButton"
-            style={{
-              color: "white",
-              borderRadius: "30px",
-              margin: "auto",
-              padding: "10px"
-            }}
+            className={`loginButton ${classes.loginButton}`}
+            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
+            sx={{ textTransform: "none", borderRadius: "30px", padding: "12px", fontWeight: 600, fontSize: "1rem", marginTop: "8px" }}
           >
-            {loading ? "Logging in..." : "Log in"}
-          </Button>
-        </div>
+          {loading ? "Logging in..." : "Log In"}
+        </Button>        </div>
         <Divider>or</Divider>
         <SmButtons />
         <Grid container justify="center" alignItems="center" className="mt-24">
