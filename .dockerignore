@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.git
+.gitignore
+*.log
+.firebase
+firebase-debug.log
+firestore-debug.log
+database-debug.log
