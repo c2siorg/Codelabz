@@ -65,6 +65,7 @@ const UserElement = ({ user, index, useStyles }) => {
       >
         <img
           src={user.img[0]}
+          alt={user.name ? `${user.name}'s profile picture` : "User profile picture"}
           className={classes.userImg}
           data-testId={index == 0 ? "UsersCardImg" : ""}
         />

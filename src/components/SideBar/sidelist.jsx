@@ -121,14 +121,14 @@ const SideList = ({
                             classes={{ badge: classes.customBadge }}
                           >
                             <img
-                              alt={"..."}
+                              alt={item.name || "Menu icon"}
                               src={item.img}
                               className={classes.icons}
                             />
                           </Badge>
                         ) : (
                           <img
-                            alt={"..."}
+                            alt={item.name || "Menu icon"}
                             src={item.img}
                             className={classes.icons}
                           />
@@ -200,7 +200,7 @@ const SideList = ({
                   {item.img && (
                     <ListItemIcon className={classes.listIcon}>
                       <img
-                        alt={"..."}
+                        alt={item.name || "Menu icon"}
                         src={item.img}
                         className={classes.icons}
                       />

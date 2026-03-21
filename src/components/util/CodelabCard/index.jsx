@@ -56,7 +56,7 @@ const CardComponent = ({
                       src={
                         require(`../../../assets/images/${profilePic}`).default
                       }
-                      alt=""
+                      alt="Author profile picture"
                       height="20rem"
                       width="20rem"
                       className={classes.personImg}
@@ -66,7 +66,7 @@ const CardComponent = ({
               ) : (
                 <img
                   src={require(`../../../assets/images/${profilePic}`).default}
-                  alt=""
+                  alt="Author profile picture"
                   className={classes.avatar}
                 />
               )}
