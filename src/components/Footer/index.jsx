@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import BrandName from "../../helpers/brandName";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import { makeStyles } from "@mui/styles";
+
 import GitHubIcon from "@mui/icons-material/GitHub";
 import BugReportOutlinedIcon from "@mui/icons-material/BugReportOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
@@ -16,14 +16,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CopyrightOutlinedIcon from "@mui/icons-material/CopyrightOutlined";
 
 const Footer = () => {
-  const useStyles = makeStyles({
-    item: {
-      display: "flex",
-      alignItems: "left",
-      justifyContent: "flex-start"
-    }
-  });
-  const classes = useStyles();
+
   return (
     <footer className="light-grey-bg pt-16 pb-16">
       <Grid container direction="row">
@@ -45,7 +38,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <HelpOutlineOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
@@ -61,7 +54,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <CheckOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
@@ -77,7 +70,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <LockOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
@@ -97,7 +90,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className=" footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <ListOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
@@ -113,7 +106,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <GitHubIcon className="mr-8" style={{ color: "#455A64" }} />{" "}
                 GitHub
               </Grid>
@@ -126,7 +119,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <BugReportOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
@@ -153,7 +146,7 @@ const Footer = () => {
               href="mailto: contact@codelabz.com"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <MailOutlineOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
@@ -169,7 +162,7 @@ const Footer = () => {
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <Grid style={{ display: "flex", alignItems: "left", justifyContent: "flex-start" }}>
                 <HomeOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
