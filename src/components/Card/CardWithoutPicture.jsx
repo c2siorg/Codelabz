@@ -91,7 +91,7 @@ export default function CardWithoutPicture({ tutorial }) {
         avatar={
           <Avatar className={classes.avatar}>
             {user?.photoURL && user?.photoURL.length > 0 ? (
-              <img src={user?.photoURL} />
+              <img src={user?.photoURL} alt={user?.displayName} />
             ) : (
               user?.displayName[0]
             )}

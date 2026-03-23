@@ -23,6 +23,7 @@ export default function ProfileCardTwo({
               <img
                 className={classes.profileUserImg}
                 src={profileImage}
+                alt ={name}
                 data-testId="user_profile_card_two_avatar"
               />
             </div>
