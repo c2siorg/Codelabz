@@ -103,7 +103,7 @@ export const getTutorialFeedData =
             featured_image: tutorial?.featured_image,
             tut_tags: tutorial?.tut_tags,
             upVotes: tutorial?.upVotes || 0,
-            downVotes: tutorial?.downVotes || 0,
+            downVotes: tutorial?.downVotes || 0
           };
           return tutorialData;
         });
@@ -223,36 +223,39 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
   }
 };
 
-export const getRecommendedTutorials = currentTutorialTags => async (firebase, firestore) => {
-  try {
-    const tutorialsRef = firestore.collection("tutorials");
+export const getRecommendedTutorials =
+  currentTutorialTags => async (firebase, firestore) => {
+    try {
+      const tutorialsRef = firestore.collection("tutorials");
 
-    // Fetch tutorials with matching tags
-    const querySnapshot = await tutorialsRef
-      .where("tut_tags", "array-contains-any", currentTutorialTags)
-      .get();
+      // Fetch tutorials with matching tags
+      const querySnapshot = await tutorialsRef
+        .where("tut_tags", "array-contains-any", currentTutorialTags)
+        .get();
 
-    // Calculate relevance score based on matching tags
-    const recommendedTutorials = querySnapshot.docs
-      .map(doc => {
-        const tutorial = doc.data();
+      // Calculate relevance score based on matching tags
+      const recommendedTutorials = querySnapshot.docs
+        .map(doc => {
+          const tutorial = doc.data();
 
-        // Skip unpublished tutorials
-        if (!tutorial.isPublished) return null;
+          // Skip unpublished tutorials
+          if (!tutorial.isPublished) return null;
 
-        const matchingTags = tutorial.tut_tags.filter(tag => currentTutorialTags.includes(tag));
-        return {
-          ...tutorial,
-          relevanceScore: matchingTags.length
-        };
-      })
-      .filter(tutorial => tutorial !== null);  // Remove null values from the array
+          const matchingTags = tutorial.tut_tags.filter(tag =>
+            currentTutorialTags.includes(tag)
+          );
+          return {
+            ...tutorial,
+            relevanceScore: matchingTags.length
+          };
+        })
+        .filter(tutorial => tutorial !== null); // Remove null values from the array
 
-    recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
+      recommendedTutorials.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-    return recommendedTutorials;
-  } catch (error) {
-    console.error("Error fetching recommended tutorials:", error);
-    return [];
-  }
-};
+      return recommendedTutorials;
+    } catch (error) {
+      console.error("Error fetching recommended tutorials:", error);
+      return [];
+    }
+  };
