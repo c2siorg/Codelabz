@@ -1,8 +1,87 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+
+    // Helper: check if the request is from an authenticated user
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: check if the authenticated user owns this resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User profiles
+    match /cl_user/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // Organization general data
+    // Public read for published orgs, authenticated read for all,
+    // authenticated write for any logged-in user (org-level RBAC comes later)
+    match /cl_org_general/{orgHandle} {
+      allow read: if isAuthenticated() || resource.data.org_published == true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    // Organization-user membership and permissions
+    match /org_users/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Organization subscribers
+    match /org_subscribers/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Tutorials — public read for published, authenticated write
+    match /tutorials/{tutorialId} {
+      allow read: if isAuthenticated() || resource.data.isPublished == true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+
+      // Tutorial steps (subcollection)
+      match /steps/{stepId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
+      }
+    }
+
+    // Comments on tutorials — public read, authenticated write
+    match /cl_comments/{commentId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    // User follower relationships
+    match /user_followers/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Tag frequencies — public read, authenticated write
+    match /tag_frequencies/{tagId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Notifications — only accessible by authenticated users
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
   }
 }
