@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { useFirebase } from "react-redux-firebase";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
@@ -83,7 +82,7 @@ export const removeOrgUser =
   ({ org_handle, handle }) =>
   async (firestore, dispatch) => {
     try {
-      dispatch({ type: actions.ADD_ORG_USER_START });
+      dispatch({ type: actions.REMOVE_ORG_USER_START });
       const userDoc = await firestore
         .collection("cl_user")
         .where("handle", "==", handle)
@@ -96,16 +95,15 @@ export const removeOrgUser =
           .delete();
 
         await getOrgUserData(org_handle)(firestore, dispatch);
-        dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
+        dispatch({ type: actions.REMOVE_ORG_USER_SUCCESS });
       } else {
         dispatch({
-          type: actions.ADD_ORG_USER_FAIL,
+          type: actions.REMOVE_ORG_USER_FAIL,
           payload: `User [${handle}] is not registered with CodeLabz`
         });
       }
     } catch (e) {
-      console.log(e);
-      dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
+      dispatch({ type: actions.REMOVE_ORG_USER_FAIL, payload: e.message });
     }
   };
 
@@ -401,7 +399,7 @@ export const addFollower =
 
 export const deleteOrganization =
   org_handle =>
-  async (firebase = useFirebase(), dispatch) => {
+  async (firebase, dispatch) => {
     try {
       const auth = firebase.auth().currentUser;
       // remove org from the organization collection

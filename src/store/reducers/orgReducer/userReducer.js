@@ -19,6 +19,7 @@ const UserReducer = (state = initialState, { type, payload }) => {
 
     case actions.GET_ORG_USER_DATA_START:
     case actions.ADD_ORG_USER_START:
+    case actions.REMOVE_ORG_USER_START:
       return {
         ...state,
         isLoaded: false,
@@ -35,6 +36,7 @@ const UserReducer = (state = initialState, { type, payload }) => {
       };
 
     case actions.ADD_ORG_USER_SUCCESS:
+    case actions.REMOVE_ORG_USER_SUCCESS:
       return {
         ...state,
         isLoaded: true,
@@ -44,6 +46,7 @@ const UserReducer = (state = initialState, { type, payload }) => {
 
     case actions.GET_ORG_USER_DATA_FAIL:
     case actions.ADD_ORG_USER_FAIL:
+    case actions.REMOVE_ORG_USER_FAIL:
       return {
         ...state,
         isLoaded: true,
