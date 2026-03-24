@@ -17,6 +17,7 @@ import AuthPage from "./components/AuthPage";
 import Dashboard from "./components/Dashboard";
 import Editor from "./components/Editor";
 import NotFound from "./components/ErrorPages/404";
+import ErrorBoundary from "./components/ErrorPages/ErrorBoundary";
 import HomePage from "./components/HomePage/index";
 import ManageUsers from "./components/ManageUsers";
 import MyFeed from "./components/MyFeed";
@@ -104,10 +105,11 @@ const AuthIsLoaded = ({ children }) => {
 const Routes = () => {
   return (
     <Router>
-      <AuthIsLoaded>
-        <CodeLabzAppBar />
-        {/* <Navbar /> */}
-        <Switch>
+      <ErrorBoundary>
+        <AuthIsLoaded>
+          <CodeLabzAppBar />
+          {/* <Navbar /> */}
+          <Switch>
           <Route exact path={"/"} component={HomePage} />
           <Route
             exact
@@ -190,10 +192,11 @@ const Routes = () => {
             path={"/notification"}
             component={UserIsAllowedUserDashboard(Notification)}
           />
-          <Route exact path={"*"} component={NotFound} />
-        </Switch>
-        {/* <Footer /> */}
-      </AuthIsLoaded>
+            <Route exact path={"*"} component={NotFound} />
+          </Switch>
+          {/* <Footer /> */}
+        </AuthIsLoaded>
+      </ErrorBoundary>
     </Router>
   );
 };
