@@ -14,6 +14,49 @@
 
 You can see the app live at [https://dev.codelabz.io/](https://dev.codelabz.io/)
 
+## Docker
+
+CodeLabz now includes a multi-stage Docker setup for both local development and production builds.
+
+### Production image
+
+The production image builds the Vite app and serves the generated static files with Nginx.
+
+`docker build` needs the Vite variables at build time because they are embedded into the frontend bundle.
+
+Example:
+
+```bash
+docker build \
+  --build-arg VITE_APP_FIREBASE_API_KEY=your_api_key \
+  --build-arg VITE_APP_AUTH_DOMAIN=your_auth_domain \
+  --build-arg VITE_APP_FIREBASE_PROJECT_ID=your_project_id \
+  --build-arg VITE_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id \
+  --build-arg VITE_APP_FIREBASE_APP_ID=your_app_id \
+  --build-arg VITE_APP_FIREBASE_MEASUREMENTID=your_measurement_id \
+  --build-arg VITE_APP_DATABASE_URL=your_database_url \
+  --build-arg VITE_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket \
+  --build-arg VITE_APP_FIREBASE_FCM_VAPID_KEY=your_vapid_key \
+  --build-arg VITE_APP_USE_EMULATOR=false \
+  -t codelabz:prod .
+```
+
+Run the production container:
+
+```bash
+docker run --rm -p 8080:80 codelabz:prod
+```
+
+### Development with Docker Compose
+
+The existing `docker-compose.yml` now uses the `development` stage from the Dockerfile so local Vite development keeps working with bind mounts.
+
+```bash
+docker compose up --build
+```
+
+The application will be available at `http://localhost:5173`.
+
 # Community
 
 Join and communicate with other members on our community. We communicate on gitter.

@@ -1,19 +1,51 @@
-FROM node:14
+FROM node:20-alpine AS base
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
 COPY package*.json ./
+RUN npm ci --legacy-peer-deps
 
-# Install the project dependencies
-RUN npm install
+FROM base AS development
 
-# Copy the entire project directory to the container
 COPY . .
 
-# Expose the desired port for the Node.js server
 EXPOSE 5173
 
-# Run the Node.js server
-CMD [ "npm", "run", "dev", "--host" ]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+FROM base AS builder
+
+ARG VITE_APP_FIREBASE_API_KEY
+ARG VITE_APP_AUTH_DOMAIN
+ARG VITE_APP_FIREBASE_PROJECT_ID
+ARG VITE_APP_FIREBASE_MESSAGING_SENDER_ID
+ARG VITE_APP_FIREBASE_APP_ID
+ARG VITE_APP_FIREBASE_MEASUREMENTID
+ARG VITE_APP_DATABASE_URL
+ARG VITE_APP_FIREBASE_STORAGE_BUCKET
+ARG VITE_APP_FIREBASE_FCM_VAPID_KEY
+ARG VITE_APP_USE_EMULATOR=false
+
+ENV VITE_APP_FIREBASE_API_KEY=$VITE_APP_FIREBASE_API_KEY
+ENV VITE_APP_AUTH_DOMAIN=$VITE_APP_AUTH_DOMAIN
+ENV VITE_APP_FIREBASE_PROJECT_ID=$VITE_APP_FIREBASE_PROJECT_ID
+ENV VITE_APP_FIREBASE_MESSAGING_SENDER_ID=$VITE_APP_FIREBASE_MESSAGING_SENDER_ID
+ENV VITE_APP_FIREBASE_APP_ID=$VITE_APP_FIREBASE_APP_ID
+ENV VITE_APP_FIREBASE_MEASUREMENTID=$VITE_APP_FIREBASE_MEASUREMENTID
+ENV VITE_APP_DATABASE_URL=$VITE_APP_DATABASE_URL
+ENV VITE_APP_FIREBASE_STORAGE_BUCKET=$VITE_APP_FIREBASE_STORAGE_BUCKET
+ENV VITE_APP_FIREBASE_FCM_VAPID_KEY=$VITE_APP_FIREBASE_FCM_VAPID_KEY
+ENV VITE_APP_USE_EMULATOR=$VITE_APP_USE_EMULATOR
+
+COPY . .
+
+RUN npm run build
+
+FROM nginx:1.27-alpine AS production
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
