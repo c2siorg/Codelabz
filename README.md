@@ -14,6 +14,46 @@
 
 You can see the app live at [https://dev.codelabz.io/](https://dev.codelabz.io/)
 
+## 🛠️ Local Development Setup
+
+To get CodeLabz running on your local machine, follow these steps:
+
+### Prerequisites
+- **Node.js**: v14 (Recommended to use `nvm`)
+- **Java JDK**: v11 or higher (Required for Firebase emulators)
+- **Make**: Optional, but recommended for task automation
+
+### Getting Started
+
+1. **Fork & Clone**
+   ```bash
+   git clone https://github.com/c2siorg/Codelabz.git
+   cd Codelabz
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   # or if persistent peer dependency issues occur:
+   npm install --legacy-peer-deps
+   ```
+
+3. **Environment Setup**
+   Create a `.env` file in the root directory and copy the contents from `.env.sample`.
+   ```bash
+   cp .env.sample .env
+   ```
+
+4. **Launch the Application**
+   ```bash
+   npm run dev
+   ```
+   The app will be available at `http://localhost:5173/`.
+
+> [!TIP]
+> For detailed Firebase setup and running emulators, please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) guide.
+
+
 # Community
 
 Join and communicate with other members on our community. We communicate on gitter.
