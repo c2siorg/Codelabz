@@ -172,7 +172,6 @@ const ViewTutorial = () => {
   }, [currentStepNo]);
 
   if (tutorialData) {
-    window.scrollTo(0, 0);
     return (
       <Grid className="row-footer-below">
         {allowEdit && (
