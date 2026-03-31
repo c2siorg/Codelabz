@@ -10,6 +10,10 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
   const db = firebase.firestore();
 
   useEffect(() => {
+    let unmounted = false;
+    let unsubscribeLikes = null;
+    let unsubscribeDislikes = null;
+
     const userId = firebase.auth().currentUser?.uid;
 
     if (!userId) {
@@ -26,12 +30,14 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
     const fetchData = async () => {
       try {
         const tutorialDoc = await tutorialDocRef.get();
+        if (unmounted) return;
         if (!tutorialDoc.exists) {
           throw new Error("Tutorial not found");
         }
 
         // Fetch existing choice of user (if any)
         const userChoiceDoc = await userChoiceRef.get();
+        if (unmounted) return;
         if (userChoiceDoc.exists) {
           const existingChoice = userChoiceDoc.data().value;
           setUserChoice(existingChoice === 1 ? "like" : "dislike");
@@ -40,35 +46,47 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
         }
 
         // Subscribe to real-time updates for likes and dislikes
-        const unsubscribeLikes = db
+        const likesSnapshotUnsubscribe = db
           .collection("tutorial_likes")
           .where("tut_id", "==", tutorial_id)
           .where("value", "==", 1)
-          .onSnapshot(snapshot => {
+          .onSnapshot((snapshot) => {
+            if (unmounted) return;
             setUpVotes(snapshot.size);
             tutorialDocRef.update({ upVotes: snapshot.size });
           });
 
-        const unsubscribeDislikes = db
+        const dislikesSnapshotUnsubscribe = db
           .collection("tutorial_likes")
           .where("tut_id", "==", tutorial_id)
           .where("value", "==", -1)
-          .onSnapshot(snapshot => {
+          .onSnapshot((snapshot) => {
+            if (unmounted) return;
             setDownVotes(snapshot.size);
             tutorialDocRef.update({ downVotes: snapshot.size });
           });
 
-        // Cleanup function to unsubscribe from listeners when component unmounts
-        return () => {
-          unsubscribeLikes();
-          unsubscribeDislikes();
-        };
+        unsubscribeLikes = likesSnapshotUnsubscribe;
+        unsubscribeDislikes = dislikesSnapshotUnsubscribe;
+
+        if (unmounted) {
+          likesSnapshotUnsubscribe();
+          dislikesSnapshotUnsubscribe();
+        }
       } catch (error) {
-        console.error("Error fetching tutorial data:", error);
+        if (!unmounted) {
+          console.error("Error fetching tutorial data:", error);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      unmounted = true;
+      if (unsubscribeLikes) unsubscribeLikes();
+      if (unsubscribeDislikes) unsubscribeDislikes();
+    };
   }, [tutorial_id, db]);
 
   const handleUserChoice = async (event, newChoice) => {
