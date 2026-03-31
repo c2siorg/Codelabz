@@ -1,8 +1,15 @@
 const functions = require("firebase-functions");
 const { db, admin } = require("../auth");
 
-exports.resendVerificationEmailHandler = async data => {
+exports.resendVerificationEmailHandler = async (data, context) => {
   try {
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "The request must be authenticated."
+      );
+    }
+
     if (!data || !data.email) {
       console.log("Email is not defined");
       throw new functions.https.HttpsError(
@@ -48,10 +55,12 @@ exports.resendVerificationEmailHandler = async data => {
     return console.log(`Verification email sent to ${email}`);
   } catch (error) {
     console.log(error);
+    if (error instanceof functions.https.HttpsError) {
+      throw error;
+    }
     throw new functions.https.HttpsError(
-      "invalid-argument",
-      error.message,
-      error
+      "internal",
+      "An unexpected error occurred."
     );
   }
 };
