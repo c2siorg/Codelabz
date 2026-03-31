@@ -105,7 +105,7 @@ export default function CardWithPicture({ tutorial }) {
         avatar={
           <Avatar className={classes.avatar}>
             {user?.photoURL && user?.photoURL.length > 0 ? (
-              <img src={user?.photoURL} />
+              <img src={user?.photoURL} alt={`${user?.displayName}'s profile picture`} />
             ) : (
               user?.displayName[0]
             )}
