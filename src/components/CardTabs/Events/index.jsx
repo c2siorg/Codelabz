@@ -50,7 +50,7 @@ const EventsCard = props => {
           {props.events.map(function (event, index) {
             return (
               <Grid
-                key={index}
+                key={event.name + index}
                 container
                 direction="row"
                 spacing={2}

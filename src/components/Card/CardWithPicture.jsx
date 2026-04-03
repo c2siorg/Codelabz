@@ -157,14 +157,18 @@ export default function CardWithPicture({ tutorial }) {
         </CardContent>
       </Link>
       <CardActions className={classes.settings} disableSpacing>
-        <Chip
-          label="HTML"
-          component="a"
-          href="#chip"
-          clickable
-          variant="outlined"
-          className={classes.margin}
-        />
+        {tutorial?.tut_tags &&
+          tutorial?.tut_tags.map((tag, index) => (
+            <Chip
+              label={tag}
+              key={`${tag}-${index}`}
+              component="a"
+              href="#chip"
+              clickable
+              variant="outlined"
+              className={classes.margin}
+            />
+          ))}
         <Typography
           variant="overline"
           display="block"
