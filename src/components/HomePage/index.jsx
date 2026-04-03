@@ -125,8 +125,10 @@ function HomePage({ background = "white", textColor = "black" }) {
       );
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
-    getFeed();
-  }, []);
+    if (profileData.uid) {
+      getFeed();
+    }
+  }, [profileData.uid, firebase, firestore, dispatch]);
 
   useEffect(() => {
     setTutorials(tutorialFeedArray);
@@ -231,11 +233,17 @@ function HomePage({ background = "white", textColor = "black" }) {
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />
           </Box>
-          {tutorials.map(tutorial => {
+          {tutorials.map((tutorial, index) => {
             return !tutorial?.featured_image ? (
-              <CardWithoutPicture tutorial={tutorial} />
+              <CardWithoutPicture
+                tutorial={tutorial}
+                key={tutorial.tutorial_id || index}
+              />
             ) : (
-              <CardWithPicture tutorial={tutorial} />
+              <CardWithPicture
+                tutorial={tutorial}
+                key={tutorial.tutorial_id || index}
+              />
             );
           })}
           <Box

@@ -121,7 +121,7 @@ const UserCard = ({ title, userId }) => {
             usersToFollow.map(function (user, index) {
               return (
                 <UserElement
-                  key={index}
+                  key={user.uid || index}
                   user={user}
                   index={index}
                   useStyles={useStyles}
@@ -133,7 +133,7 @@ const UserCard = ({ title, userId }) => {
             contributors.map(function (user, index) {
               return (
                 <UserElement
-                  key={index}
+                  key={user.name + index}
                   user={user}
                   index={index}
                   useStyles={useStyles}
