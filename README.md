@@ -23,6 +23,8 @@
 - [🤝 Contributing](#-contributing)
 - [📜 License](#-license)
 - [💬 Community & Support](#-community--support)
+> ⚠️ **Note:** The live deployment is currently unavailable (DNS error).
+> Please set up the app locally using the [Contributing Guide](./CONTRIBUTING.md).
 
 ---
 
