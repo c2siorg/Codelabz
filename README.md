@@ -10,6 +10,24 @@
 
 **CodeLabz** is a platform where the users can engage with online tutorials and the organizations can create tutorials for the users. The platform will be developed using ReactJS frontend library and the backend will be developed using the Google Cloud Firestore and Google Firebase Real-Time database.
 
+# Tech Stack
+
+Category --> Technology  
+Frontend --> React.js, Material UI
+Backend --> Firebase, Firestore
+Auth --> Firebase Authentication
+Testing --> Cypress
+DevOps --> Docker, GitHub Actions
+
+# Prerequisites
+
+Before setting up, make sure you have:
+
+- Node.js v14+
+- npm v6+
+- Git
+- Firebase CLI
+
 # Deployment
 
 > ⚠️ **Note:** The live deployment is currently unavailable.
@@ -104,5 +122,13 @@ Follow this link to fix this issue.
 2. Have a look into issues that are already raised and are not assigned to anyone and ask the mentors to get it assigned it to you.
 3. If you want to work on a new issue, first try to discuss it in the gitter channel with the mentors and then raise the issue.
 <hr/>
+
+# 8. Getting `auth/cancelled-popup-request` error on Google login.
+
+# Solution :-
+
+This happens when multiple popup requests conflict.
+Make sure Firebase emulators are running before
+clicking social login buttons.
 
 ### ❓ Got more questions, ask it in our [gitter channel](https://matrix.to/#/#scorelab_CodeLabz:gitter.im) and we will love ❤ to answer them.
