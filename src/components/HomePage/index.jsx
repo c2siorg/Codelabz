@@ -116,19 +116,19 @@ function HomePage({ background = "white", textColor = "black" }) {
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
-useEffect(() => {
-  if (!profileData.uid) return;
-  const getFeed = async () => {
-    const ids = await getTutorialFeedIdArray(profileData.uid)(
-      firebase,
-      firestore,
-      dispatch
-    );
-    getTutorialFeedData(ids)(firebase, firestore, dispatch);
-  };
-  getFeed();
-}, [profileData.uid]);
-  
+  useEffect(() => {
+    if (!profileData.uid) return;
+    const getFeed = async () => {
+      const ids = await getTutorialFeedIdArray(profileData.uid)(
+        firebase,
+        firestore,
+        dispatch
+      );
+      getTutorialFeedData(ids)(firebase, firestore, dispatch);
+    };
+    getFeed();
+  }, [profileData.uid]);
+
   const notifications = useSelector(
     state => state.notifications.data.notifications
   );
