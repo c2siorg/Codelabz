@@ -354,6 +354,19 @@ The `testdata/storage_export` directory is missing blob data. The Storage emulat
 **`Your requested "node" version "18" doesn't match your global version`**
 The Functions emulator requires Node 18 per `functions/package.json`, but if you are running Node 20 or 22, it will use your host version and print this warning. The emulator still works correctly.
 
+**`@vitejs/plugin-react-swc` — "Bindings not found" error (Windows + Node 22)**
+On Windows with Node 22, the SWC native bindings may fail to load. Fix by replacing the plugin with the Babel-based variant:
+```bash
+npm install @vitejs/plugin-react@4.3.1
+```
+Then update `vite.config.js`:
+```js
+// Before
+import react from "@vitejs/plugin-react-swc";
+// After
+import react from "@vitejs/plugin-react";
+```
+
 ---
 
 For contribution guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md).
