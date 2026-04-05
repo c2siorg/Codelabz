@@ -26,6 +26,8 @@ import {
   addComment
 } from "../../../../store/actions/tutorialPageActions";
 import CommentLikesDislikes from "../../../ui-helpers/CommentLikesDislikes";
+import * as actions from "../../../../store/actions/actionTypes";
+
 const useStyles = makeStyles(() => ({
   container: {
     margin: "10px 0",
@@ -68,6 +70,14 @@ const Comment = ({ id }) => {
     }) => data
   );
 
+  const userHandle = useSelector(
+    ({
+      firebase: {
+        profile: { handle }
+      }
+    }) => handle
+  );
+
   const [data] = commentsArray.filter(comment => comment.comment_id == id);
 
   const repliesArray = useSelector(
@@ -79,18 +89,35 @@ const Comment = ({ id }) => {
   );
 
   const [replies] = repliesArray.filter(replies => replies.comment_id == id);
-
-  const handleSubmit = comment => {
+  const handleSubmit = async comment => {
     const commentData = {
       content: comment,
       replyTo: data.comment_id,
       tutorial_id: data.tutorial_id,
       createdAt: firestore.FieldValue.serverTimestamp(),
-      userId: "codelabzuser"
+      userId: userHandle
     };
-    addComment(commentData)(firebase, firestore, dispatch);
+    const commentId = await addComment(commentData)(
+      firebase,
+      firestore,
+      dispatch
+    );
+    if (commentId) {
+      const newRepliesArray = repliesArray.map(reply => {
+        if (reply.comment_id === id) {
+          return {
+            ...reply,
+            replies: [...reply.replies, commentId]
+          };
+        }
+        return reply;
+      });
+      dispatch({
+        type: actions.ADD_REPLIES_SUCCESS,
+        payload: newRepliesArray
+      });
+    }
   };
-
   return (
     data && (
       <>
@@ -109,7 +136,9 @@ const Comment = ({ id }) => {
                   }}
                   sx={{ textTransform: "none", fontSize: "12px" }}
                 >
-                  {replies?.replies?.length > 0 && replies?.replies?.length}{" "}
+                  {replies?.replies?.length > 0
+                    ? replies?.replies?.length
+                    : data?.no_of_replies}{" "}
                   Reply
                 </Button>
               )}

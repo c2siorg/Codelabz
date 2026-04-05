@@ -106,11 +106,25 @@ const CommentLikesDislikes = ({ comment_id }) => {
       onChange={handleUserChoice}
       aria-label="like dislike"
     >
-      <ToggleButton value="like" aria-label="like">
+      <ToggleButton
+        style={{
+          display: "flex",
+          gap: "4px"
+        }}
+        value="like"
+        aria-label="like"
+      >
         <ThumbUp />
         <Typography variant="body2">{upVotes}</Typography>
       </ToggleButton>
-      <ToggleButton value="dislike" aria-label="dislike">
+      <ToggleButton
+        style={{
+          display: "flex",
+          gap: "4px"
+        }}
+        value="dislike"
+        aria-label="dislike"
+      >
         <ThumbDown />
         <Typography variant="body2">{downVotes}</Typography>
       </ToggleButton>

@@ -9,6 +9,8 @@ import {
 import EmojiPicker from "emoji-picker-react";
 import { InsertEmoticon, Send } from "@mui/icons-material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import Avatar from "@mui/material/Avatar";
+import { useSelector } from "react-redux";
 
 const Textbox = ({ type, handleSubmit }) => {
   const [commentText, setCommentText] = useState("");
@@ -17,6 +19,13 @@ const Textbox = ({ type, handleSubmit }) => {
     setCommentText(prev => prev + emoji.emoji);
     setShowEmojiPicker(false);
   };
+  const user = useSelector(
+    ({
+      profile: {
+        user: { data }
+      }
+    }) => data
+  );
   return (
     <Box
       sx={{
@@ -27,13 +36,18 @@ const Textbox = ({ type, handleSubmit }) => {
         margin: "10px 0 24px"
       }}
     >
-      <AccountCircle
+      <Avatar
         sx={{
-          color: "action.active",
-          width: "36px",
-          height: "36px"
+          height: "24px",
+          width: "24px"
         }}
-      />
+      >
+        {user?.photoURL && user?.photoURL.length > 0 ? (
+          <img src={user?.photoURL} />
+        ) : (
+          user?.displayName[0]
+        )}
+      </Avatar>
       <TextField
         label={type === "reply" ? "Reply" : "Write a comment"}
         variant="standard"

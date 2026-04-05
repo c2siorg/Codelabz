@@ -15,6 +15,7 @@ import { getUserProfileData } from "../../../store/actions";
 import { HashLink } from "react-router-hash-link";
 import { useParams } from "react-router-dom";
 import TutorialLikesDislikes from "../../ui-helpers/TutorialLikesDislikes";
+import InfoSnackBar from "./InfoSnackBar";
 const useStyles = makeStyles(() => ({
   container: {
     padding: "20px",
@@ -47,18 +48,6 @@ const PostDetails = ({ details }) => {
   useEffect(() => {
     getUserProfileData(details.user)(firebase, firestore, dispatch);
   }, [details]);
-
-  const user = useSelector(
-    ({
-      profile: {
-        user: { data }
-      }
-    }) => data
-  );
-
-  const getTime = timestamp => {
-    return timestamp.toDate().toDateString();
-  };
 
   const classes = useStyles();
   return (
@@ -94,12 +83,17 @@ const PostDetails = ({ details }) => {
                         <ChatOutlinedIcon />
                       </IconButton>
                     </HashLink>
-                    <IconButton
-                      aria-label="add to favorites"
-                      data-testId="ShareIcon"
-                    >
-                      <ShareOutlinedIcon />
-                    </IconButton>
+                    <InfoSnackBar message={"Copied to clipboard"}>
+                      <IconButton
+                        aria-label="add to favorites"
+                        data-testId="ShareIcon"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                        }}
+                      >
+                        <ShareOutlinedIcon />
+                      </IconButton>
+                    </InfoSnackBar>
                     <IconButton aria-label="share" data-testId="NotifIcon">
                       <TurnedInNotOutlinedIcon />
                     </IconButton>

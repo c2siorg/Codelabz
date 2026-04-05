@@ -96,20 +96,20 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   }, [tags]);
 
-  const organizations = useSelector(
-    ({
-      profile: {
-        data: { organizations }
-      }
-    }) => organizations
-  );
-  // console.log("organizations", organizations);
+  const profileState = useSelector(state => state.profile.data);
+
+  const { organizations, isEmpty } = profileState || {
+    organizations: null,
+    isEmpty: false
+  };
 
   useEffect(() => {
-    if (!organizations) {
+    const isFetchProfile = organizations === null && !isEmpty;
+
+    if (isFetchProfile) {
       getProfileData()(firebase, firestore, dispatch);
     }
-  }, [firestore, firebase, dispatch, organizations]);
+  }, [firestore, firebase, dispatch, organizations, isEmpty]);
 
   const userHandle = useSelector(
     ({
@@ -117,14 +117,6 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
         profile: { handle }
       }
     }) => handle
-  );
-
-  const displayName = useSelector(
-    ({
-      firebase: {
-        profile: { displayName }
-      }
-    }) => displayName
   );
 
   //This name should be replaced by displayName when implementing backend
@@ -158,6 +150,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
 
   const onSubmit = formData => {
     formData.preventDefault();
+    setError(false);
     const tutorialData = {
       ...formValue,
       created_by: userHandle,

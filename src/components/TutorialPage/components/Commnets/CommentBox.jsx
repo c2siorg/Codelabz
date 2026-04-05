@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import Textbox from "./Textbox";
 import Comment from "./Comment";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -30,6 +31,14 @@ const CommentBox = ({ commentsArray, onAddComment }) => {
   const classes = useStyles();
   const [comments, setComments] = useState(commentsArray);
   const [currCommentCount, setCurrCommentCount] = useState(3);
+  const data = useSelector(
+    ({
+      tutorialPage: {
+        post: { data }
+      }
+    }) => data
+  );
+  const noOfComments = data?.no_of_comments || 0;
 
   useEffect(() => {
     setComments(commentsArray?.slice(0, currCommentCount));
@@ -48,7 +57,7 @@ const CommentBox = ({ commentsArray, onAddComment }) => {
       data-testId="tutorialpageComments"
     >
       <Typography variant="h5" sx={{ fontWeight: "600" }}>
-        Comments({commentsArray?.length || 0})
+        Comments({noOfComments})
       </Typography>
       <Textbox handleSubmit={onAddComment} />
       <Grid container rowSpacing={2}>
