@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   isEmpty,
@@ -39,61 +39,20 @@ const AuthIsLoaded = ({ children }) => {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
+  const hasRequestedProfileData = useRef(false);
 
   const profile = useSelector(({ firebase: { profile } }) => profile);
   const data = useSelector(({ profile: { data } }) => data);
   const general = useSelector(({ org: { general } }) => general);
 
   useEffect(() => {
-    if (isLoaded(profile) && isLoaded(data) && isLoaded(general)) {
-      return; // Avoid fetching if data is already loaded
-    }
+    if (!isLoaded(profile) || isEmpty(profile)) return;
+    if (hasRequestedProfileData.current) return;
+    hasRequestedProfileData.current = true;
     getProfileData()(firebase, firestore, dispatch);
-  }, [profile, firestore, firebase, dispatch]);
+  }, [profile, firestore, firebase, dispatch, data, general]);
 
-  //case for not logged in user
-  if (
-    isLoaded(profile) &&
-    isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
-
-  //case for logged in uncompleted user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
-
-  //case for authed org user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    !isEmpty(data) &&
-    isLoaded(general) &&
-    !isEmpty(general)
-  )
-    return children;
-
-  //case for authed normal user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
+  if (isLoaded(profile)) return children;
 
   return <Spinner />;
 };

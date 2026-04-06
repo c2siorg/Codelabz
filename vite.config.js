@@ -19,7 +19,14 @@ export default defineConfig({
   },
   plugins: [react()],
   server: {
-    host: true
+    host: true,
+    watch: {
+      ignored: [
+        "**/*.log",
+        "**/*-debug.log",
+        "**/firebase-debug.log"
+      ]
+    }
   },
   define: {
     // Some libraries use the global object, even though it doesn't exist in the browser.
