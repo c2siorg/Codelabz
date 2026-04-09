@@ -43,7 +43,8 @@ const SideBar = ({
   drawWidth,
   value,
   onStateChange,
-  children
+  children,
+  mobileOnly = false
 }) => {
   const windowSize = useWindowSize();
   const firebase = useFirebase();
@@ -144,18 +145,20 @@ const SideBar = ({
           </SideList>
         </Drawer>
       ) : (
-        <Card className={classes.card}>
-          <div data-testId="sidebar_desktop">
-            <SideList
-              menuItems={menuItems || defaultMenu}
-              value={value}
-              onStateChange={onStateChange}
-              notificationCount={notificationCount}
-            >
-              {children}
-            </SideList>
-          </div>
-        </Card>
+        !mobileOnly && (
+          <Card className={classes.card}>
+            <div data-testId="sidebar_desktop">
+              <SideList
+                menuItems={menuItems || defaultMenu}
+                value={value}
+                onStateChange={onStateChange}
+                notificationCount={notificationCount}
+              >
+                {children}
+              </SideList>
+            </div>
+          </Card>
+        )
       )}
     </>
   );
