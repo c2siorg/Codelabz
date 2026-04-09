@@ -1,6 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { List, ListItem, ListItemIcon, ListItemText, Typography, Box, Divider } from "@mui/material";
+import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Box,
+  Divider
+} from "@mui/material";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
@@ -12,15 +20,23 @@ import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 const ExploreMenu = ({ onClose }) => {
   const topItems = [
     { text: "Home", icon: <HomeOutlinedIcon />, link: "/" },
-    { text: "Notifications", icon: <NotificationsOutlinedIcon />, link: "/notification" },
+    {
+      text: "Notifications",
+      icon: <NotificationsOutlinedIcon />,
+      link: "/notification"
+    },
     { text: "User Settings", icon: <SettingsOutlinedIcon />, link: "/profile" },
-    { text: "Organizations", icon: <GroupOutlinedIcon />, link: "/organization" },
+    {
+      text: "Organizations",
+      icon: <GroupOutlinedIcon />,
+      link: "/organization"
+    }
   ];
 
   const bottomItems = [
     { text: "Profile", icon: <PersonOutlinedIcon />, link: "/profile" },
     { text: "Bookmarks", icon: <BookmarkBorderIcon />, link: "/dashboard" },
-    { text: "Tutorials", icon: <MenuBookOutlinedIcon />, link: "/tutorials" },
+    { text: "Tutorials", icon: <MenuBookOutlinedIcon />, link: "/tutorials" }
   ];
 
   const renderItem = (item, index) => (
@@ -34,7 +50,7 @@ const ExploreMenu = ({ onClose }) => {
         py: 1.2,
         px: 3,
         "&:hover": {
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#f5f5f5"
         }
       }}
     >
@@ -43,7 +59,10 @@ const ExploreMenu = ({ onClose }) => {
       </ListItemIcon>
       <ListItemText
         primary={
-          <Typography variant="body1" sx={{ fontSize: "1rem", color: "#000", fontWeight: 400 }}>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1rem", color: "#000", fontWeight: 400 }}
+          >
             {item.text}
           </Typography>
         }
@@ -63,21 +82,17 @@ const ExploreMenu = ({ onClose }) => {
           color: "#8c8c8c",
           letterSpacing: "0.5px",
           fontSize: "0.8rem",
-          textTransform: "uppercase",
+          textTransform: "uppercase"
         }}
       >
         EXPLORE
       </Typography>
-      
-      <List sx={{ p: 0 }}>
-        {topItems.map(renderItem)}
-      </List>
-      
+
+      <List sx={{ p: 0 }}>{topItems.map(renderItem)}</List>
+
       <Divider sx={{ my: 1, mx: 0, borderColor: "#eee" }} />
-      
-      <List sx={{ p: 0 }}>
-        {bottomItems.map(renderItem)}
-      </List>
+
+      <List sx={{ p: 0 }}>{bottomItems.map(renderItem)}</List>
     </Box>
   );
 };

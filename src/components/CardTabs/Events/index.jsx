@@ -48,7 +48,15 @@ const EventsCard = props => {
             p: 3
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: "900", mb: 2.5, color: "#1a1a1a", letterSpacing: "-0.5px" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "900",
+              mb: 2.5,
+              color: "#1a1a1a",
+              letterSpacing: "-0.5px"
+            }}
+          >
             {props.title}
           </Typography>
           {props.events.map(function (event, index) {
@@ -64,12 +72,14 @@ const EventsCard = props => {
                   mb: 1.5,
                   p: 2,
                   borderRadius: "12px",
-                  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                  transition:
+                    "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                   cursor: "pointer",
                   backgroundColor: "transparent",
                   borderLeft: "4px solid transparent",
                   "&:hover": {
-                    background: "linear-gradient(90deg, rgba(111, 66, 193, 0.15) 0%, rgba(71, 111, 255, 0.1) 100%)",
+                    background:
+                      "linear-gradient(90deg, rgba(111, 66, 193, 0.15) 0%, rgba(71, 111, 255, 0.1) 100%)",
                     transform: "translateX(10px) scale(1.02)",
                     boxShadow: "0 12px 25px rgba(111, 66, 193, 0.15)",
                     borderLeft: "4px solid #6f42c1",
@@ -90,7 +100,9 @@ const EventsCard = props => {
 
                 <Grid item xs={9}>
                   <Box data-testId={index == 0 ? "upEventName" : ""}>
-                    <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>{event.name}</Typography>
+                    <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                      {event.name}
+                    </Typography>
                   </Box>
                   <Box
                     sx={{ fontWeight: 400, fontSize: "0.8rem", color: "#666" }}

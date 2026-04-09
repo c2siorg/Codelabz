@@ -32,20 +32,22 @@ const MainNavbar = () => {
   const firebase = useFirebase();
   const windowSize = useWindowSize();
   const logoRef = React.useRef(null);
-  
+
   const [openMenu, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [exploreAnchor, setExploreAnchor] = useState(null);
   const [tagsAnchor, setTagsAnchor] = useState(null);
   const [profileAnchor, setProfileAnchor] = useState(null);
 
-  const profile = useSelector((state) => state.firebase.profile);
+  const profile = useSelector(state => state.firebase.profile);
   const authed = profile && profile.displayName;
 
-  const notifications = useSelector((state) => state.notifications?.data?.notifications || []);
+  const notifications = useSelector(
+    state => state.notifications?.data?.notifications || []
+  );
   const notificationCount = notifications.filter(n => !n.isRead).length;
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     e.preventDefault();
     if (searchQuery.trim()) {
       history.push(`/search?query=${searchQuery}`);
@@ -54,14 +56,17 @@ const MainNavbar = () => {
 
   return (
     <Headroom>
-      <Box component="nav" sx={{
-        padding: "0 24px",
-        background: "#fff",
-        borderBottom: "1px solid #f0f0f0",
-        height: "72px",
-        display: "flex",
-        alignItems: "center"
-      }}>
+      <Box
+        component="nav"
+        sx={{
+          padding: "0 24px",
+          background: "#fff",
+          borderBottom: "1px solid #f0f0f0",
+          height: "72px",
+          display: "flex",
+          alignItems: "center"
+        }}
+      >
         <Grid container alignItems="center" wrap="nowrap">
           <Grid item>
             <Typography
@@ -87,8 +92,11 @@ const MainNavbar = () => {
               CodeLabz
             </Typography>
           </Grid>
-          
-          <Grid item sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
+
+          <Grid
+            item
+            sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+          >
             <Typography
               component={Link}
               to="/"
@@ -112,26 +120,30 @@ const MainNavbar = () => {
             <Box
               onClick={() => setExploreAnchor(logoRef.current)}
               sx={{
-                backgroundColor: Boolean(exploreAnchor) ? "#eceff1" : "transparent",
+                backgroundColor: Boolean(exploreAnchor)
+                  ? "#eceff1"
+                  : "transparent",
                 borderRadius: "10px",
                 padding: "8px 18px",
                 cursor: "pointer",
                 margin: "0 5px",
                 transition: "all 0.2s ease-in-out",
-                "&:hover": { 
+                "&:hover": {
                   backgroundColor: "#f5f5f5",
                   transform: "scale(1.05)"
                 }
               }}
             >
-              <Typography sx={{ 
-                fontWeight: 500, 
-                fontSize: "15px", 
-                color: "#333", 
-                fontFamily: "'Inter', sans-serif",
-                transition: "all 0.2s ease",
-                "&:hover": { fontWeight: 700 }
-              }}>
+              <Typography
+                sx={{
+                  fontWeight: 500,
+                  fontSize: "15px",
+                  color: "#333",
+                  fontFamily: "'Inter', sans-serif",
+                  transition: "all 0.2s ease",
+                  "&:hover": { fontWeight: 700 }
+                }}
+              >
                 Explore
               </Typography>
             </Box>
@@ -157,50 +169,68 @@ const MainNavbar = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center" }}>
-            <Paper component="form" onSubmit={handleSearch} sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#fff",
-              padding: "2px 16px",
-              border: "1px solid #e5e5e5",
-              borderRadius: "30px",
-              width: "100%",
-              maxWidth: "1200px",
-              marginLeft: "20px",
-              marginRight: "20px",
-              boxShadow: "none",
-              height: "42px"
-            }}>
+          <Grid
+            item
+            xs
+            sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center" }}
+          >
+            <Paper
+              component="form"
+              onSubmit={handleSearch}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#fff",
+                padding: "2px 16px",
+                border: "1px solid #e5e5e5",
+                borderRadius: "30px",
+                width: "100%",
+                maxWidth: "1200px",
+                marginLeft: "20px",
+                marginRight: "20px",
+                boxShadow: "none",
+                height: "42px"
+              }}
+            >
               <IconButton size="small" disableRipple>
                 <SearchIcon sx={{ color: "#757575", fontSize: "1.2rem" }} />
               </IconButton>
               <InputBase
                 value={searchQuery}
                 placeholder="Search tutorials..."
-                onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{ ml: 1, flex: 1, fontSize: "14px", fontFamily: "'Inter', sans-serif" }}
+                onChange={e => setSearchQuery(e.target.value)}
+                sx={{
+                  ml: 1,
+                  flex: 1,
+                  fontSize: "14px",
+                  fontFamily: "'Inter', sans-serif"
+                }}
               />
             </Paper>
 
-            <Box onClick={(e) => setTagsAnchor(e.currentTarget)} sx={{
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-              marginLeft: "15px",
-              marginRight: "15px",
-              gap: "6px",
-              color: "#333",
-              "&:hover": { color: "#6f42c1" },
-              whiteSpace: "nowrap"
-            }}>
-              <LocalOfferIcon sx={{ fontSize: "1.2rem" }} />
-              <Typography sx={{ 
-                display: { xs: "none", lg: "block" }, 
-                fontWeight: 500, 
-                fontSize: "15px",
+            <Box
+              onClick={e => setTagsAnchor(e.currentTarget)}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                marginLeft: "15px",
+                marginRight: "15px",
+                gap: "6px",
+                color: "#333",
+                "&:hover": { color: "#6f42c1" },
                 whiteSpace: "nowrap"
-              }}>
+              }}
+            >
+              <LocalOfferIcon sx={{ fontSize: "1.2rem" }} />
+              <Typography
+                sx={{
+                  display: { xs: "none", lg: "block" },
+                  fontWeight: 500,
+                  fontSize: "15px",
+                  whiteSpace: "nowrap"
+                }}
+              >
                 Popular Tags
               </Typography>
             </Box>
@@ -209,13 +239,21 @@ const MainNavbar = () => {
           <Grid item sx={{ display: "flex", alignItems: "center" }}>
             <Avatar
               src={profile.photoURL}
-              onClick={(e) => setProfileAnchor(e.currentTarget)}
-              sx={{ cursor: "pointer", width: "38px", height: "38px", backgroundColor: "#6f42c1" }}
+              onClick={e => setProfileAnchor(e.currentTarget)}
+              sx={{
+                cursor: "pointer",
+                width: "38px",
+                height: "38px",
+                backgroundColor: "#6f42c1"
+              }}
             >
               {avatarName(profile.displayName)}
             </Avatar>
 
-            <IconButton onClick={() => setOpen(true)} sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              onClick={() => setOpen(true)}
+              sx={{ display: { xs: "flex", md: "none" } }}
+            >
               <MenuIcon />
             </IconButton>
           </Grid>
@@ -258,21 +296,25 @@ const MainNavbar = () => {
         >
           <Paper sx={{ p: 2, minWidth: "150px" }}>
             <Typography variant="subtitle2">{profile.displayName}</Typography>
-            <Button fullWidth onClick={() => history.push("/profile")}>My Profile</Button>
-            <Button fullWidth onClick={() => signOut()(firebase, dispatch)}>Log Out</Button>
+            <Button fullWidth onClick={() => history.push("/profile")}>
+              My Profile
+            </Button>
+            <Button fullWidth onClick={() => signOut()(firebase, dispatch)}>
+              Log Out
+            </Button>
           </Paper>
         </Popover>
 
-        <SideBar 
-          open={openMenu} 
-          toggleSlider={() => setOpen(false)} 
-          notificationCount={notificationCount} 
-          drawWidth={280} 
+        <SideBar
+          open={openMenu}
+          toggleSlider={() => setOpen(false)}
+          notificationCount={notificationCount}
+          drawWidth={280}
           mobileOnly={true}
         />
       </Box>
     </Headroom>
   );
-}
+};
 
 export default MainNavbar;
