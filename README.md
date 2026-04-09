@@ -30,7 +30,7 @@ Before setting up, make sure you have:
 
 # Deployment
 
-> ⚠️ **Note:** The live deployment is currently unavailable.
+> ⚠️ **Note:** The live deployment is currently unavailable (DNS error).
 > Please set up the app locally using the [Contributing Guide](./CONTRIBUTING.md).
 
 # Community
