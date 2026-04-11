@@ -1,8 +1,11 @@
 {
   "name": "functions",
+  "main": "lib/index.js",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint . --ext .js",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
@@ -19,9 +22,11 @@
     "lodash": "^4.17.19"
   },
   "devDependencies": {
+    "@types/node": "^20.11.30",
     "eslint": "^5.12.0",
     "eslint-plugin-promise": "^4.0.1",
-    "firebase-functions-test": "^0.2.0"
+    "firebase-functions-test": "^0.2.0",
+    "typescript": "^5.6.3"
   },
   "private": true
 }

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "rootDir": "./src",
+    "outDir": "lib",
+    "sourceMap": true,
+    "ignoreDeprecations": "6.0",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "compileOnSave": true,
+  "include": ["src/**/*.ts"]
+}
