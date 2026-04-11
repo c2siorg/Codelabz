@@ -14,7 +14,6 @@ import { useFirebase } from "react-redux-firebase";
 import { Grid } from "@mui/material";
 
 const Orgsocial = props => {
-  console.log(props.toOpen);
   const classes = useStyles();
 
   const CurrentOrg = useSelector(
@@ -49,7 +48,7 @@ const Orgsocial = props => {
             onClick={() =>
               props.toOpen
                 ? openSocialMedialLink(OrgData.org_link_facebook)
-                : console.log("clicked")
+                : null
             }
             data-testId="facebookButton"
           >
@@ -67,7 +66,7 @@ const Orgsocial = props => {
             onClick={() =>
               props.toOpen
                 ? openSocialMedialLink(OrgData.org_link_github)
-                : console.log("clicked")
+                : null
             }
             data-testId="githubButton"
           >
@@ -86,7 +85,7 @@ const Orgsocial = props => {
             onClick={() =>
               props.toOpen
                 ? openSocialMedialLink(OrgData.org_link_linkedin)
-                : console.log("clicked")
+                : null
             }
             data-testId="googleButton"
           >
@@ -101,7 +100,7 @@ const Orgsocial = props => {
             onClick={() =>
               props.toOpen
                 ? openSocialMedialLink(OrgData.org_link_twitter)
-                : console.log("clicked")
+                : null
             }
             data-testId="twitterButton"
           >

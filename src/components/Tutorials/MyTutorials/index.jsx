@@ -61,7 +61,6 @@ const MyTutorials = () => {
   }, [userHandle, firestore, dispatch]);
 
   useEffect(() => {
-    console.log("org_handles", org_handles);
     if (org_handles.length > 0)
       getOrgTutorialsBasicData(org_handles)(firestore, dispatch);
   }, [org_handles, firestore, dispatch]);

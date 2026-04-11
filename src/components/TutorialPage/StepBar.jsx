@@ -47,7 +47,6 @@ const StepsBar = ({
     }) => current
   );
 
-  console.log("steps bar", steps);
 
   const classes = useStyles();
   return (

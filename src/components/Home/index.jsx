@@ -36,9 +36,8 @@ const Home = () => {
             messaging
               .getToken()
               .then(refreshedToken => {
-                console.log(refreshedToken);
               })
-              .catch(e => console.log(e));
+              .catch(e => {});
           }
         });
       }
@@ -49,9 +48,8 @@ const Home = () => {
     if (messaging) {
       const unsubscribe = messaging.onMessage(
         payload => {
-          console.log(payload);
         },
-        error => console.log(error)
+        error => {}
       );
 
       return () => {
@@ -67,13 +65,11 @@ const Home = () => {
           messaging
             .getToken()
             .then(refreshedToken => {
-              console.log(refreshedToken);
             })
             .catch(e => {
-              console.log(e);
             });
         },
-        error => console.log(error)
+        error => {}
       );
 
       return () => {

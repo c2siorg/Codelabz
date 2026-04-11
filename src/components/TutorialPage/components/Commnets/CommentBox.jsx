@@ -35,7 +35,6 @@ const CommentBox = ({ commentsArray, onAddComment }) => {
     setComments(commentsArray?.slice(0, currCommentCount));
   }, [currCommentCount, commentsArray]);
 
-  console.log(commentsArray, comments, currCommentCount);
 
   const increaseCommentCount = () => {
     setCurrCommentCount(state => state + 3);
