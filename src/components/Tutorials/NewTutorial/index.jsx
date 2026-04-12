@@ -127,6 +127,8 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }) => displayName
   );
 
+  const firebaseUser = firebase.auth().currentUser;
+
   //This name should be replaced by displayName when implementing backend
   const sampleName = "User Name Here";
   const allowOrgs = organizations && organizations.length > 0;
@@ -144,17 +146,28 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           .filter(Boolean)
       : null;
 
+  const ownerOptions = [
+    {
+      value: userHandle || firebaseUser?.uid || firebaseUser?.email || "me",
+      label: displayName || firebaseUser?.displayName || "Personal tutorial"
+    },
+    ...(orgList || []).map(org => ({
+      value: org.org_handle,
+      label: org.org_name
+    }))
+  ];
+
   useEffect(() => {
     setTags([]);
     setNewTag("");
     setformValue({
       title: "",
       summary: "",
-      owner: "",
+      owner: userHandle || firebaseUser?.uid || firebaseUser?.email || "me",
       tags: []
     });
     setVisible(viewModal);
-  }, [viewModal]);
+  }, [viewModal, userHandle, firebaseUser]);
 
   const onSubmit = formData => {
     formData.preventDefault();
@@ -240,10 +253,10 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
         >
           <Typography>
             <Select
-              options={organizations?.map(org => ({
-                value: org.org_handle,
-                label: org.org_name
-              }))}
+              options={ownerOptions}
+              value={ownerOptions.find(
+                option => option.value === formValue.owner
+              )}
               onChange={data => {
                 onOwnerChange(data.value);
               }}
