@@ -6,6 +6,24 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 
+const activityList = [
+  {
+    id: 1,
+    icon: LocalOfferIcon,
+    text: "Featured"
+  },
+  {
+    id: 2,
+    icon: StarBorderIcon,
+    text: "New"
+  },
+  {
+    id: 3,
+    icon: EmojiEventsIcon,
+    text: "Top"
+  }
+];
+
 const story = {
   title: "Topbar/ActivityList",
   component: ActivityList
@@ -16,24 +34,6 @@ export default story;
 const Template = args => {
   const [List, setList] = useState(1);
 
-  const acitvitylist = [
-    {
-      id: 1,
-      icon: LocalOfferIcon,
-      text: "Featured"
-    },
-    {
-      id: 2,
-      icon: StarBorderIcon,
-      text: "New"
-    },
-    {
-      id: 3,
-      icon: EmojiEventsIcon,
-      text: "Top"
-    }
-  ];
-
   return (
     <ProviderWrapper>
       <MemoryRouter>
@@ -43,7 +43,7 @@ const Template = args => {
           toggle={item => {
             setList(item.id);
           }}
-          acitvitylist={acitvitylist}
+          activityList={activityList}
         />
       </MemoryRouter>
     </ProviderWrapper>

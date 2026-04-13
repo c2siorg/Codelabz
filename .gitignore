@@ -17,7 +17,6 @@
 
 # misc
 .DS_Store
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -26,7 +25,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 yarn.lock
-.env
 /.idea
 .vscode/settings.json
 INTERNAL.md
@@ -49,3 +47,4 @@ firebase-debug.log
 firestore-debug.log
 pubsub-debug.log
 ui-debug.log
+config.bat

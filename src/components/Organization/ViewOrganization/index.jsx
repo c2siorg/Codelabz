@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,18 @@ import Description from "../../UserDetails/Description";
 import Spinner from "../../../helpers/spinner";
 import ActivityList from "../../Topbar/Activity/ActivityList";
 import { BasicImage, NoImage } from "../../../helpers/images";
+
+const aboutfeedlist = [
+  {
+    id: 1,
+    text: "About"
+  },
+  {
+    id: 2,
+    text: "Feeds"
+  }
+];
+
 const useStyles = makeStyles(theme => ({
   acitvitylist: {
     padding: theme.spacing(1),
@@ -68,16 +80,9 @@ const ViewOrganization = () => {
     }) => (organizations ? organizations[0] : undefined)
   );
 
-  const aboutfeedlist = [
-    {
-      id: 1,
-      text: "About"
-    },
-    {
-      id: 2,
-      text: "Feeds"
-    }
-  ];
+  const handleActivityToggle = useCallback(itemId => {
+    setActivity(itemId);
+  }, []);
 
   const ContributersUsers = [
     {
@@ -219,19 +224,8 @@ const ViewOrganization = () => {
                     <Grid item xs={12} container direction="column">
                       <Grid item xs={12}>
                         <ActivityList
-                          acitvitylist={[
-                            {
-                              id: 1,
-                              text: "About"
-                            },
-                            {
-                              id: 2,
-                              text: "Feeds"
-                            }
-                          ]}
-                          toggle={item => {
-                            setActivity(item.id);
-                          }}
+                          activityList={aboutfeedlist}
+                          toggle={handleActivityToggle}
                           value={Activity}
                           classname={classes.acitvitylist}
                         />

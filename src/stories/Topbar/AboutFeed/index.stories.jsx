@@ -1,8 +1,19 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { MemoryRouter } from "react-router";
 import Activity from "../../../components/Topbar/Activity";
 import ActivityList from "../../../components/Topbar/Activity/ActivityList";
 import ProviderWrapper from "../../../helpers/providerWrapper";
+
+const activityList = [
+  {
+    id: 1,
+    text: "About"
+  },
+  {
+    id: 2,
+    text: "Feeds"
+  }
+];
 
 const story = {
   title: "Topbar/AboutFeed",
@@ -13,17 +24,9 @@ export default story;
 
 const Template = args => {
   const [List, setList] = useState(1);
-
-  const acitvitylist = [
-    {
-      id: 1,
-      text: "About"
-    },
-    {
-      id: 2,
-      text: "Feeds"
-    }
-  ];
+  const handleToggle = useCallback(itemId => {
+    setList(itemId);
+  }, []);
 
   return (
     <ProviderWrapper>
@@ -31,10 +34,8 @@ const Template = args => {
         <ActivityList
           {...args}
           value={List}
-          toggle={item => {
-            setList(item.id);
-          }}
-          acitvitylist={acitvitylist}
+          toggle={handleToggle}
+          activityList={activityList}
         />
       </MemoryRouter>
     </ProviderWrapper>
