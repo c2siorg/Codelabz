@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import ActivityList from "./ActivityList";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -7,6 +7,24 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { makeStyles } from "@mui/styles";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+
+const activityListItems = [
+  {
+    id: 1,
+    icon: LocalOfferIcon,
+    text: "Featured"
+  },
+  {
+    id: 2,
+    icon: StarBorderIcon,
+    text: "New"
+  },
+  {
+    id: 3,
+    icon: EmojiEventsIcon,
+    text: "Top"
+  }
+];
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,23 +40,13 @@ function Activity({ handleFeedChange }) {
   const classes = useStyles();
   const [List, setList] = useState(1);
 
-  const activityList = [
-    {
-      id: 1,
-      icon: LocalOfferIcon,
-      text: "Featured"
+  const handleToggle = useCallback(
+    itemId => {
+      setList(itemId);
+      handleFeedChange(activityListItems[itemId - 1].text);
     },
-    {
-      id: 2,
-      icon: StarBorderIcon,
-      text: "New"
-    },
-    {
-      id: 3,
-      icon: EmojiEventsIcon,
-      text: "Top"
-    }
-  ];
+    [handleFeedChange]
+  );
 
   return (
     <React.Fragment>
@@ -50,11 +58,8 @@ function Activity({ handleFeedChange }) {
           <Grid item>
             <ActivityList
               value={List}
-              toggle={item => {
-                setList(item.id);
-                handleFeedChange(activityList[item.id - 1].text);
-              }}
-              activityList={activityList}
+              toggle={handleToggle}
+              activityList={activityListItems}
             />
           </Grid>
         </div>
