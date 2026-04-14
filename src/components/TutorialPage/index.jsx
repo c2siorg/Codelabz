@@ -142,7 +142,7 @@ function TutorialPage({ background = "white", textColor = "black" }) {
           xs={6}
         >
           <PostDetails details={postDetails} />
-          <Tutorial steps={steps} />
+          <Tutorial steps={steps} media={tutorial?.media} />
           <CommentBox
             commentsArray={commentsArray}
             onAddComment={handleAddComment}

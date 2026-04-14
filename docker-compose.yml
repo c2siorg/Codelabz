@@ -1,16 +1,39 @@
 version: "3.3"
 
 services:
+  # ── Production build (served by nginx on port 80) ───────────
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
     ports:
-      - 5173:5173
-    volumes:
-      - .:/app
+      - "80:80"
+    env_file:
+      - .env
+    depends_on:
+      - emulator
     networks:
       - main
+
+  # ── Development server with hot-reload ──────────────────────
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - emulator
+    networks:
+      - main
+
+  # ── Firebase emulator suite ─────────────────────────────────
   emulator:
     image: spine3/firebase-emulator
     environment:
