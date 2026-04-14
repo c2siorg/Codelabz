@@ -140,8 +140,48 @@ export const getOrgTutorialsBasicData =
 export const clearTutorialsBasicData = () => dispatch =>
   dispatch({ type: actions.CLEAR_TUTORIALS_BASIC_STATE });
 
+/**
+ * Uploads a media file (image / video / document) to Firebase Storage under
+ * `tutorials/<tutorial_id>/media/<filename>` and returns the download URL.
+ *
+ * @param {File}   file        - The File object selected by the user.
+ * @param {string} tutorial_id - The tutorial document ID (used as storage prefix).
+ * @returns {Promise<{url: string, name: string, type: string}>}
+ */
+export const uploadTutorialMedia =
+  (file, tutorial_id) => async firebase => {
+    const filename = `${Date.now()}_${file.name}`;
+    const storagePath = `tutorials/${tutorial_id}/media/${filename}`;
+
+    const storageRef = firebase.storage().ref().child(storagePath);
+    const snapshot = await storageRef.put(file);
+    const url = await snapshot.ref.getDownloadURL();
+
+    const mimeType = file.type;
+    let type = "document";
+    if (mimeType.startsWith("image/")) type = "image";
+    else if (mimeType.startsWith("video/")) type = "video";
+
+    return { url, name: file.name, type };
+  };
+
+/**
+ * Saves an array of media metadata objects to a tutorial document.
+ *
+ * @param {string} tutorial_id
+ * @param {Array<{url: string, name: string, type: string}>} mediaItems
+ */
+export const saveTutorialMedia =
+  (tutorial_id, mediaItems) => async (firebase, firestore) => {
+    await firestore.collection("tutorials").doc(tutorial_id).update({
+      media: firestore.FieldValue.arrayUnion(...mediaItems),
+      updatedAt: firestore.FieldValue.serverTimestamp()
+    });
+  };
+
 export const createTutorial =
-  tutorialData => async (firebase, firestore, dispatch, history) => {
+  (tutorialData, attachedFiles = []) =>
+  async (firebase, firestore, dispatch, history) => {
     try {
       dispatch({ type: actions.CREATE_TUTORIAL_START });
       const { title, summary, owner, created_by, is_org, tags } = tutorialData;
@@ -151,6 +191,16 @@ export const createTutorial =
 
         const documentID = document.id;
         const step_id = `${documentID}_${new Date().getTime()}`;
+
+        // Upload any attached files and collect their metadata
+        let media = [];
+        if (attachedFiles.length > 0) {
+          media = await Promise.all(
+            attachedFiles.map(file =>
+              uploadTutorialMedia(file, documentID)(firebase)
+            )
+          );
+        }
 
         await document.set({
           created_by,
@@ -166,6 +216,7 @@ export const createTutorial =
           url: "",
           background_color: "#ffffff",
           text_color: "#000000",
+          media,
           createdAt: firestore.FieldValue.serverTimestamp(),
           updatedAt: firestore.FieldValue.serverTimestamp()
         });
@@ -687,3 +738,4 @@ export const deleteNotification =
       console.log(e.message);
     }
   };
+
