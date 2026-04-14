@@ -1,22 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { AppstoreAddOutlined } from "@ant-design/icons";
+import React, { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { createTutorial, getProfileData } from "../../../store/actions";
+import {
+  createTutorial,
+  getProfileData
+} from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
-import { Alert, Box, Chip } from "@mui/material";
+import { Alert, Box, Chip, List, ListItem, ListItemIcon, ListItemText, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import Divider from "@mui/material/Divider";
 import { IconButton } from "@mui/material";
-import Modal from "@mui/material/Modal";
-import Avatar from "@mui/material/Avatar";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 import { makeStyles } from "@mui/styles";
 import { deepPurple } from "@mui/material/colors";
 import { Typography } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import DescriptionIcon from "@mui/icons-material/Description";
 import MovieIcon from "@mui/icons-material/Movie";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
@@ -46,10 +51,24 @@ const useStyles = makeStyles(theme => ({
   button: {
     marginLeft: theme.spacing(1),
     padding: "0.4rem 0.4rem"
+  },
+  selectWrapper: {
+    marginBottom: "1.5rem"
+  },
+  mediaIcons: {
+    display: "flex",
+    gap: theme.spacing(1),
+    marginBottom: "1rem"
+  },
+  actionRow: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: theme.spacing(1),
+    flexWrap: "wrap"
   }
 }));
 
-const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
+const NewTutorial = ({ viewModal, onSidebarClick }) => {
   const firebase = useFirebase();
   const firestore = useFirestore();
   const dispatch = useDispatch();
@@ -59,6 +78,14 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [error, setError] = useState(false);
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
+  const [attachedFiles, setAttachedFiles] = useState([]);
+  const [uploadError, setUploadError] = useState("");
+
+  // Hidden file-input refs for the three media types
+  const imageInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const docInputRef = useRef(null);
+
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
@@ -119,34 +146,11 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }) => handle
   );
 
-  const displayName = useSelector(
-    ({
-      firebase: {
-        profile: { displayName }
-      }
-    }) => displayName
-  );
-
-  //This name should be replaced by displayName when implementing backend
-  const sampleName = "User Name Here";
-  const allowOrgs = organizations && organizations.length > 0;
-
-  const orgList =
-    allowOrgs > 0
-      ? organizations
-          .map((org, i) => {
-            if (org.permissions.includes(3) || org.permissions.includes(2)) {
-              return org;
-            } else {
-              return null;
-            }
-          })
-          .filter(Boolean)
-      : null;
-
   useEffect(() => {
     setTags([]);
     setNewTag("");
+    setAttachedFiles([]);
+    setUploadError("");
     setformValue({
       title: "",
       summary: "",
@@ -156,16 +160,52 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     setVisible(viewModal);
   }, [viewModal]);
 
-  const onSubmit = formData => {
-    formData.preventDefault();
+  const handleFileSelect = e => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+    const valid = files.filter(f => {
+      if (f.size > MAX_SIZE) {
+        setUploadError(`"${f.name}" exceeds the 50 MB limit and was skipped.`);
+        return false;
+      }
+      return true;
+    });
+    setAttachedFiles(prev => {
+      const names = new Set(prev.map(f => f.name));
+      return [...prev, ...valid.filter(f => !names.has(f.name))];
+    });
+    // Reset the input so the same file can be selected again if needed
+    e.target.value = "";
+  };
+
+  const handleRemoveFile = filename => {
+    setAttachedFiles(prev => prev.filter(f => f.name !== filename));
+  };
+
+  const getFileIcon = file => {
+    if (file.type.startsWith("image/")) return <ImageIcon fontSize="small" />;
+    if (file.type.startsWith("video/")) return <MovieIcon fontSize="small" />;
+    return <DescriptionIcon fontSize="small" />;
+  };
+
+  const onSubmit = async () => {
     const tutorialData = {
       ...formValue,
       created_by: userHandle,
       is_org: userHandle !== formValue.owner,
-      completed: false
+      completed: false,
+      media: []
     };
-    console.log(tutorialData);
-    createTutorial(tutorialData)(firebase, firestore, dispatch, history);
+
+    // createTutorial navigates away on success; we pass attached files so
+    // the action can upload them after the document is created.
+    createTutorial(tutorialData, attachedFiles)(
+      firebase,
+      firestore,
+      dispatch,
+      history
+    );
   };
 
   const onOwnerChange = value => {
@@ -203,102 +243,100 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   };
 
   const classes = useStyles();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const handleCancel = () => {
+    onSidebarClick();
+    setTags([]);
+    setNewTag("");
+    setformValue({
+      title: "",
+      summary: "",
+      owner: "",
+      tags: []
+    });
+  };
+
   return (
-    <Modal
+    <Dialog
       open={visible}
-      onClose={onSidebarClick}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
+      onClose={handleCancel}
+      fullScreen={fullScreen}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby="new-tutorial-dialog-title"
+      data-testId="tutorialNewModal"
     >
-      <div
-        data-testId="tutorialNewModal"
-        style={{
-          height: "auto",
-          width: "auto",
-          background: "white",
-          padding: "2rem",
-          paddingTop: "1rem",
-          maxWidth: "40%"
-        }}
-      >
+      <DialogTitle id="new-tutorial-dialog-title">
+        Create a Tutorial
+      </DialogTitle>
+
+      <DialogContent dividers>
         {error && (
-          <Alert message={""} type="error" closable="true" className="mb-24">
-            description={"Tutorial Creation Failed"}
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Tutorial creation failed. Please try again.
           </Alert>
         )}
-        <Typography variant="h5">Create a Tutorial</Typography>
-        <Box
-          sx={{
-            py: 2,
-            width: "50%"
-          }}
-        >
-          <Typography>
-            <Select
-              options={organizations?.map(org => ({
-                value: org.org_handle,
-                label: org.org_name
-              }))}
-              onChange={data => {
-                onOwnerChange(data.value);
-              }}
-              id="orgSelect"
-            />
+
+        <Box className={classes.selectWrapper}>
+          <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500 }}>
+            Organization
           </Typography>
+          <Select
+            options={organizations?.map(org => ({
+              value: org.org_handle,
+              label: org.org_name
+            }))}
+            onChange={data => onOwnerChange(data.value)}
+            id="orgSelect"
+            placeholder="Select an organization…"
+          />
         </Box>
 
         <form id="tutorialNewForm">
           <TextField
-            prefix={
-              <AppstoreAddOutlined style={{ color: "rgba(0,0,0,.25)" }} />
-            }
-            placeholder="Title of the Tutorial"
-            autoComplete="title"
+            label="Tutorial Title"
+            placeholder="Enter a descriptive title"
+            autoComplete="off"
             name="title"
             variant="outlined"
             fullWidth
             data-testId="newTutorial_title"
             id="newTutorialTitle"
-            style={{ marginBottom: "2rem" }}
-            onChange={e => handleChange(e)}
+            sx={{ mb: 2 }}
+            onChange={handleChange}
           />
 
           <TextField
-            prefix={
-              <AppstoreAddOutlined style={{ color: "rgba(0,0,0,.25)" }} />
-            }
+            label="Summary"
+            placeholder="Brief description of this tutorial"
             fullWidth
+            multiline
+            rows={3}
             variant="outlined"
             name="summary"
-            placeholder="Summary of the Tutorial"
-            autoComplete="summary"
+            autoComplete="off"
             id="newTutorialSummary"
             data-testId="newTutorial_summary"
-            onChange={e => handleChange(e)}
-            style={{ marginBottom: "2rem" }}
+            onChange={handleChange}
+            sx={{ mb: 2 }}
           />
 
-          <TextField
-            label="Enter a tag"
-            variant="outlined"
-            size="small"
-            value={newTag}
-            onChange={e => setNewTag(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={handleAddTag}
-          >
-            Add Tag
-          </Button>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <TextField
+              label="Add a tag"
+              variant="outlined"
+              size="small"
+              value={newTag}
+              onChange={e => setNewTag(e.target.value)}
+              onKeyDown={handleKeyDown}
+              sx={{ flexGrow: 1 }}
+            />
+            <Button variant="outlined" size="small" onClick={handleAddTag}>
+              Add
+            </Button>
+          </Box>
 
           <div className={classes.tagsContainer}>
             {tags.map((tag, index) => (
@@ -312,66 +350,132 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             ))}
           </div>
 
-          <IconButton>
-            <ImageIcon />
-          </IconButton>
-          <IconButton>
-            <MovieIcon />
-          </IconButton>
-          <IconButton>
-            <DescriptionIcon />
-          </IconButton>
+          {/* Hidden file pickers */}
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            multiple
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
+          <input
+            ref={docInputRef}
+            type="file"
+            accept=".pdf,.doc,.docx,.txt,.md"
+            multiple
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
 
-          <div className="mb-0">
-            <div style={{ float: "right" }}>
-              <Button
-                key="back"
-                onClick={() => {
-                  onSidebarClick();
-                  setTags([]);
-                  setNewTag("");
-                  setformValue({
-                    title: "",
-                    summary: "",
-                    owner: "",
-                    tags: []
-                  });
-                }}
-                id="cancelAddTutorial"
+          {uploadError && (
+            <Alert severity="warning" sx={{ mb: 1 }} onClose={() => setUploadError("")}>
+              {uploadError}
+            </Alert>
+          )}
+
+          <Box className={classes.mediaIcons}>
+            <Tooltip title="Attach image">
+              <IconButton
+                aria-label="attach image"
+                size="small"
+                onClick={() => imageInputRef.current?.click()}
               >
-                Cancel
-              </Button>
-              <Button
-                key="submit"
-                type="primary"
-                variant="contained"
-                color="secondary"
-                htmlType="submit"
-                loading={loading}
-                onClick={e => onSubmit(e)}
-                data-testid="newTutorialSubmit"
-                sx={{
-                  bgcolor: "#03AAFA",
-                  borderRadius: "30px",
-                  color: common.white,
-                  "&:hover": {
-                    bgcolor: "#03AAFA"
+                <ImageIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Attach video">
+              <IconButton
+                aria-label="attach video"
+                size="small"
+                onClick={() => videoInputRef.current?.click()}
+              >
+                <MovieIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Attach document">
+              <IconButton
+                aria-label="attach document"
+                size="small"
+                onClick={() => docInputRef.current?.click()}
+              >
+                <DescriptionIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+
+          {attachedFiles.length > 0 && (
+            <List dense disablePadding>
+              {attachedFiles.map(file => (
+                <ListItem
+                  key={file.name}
+                  disableGutters
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      aria-label={`remove ${file.name}`}
+                      size="small"
+                      onClick={() => handleRemoveFile(file.name)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
                   }
-                }}
-                disabled={
-                  formValue.title === "" ||
-                  formValue.summary === "" ||
-                  formValue.owner === ""
-                }
-              >
-                {loading ? "Creating..." : "Create"}
-              </Button>
-            </div>
-          </div>
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    {getFileIcon(file)}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={file.name}
+                    primaryTypographyProps={{ noWrap: true, variant: "body2" }}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
         </form>
-      </div>
-    </Modal>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button id="cancelAddTutorial" onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={onSubmit}
+          data-testid="newTutorialSubmit"
+          disabled={
+            loading ||
+            formValue.title === "" ||
+            formValue.summary === "" ||
+            formValue.owner === ""
+          }
+          sx={{
+            bgcolor: "#03AAFA",
+            borderRadius: "30px",
+            color: common.white,
+            "&:hover": { bgcolor: "#0390d4" }
+          }}
+        >
+          {loading ? "Creating…" : "Create"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
+};
+
+NewTutorial.propTypes = {
+  viewModal: PropTypes.bool,
+  onSidebarClick: PropTypes.func.isRequired,
+  viewCallback: PropTypes.func,
+  active: PropTypes.bool
 };
 
 export default NewTutorial;
