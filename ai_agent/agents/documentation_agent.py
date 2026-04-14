@@ -10,6 +10,7 @@ knowledge-base stored in ChromaDB.  It:
 
 import logging
 import os
+import threading
 from typing import Any
 
 from langchain_core.messages import AIMessage, SystemMessage
@@ -30,12 +31,15 @@ Be concise, use examples when helpful, and format code with markdown fences.
 """
 
 _vector_store: VectorStoreManager | None = None
+_vector_store_lock = threading.Lock()
 
 
 def _get_vector_store() -> VectorStoreManager:
     global _vector_store
     if _vector_store is None:
-        _vector_store = VectorStoreManager()
+        with _vector_store_lock:
+            if _vector_store is None:
+                _vector_store = VectorStoreManager()
     return _vector_store
 
 

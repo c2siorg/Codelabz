@@ -43,7 +43,20 @@ Reply with one word only: documentation | debugging | respond
 
 
 def route(state: AgentState) -> dict[str, Any]:
-    """LangGraph node: classify the last message and set ``next_step``."""
+    """Classify the student's latest message and set the routing decision.
+
+    Parameters
+    ----------
+    state:
+        The current ``AgentState``.  The function reads ``messages`` and
+        ``current_code_snippet``.
+
+    Returns
+    -------
+    dict
+        A partial state update containing ``next_step`` set to one of
+        ``"documentation"``, ``"debugging"``, or ``"respond"``.
+    """
 
     messages = state.get("messages", [])
     if not messages:

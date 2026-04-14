@@ -24,6 +24,7 @@ function ChatInterface({ labId, currentCode, onClose }) {
   const classes = useStyles();
   const [messages, setMessages] = useState([
     {
+      id: "init",
       role: "ai",
       content:
         "Hi! I'm the CodeLabz AI assistant. Ask me anything about this lab or paste an error message and I'll help you debug it."
@@ -44,7 +45,7 @@ function ChatInterface({ labId, currentCode, onClose }) {
     const text = input.trim();
     if (!text || loading) return;
 
-    setMessages(prev => [...prev, { role: "user", content: text }]);
+    setMessages(prev => [...prev, { id: `user-${Date.now()}`, role: "user", content: text }]);
     setInput("");
     setLoading(true);
     setRetrievedDocs([]);
@@ -66,7 +67,7 @@ function ChatInterface({ labId, currentCode, onClose }) {
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: "ai", content: data.reply }]);
+      setMessages(prev => [...prev, { id: `ai-${Date.now()}`, role: "ai", content: data.reply }]);
       if (data.conversation_id) setConversationId(data.conversation_id);
       if (data.retrieved_kb_docs?.length) {
         setRetrievedDocs(data.retrieved_kb_docs);
@@ -75,6 +76,7 @@ function ChatInterface({ labId, currentCode, onClose }) {
       setMessages(prev => [
         ...prev,
         {
+          id: `ai-err-${Date.now()}`,
           role: "ai",
           content:
             "Sorry, I couldn't reach the AI service right now. Please try again later."
@@ -107,9 +109,9 @@ function ChatInterface({ labId, currentCode, onClose }) {
 
       {/* Messages */}
       <div className={classes.messagesContainer}>
-        {messages.map((msg, idx) => (
+        {messages.map(msg => (
           <div
-            key={idx}
+            key={msg.id}
             className={`${classes.messageBubble} ${
               msg.role === "user" ? classes.userBubble : classes.aiBubble
             }`}
@@ -137,7 +139,7 @@ function ChatInterface({ labId, currentCode, onClose }) {
           {showDocs && (
             <div className={classes.docsPanel}>
               {retrievedDocs.map((doc, i) => (
-                <div key={i} className={classes.docItem}>
+                <div key={`doc-${i}-${doc.slice(0, 20)}`} className={classes.docItem}>
                   {doc.length > 200 ? `${doc.slice(0, 200)}…` : doc}
                 </div>
               ))}
