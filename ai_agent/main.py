@@ -204,14 +204,29 @@ def _persist_turn(
         doc_ref = collection.document()
         conversation_id = doc_ref.id
 
-    doc_ref.set(
-        {
-            "lab_id": lab_id,
-            "turns": firestore.ArrayUnion(
-                [{"role": "user", "content": user_message},
-                 {"role": "assistant", "content": ai_reply}]
-            ),
-        },
-        merge=True,
-    )
+    new_turns = [
+        {"role": "user", "content": user_message},
+        {"role": "assistant", "content": ai_reply},
+    ]
+
+    transaction = db.transaction()
+
+    @firestore.transactional
+    def append_turns_in_transaction(txn, reference) -> None:
+        snapshot = reference.get(transaction=txn)
+        existing_turns = []
+        if snapshot.exists:
+            existing_turns = snapshot.to_dict().get("turns", [])
+
+        txn.set(
+            reference,
+            {
+                "lab_id": lab_id,
+                "turns": existing_turns + new_turns,
+                "updated_at": firestore.SERVER_TIMESTAMP,
+            },
+            merge=True,
+        )
+
+    append_turns_in_transaction(transaction, doc_ref)
     return conversation_id
