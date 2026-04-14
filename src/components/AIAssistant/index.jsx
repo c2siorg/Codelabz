@@ -24,13 +24,16 @@ function AIAssistant({ labId, currentCode }) {
 
   return (
     <>
-      {open && (
+      <div
+        style={{ display: open ? "block" : "none" }}
+        aria-hidden={!open}
+      >
         <ChatInterface
           labId={labId}
           currentCode={currentCode}
           onClose={() => setOpen(false)}
         />
-      )}
+      </div>
 
       <Tooltip
         title={open ? "Close AI Assistant" : "Open AI Assistant"}
