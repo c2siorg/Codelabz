@@ -130,12 +130,14 @@ function ChatInterface({ labId, currentCode, onClose }) {
       {/* Retrieved docs toggle */}
       {retrievedDocs.length > 0 && (
         <>
-          <span
+          <button
+            type="button"
             className={classes.docsToggle}
             onClick={() => setShowDocs(v => !v)}
+            aria-expanded={showDocs}
           >
             {showDocs ? "Hide" : "Show"} retrieved documentation ({retrievedDocs.length})
-          </span>
+          </button>
           {showDocs && (
             <div className={classes.docsPanel}>
               {retrievedDocs.map((doc, i) => (
