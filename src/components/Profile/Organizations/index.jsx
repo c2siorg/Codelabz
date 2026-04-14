@@ -17,7 +17,7 @@ const Organizations = () => {
             <Box className={classes.column}>
               <img
                 src={GoogleImg}
-                alt="google"
+                alt="Sign in with Google"
                 // onClick={() => signInWithGoogle()(firebase, dispatch)}
                 className={classes.googleIcon}
               />

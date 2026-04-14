@@ -10,7 +10,7 @@ function BrandName() {
           cursor: "pointer"
         }}
         src={Logo}
-        alt="logo"
+        alt="Codelabz logo"
       />
     </>
   );

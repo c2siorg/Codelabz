@@ -25,10 +25,6 @@ export const ImageRenderer = props => {
   } catch (error) {}
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      style={{ maxWidth: imageScale + "%", display: "block", margin: "0 auto" }}
-    />
+    <img style={{ width: "100px", cursor: "pointer" }} src={Logo} alt="CodeLabz logo" />
   );
 };

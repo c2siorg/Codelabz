@@ -49,12 +49,16 @@ const CardComponent = ({
                   <Grid item className={classes.headerGrid}>
                     <img
                       src="/logo.jpeg"
-                      alt="logo"
+                      alt={codelab?.title || "Codelab thumbnail"}
                       className={classes.logoImg}
                     />
                     <img
                       src={require(`../../assets/images/${profilePic}`).default}
-                      alt=""
+                      alt={
+                        codelab?.ownerName
+                          ? `${codelab.ownerName}'s profile picture`
+                          : "Author profile picture"
+                      }
                       height="20rem"
                       width="20rem"
                       className={classes.personImg}
@@ -64,7 +68,7 @@ const CardComponent = ({
               ) : (
                 <img
                   src={require(`../../assets/images/${profilePic}`).default}
-                  alt=""
+                  alt={codelab?.title || "Codelab image"}
                   className={classes.avatar}
                 />
               )}

@@ -642,7 +642,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
             <Fade right={true} when={showImage}>
               <img
                 src={showImage === "user" ? profileUser : orgUser}
-                alt="Background for auth"
+                alt={user?.displayName ? `${user.displayName}'s profile picture` : "Profile picture"}
                 width="100%"
                 className="dash-image"
               />

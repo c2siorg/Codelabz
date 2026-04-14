@@ -35,14 +35,22 @@ export default function Banner({
           <img
             className={classes.profileCoverImg}
             src={bannerImage}
-            alt="Profile Banner"
+            alt={
+              organization?.org_name
+                ? `${organization.org_name} cover photo`
+                : "Organization cover photo"
+            }
             data-testId="orgbannerimg"
           />
           <div className={classes.profileInfo}>
             <img
               className={classes.profileUserImg}
               src={profileImage}
-              alt="Avatar"
+              alt={
+                organization?.org_name
+                  ? `${organization.org_name} logo`
+                  : "Organization logo"
+              }
               data-testId="orgbanneravatar"
             />
             <Typography

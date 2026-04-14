@@ -36,7 +36,11 @@ export default function ProfileCardOne({
               <img
                 className={classes.profileUserImg}
                 src={profileImage}
-                alt="Avatar"
+                alt={
+                  userData?.displayName
+                    ? `${userData.displayName}'s profile picture`
+                    : "Profile picture"
+                }
                 data-testId="user_profile_card_one_avatar"
               />
             </div>

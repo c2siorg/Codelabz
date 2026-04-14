@@ -59,6 +59,7 @@ const EventsCard = props => {
                 <Grid item xs={3}>
                   <img
                     src={event.img[0]}
+                    alt={event?.title || event?.name || "Event image"}
                     className={classes.logo}
                     data-testId={index == 0 ? "upEventImg" : ""}
                   />
