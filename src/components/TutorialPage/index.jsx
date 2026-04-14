@@ -8,6 +8,7 @@ import SideBar from "./components/sideBar";
 import Grid from "@mui/material/Grid";
 import useStyles from "./styles";
 import StepsBar from "./StepBar";
+import AIAssistant from "../AIAssistant";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import {
   getTutorialData,
@@ -157,6 +158,8 @@ function TutorialPage({ background = "white", textColor = "black" }) {
           <SideBar currentTutorial={postDetails} />
         </Grid>
       </Grid>
+
+      <AIAssistant labId={id} />
     </Box>
   );
 }
