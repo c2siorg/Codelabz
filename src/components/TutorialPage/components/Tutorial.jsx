@@ -5,6 +5,14 @@ import { makeStyles } from "@mui/styles";
 import HtmlTextRenderer from "../../Tutorials/subComps/HtmlTextRenderer";
 import DescriptionIcon from "@mui/icons-material/Description";
 
+const mediaPropType = PropTypes.arrayOf(
+  PropTypes.shape({
+    url: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    type: PropTypes.oneOf(["image", "video", "document"])
+  })
+);
+
 const useStyles = makeStyles(() => ({
   container: {
     padding: "5px 24px",
@@ -99,14 +107,6 @@ const Tutorial = ({ steps, media }) => {
     </>
   );
 };
-
-const mediaPropType = PropTypes.arrayOf(
-  PropTypes.shape({
-    url: PropTypes.string.isRequired,
-    name: PropTypes.string,
-    type: PropTypes.oneOf(["image", "video", "document"])
-  })
-);
 
 MediaRenderer.propTypes = {
   mediaItems: mediaPropType,

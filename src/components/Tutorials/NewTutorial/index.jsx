@@ -68,6 +68,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const MAX_MEDIA_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+
 const NewTutorial = ({ viewModal, onSidebarClick }) => {
   const firebase = useFirebase();
   const firestore = useFirestore();
@@ -163,9 +165,8 @@ const NewTutorial = ({ viewModal, onSidebarClick }) => {
   const handleFileSelect = e => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
     const valid = files.filter(f => {
-      if (f.size > MAX_SIZE) {
+      if (f.size > MAX_MEDIA_FILE_SIZE) {
         setUploadError(`"${f.name}" exceeds the 50 MB limit and was skipped.`);
         return false;
       }
