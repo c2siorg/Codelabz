@@ -1,19 +1,25 @@
-FROM node:14
+# Stage 1: Build the React app
+FROM node:18-alpine AS builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
-COPY package*.json ./
+# Install dependencies first for layer caching
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps
 
-# Install the project dependencies
-RUN npm install
-
-# Copy the entire project directory to the container
+# Copy source and build
 COPY . .
+RUN npm run build
 
-# Expose the desired port for the Node.js server
-EXPOSE 5173
+# Stage 2: Serve with nginx
+FROM nginx:alpine
 
-# Run the Node.js server
-CMD [ "npm", "run", "dev", "--host" ]
+# Copy built assets from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Use custom nginx config for client-side routing
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
