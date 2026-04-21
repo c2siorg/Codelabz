@@ -89,8 +89,12 @@ export {
   updateStepTitle,
   fetchAndIndexTutorials,
   updateTagFrequencies,
-  uploadTutorialImages
+  uploadTutorialImages,
+  blockUser,
+  muteUser
 } from "./tutorialsActions";
 export {
   getRecommendedTutorials,
 } from "./tutorialPageActions";
+
+
