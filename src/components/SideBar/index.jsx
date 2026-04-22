@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Drawer } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import SideList from "../SideBar/sidelist";
 import Home from "./../../assets/images/home.svg";
 import Notification from "./../../assets/images/notification.svg";
@@ -13,26 +14,23 @@ import { useSelector } from "react-redux";
 import Tutorials from "./../../assets/images/tutorial.svg";
 import MyFeed from "./../../assets/images/MyFeed.svg";
 import { signOut } from "../../store/actions";
-import { makeStyles } from "@mui/styles";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import { useFirebase } from "react-redux-firebase";
 import { useDispatch } from "react-redux";
 import { useAllowDashboard } from "../../helpers/customHooks";
 import Card from "@mui/material/Card";
 
-const useStyles = makeStyles(theme => ({
-  drawer: {
-    width: 250,
-    flexShrink: 0,
-    display: theme.breakpoints.down("md") ? null : "none"
-  },
-  drawerPaper: {
+const StyledDrawer = styled(Drawer)(() => ({
+  width: 250,
+  flexShrink: 0,
+  "& .MuiDrawer-paper": {
     width: 250
-  },
-  card: {
-    margin: "0.1rem",
-    padding: "0.5rem 1.5rem 0.5rem 0.5rem"
   }
+}));
+
+const StyledCard = styled(Card)(() => ({
+  margin: "0.1rem",
+  padding: "0.5rem 1.5rem 0.5rem 0.5rem"
 }));
 
 const SideBar = ({
@@ -50,7 +48,6 @@ const SideBar = ({
   const dispatch = useDispatch();
   const allowDashboard = useAllowDashboard();
 
-  //Taking out the current organization handle of the user
   const currentOrg = useSelector(
     ({
       org: {
@@ -113,51 +110,45 @@ const SideBar = ({
     }
   ];
 
-  const classes = useStyles();
-  return (
-    <>
-      {windowSize.width <= (drawWidth || 960) ? (
-        <Drawer
-          closable="true"
-          open={open}
-          anchor="right"
-          onClose={toggleSlider}
-          data-testId="sidebar_mobile"
-          style={{ zIndex: 99999 }}
-          classes={{
-            root: classes.drawer,
-            paper: classes.drawerPaper
-          }}
-          xs={12}
-          md={3}
+  if (windowSize.width <= (drawWidth || 960)) {
+    return (
+      <StyledDrawer
+        closable="true"
+        open={open}
+        anchor="right"
+        onClose={toggleSlider}
+        data-testId="sidebar_mobile"
+        style={{ zIndex: 99999 }}
+        xs={12}
+        md={3}
+      >
+        <SideList
+          menuItems={menuItems || defaultMenu}
+          value={value}
+          onStateChange={onStateChange}
+          toggleSlider={toggleSlider}
+          notificationCount={notificationCount}
+          style={{ position: "absolute" }}
         >
-          <SideList
-            menuItems={menuItems || defaultMenu}
-            value={value}
-            onStateChange={onStateChange}
-            toggleSlider={toggleSlider}
-            style={{
-              position: "absolute"
-            }}
-          >
-            {children}
-          </SideList>
-        </Drawer>
-      ) : (
-        <Card className={classes.card}>
-          <div data-testId="sidebar_desktop">
-            <SideList
-              menuItems={menuItems || defaultMenu}
-              value={value}
-              onStateChange={onStateChange}
-              notificationCount={notificationCount}
-            >
-              {children}
-            </SideList>
-          </div>
-        </Card>
-      )}
-    </>
+          {children}
+        </SideList>
+      </StyledDrawer>
+    );
+  }
+
+  return (
+    <StyledCard>
+      <div data-testId="sidebar_desktop">
+        <SideList
+          menuItems={menuItems || defaultMenu}
+          value={value}
+          onStateChange={onStateChange}
+          notificationCount={notificationCount}
+        >
+          {children}
+        </SideList>
+      </div>
+    </StyledCard>
   );
 };
 

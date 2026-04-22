@@ -1,73 +1,65 @@
-import React, { useEffect, useState } from "react";
-import { NavLink, useHistory, useLocation } from "react-router-dom";
+import React from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   MenuItem,
   MenuList,
   ListItemIcon,
   ListItemText,
-  Paper,
-  Grid,
-  Button
+  Paper
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 
-const useStyles = makeStyles(theme => ({
-  icons: {
-    width: "20px",
-    height: "20px"
-  },
+const StyledPaper = styled(Paper)(() => ({
+  display: "flex",
+  minWidth: "100%",
+  border: "none",
+  backgroundColor: "transparent",
+  boxShadow: "none"
+}));
 
-  listIcon: {
-    minWidth: "20px",
-    marginRight: "10px"
-  },
+const StyledMenuList = styled(MenuList)(() => ({
+  border: "none",
+  boxShadow: "none",
+  width: "100%"
+}));
 
-  paper: {
-    display: "flex",
-    minWidth: "100%",
-    border: "none",
-    backgrounColor: "transparent",
-    boxShadow: "none"
-  },
+const StyledMenuItem = styled(MenuItem)(() => ({
+  width: "100%",
+  height: "100%",
+  borderRadius: "100px",
+  paddingTop: "8px",
+  paddingBottom: "3px",
+  margin: "3px 0 3px 0"
+}));
 
-  navLink: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center"
-  },
+const NavLinkStyled = styled(NavLink)(() => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center"
+}));
 
-  menuList: {
-    border: "none",
-    boxShadow: "none"
-  },
+const iconStyles = {
+  width: "20px",
+  height: "20px"
+};
 
-  menuItem: {
-    width: "100%",
-    height: "100%",
-    borderRadius: "100px",
-    paddingTop: "8px",
-    paddingBottom: "3px",
-    margin: "3px 0 3px 0"
-  },
+const listIconStyles = {
+  minWidth: "20px",
+  marginRight: "10px"
+};
 
-  notification: {
-    color: "#000000"
-  },
-  customBadge: {
+const customBadgeSx = {
+  "& .MuiBadge-badge": {
     color: "#ffffff",
     backgroundColor: "#03AAFA",
     fontSize: "0.6rem",
     height: "16px",
     minWidth: "16px"
   }
-}));
+};
 
-/**
- * @description - This component renders the side bar menu
- * @returns
- */
 const SideList = ({
   menuItems = [],
   value,
@@ -77,155 +69,136 @@ const SideList = ({
   children,
   notificationCount
 }) => {
-  const classes = useStyles();
   const location = useLocation();
 
-  /**
-   * * Cases for rendering the menu items
-   *
-   * ? 1. item.link - If the item has a link, render a NavLink
-   * ? 2. item.onClick - If the item has an onClick, render a button
-   * ? if the item has neither, render a MenuItem with no onClick
-   *
-   */
   return (
-    <Paper className={classes.paper} style={style}>
-      <MenuList className={classes.menuList}>
+    <StyledPaper style={style}>
+      <StyledMenuList>
         {menuItems.map(function (item, index) {
+          const itemKey = item.link || item.name || index;
+
+          const textStyle = {
+            fontWeight: item?.id && value === item?.id ? "bold" : "normal",
+            color: item?.link === location.pathname ? "#0293d9" : "black"
+          };
+
+          const activeBackground =
+            item.link === location.pathname
+              ? { background: "#d9f1fc", borderRadius: "100px" }
+              : {};
+
           return (
             <div
-              key="menu-items"
-              style={
-                item.link == location.pathname
-                  ? { background: "#d9f1fc", borderRadius: "100px" }
-                  : {}
-              }
+              key={itemKey}
+              style={activeBackground}
               data-testId={item?.dataTestId}
             >
               {item.link && (
-                <NavLink to={item.link} className={classes.navLink}>
-                  <MenuItem
-                    key={item.link}
+                <NavLinkStyled to={item.link}>
+                  <StyledMenuItem
                     onClick={() => {
                       toggleSlider();
                       onStateChange(index);
                     }}
-                    className={classes.menuItem}
                   >
                     {item.img && (
-                      <ListItemIcon className={classes.listIcon}>
+                      <ListItemIcon style={listIconStyles}>
                         {item.name === "Notifications" ? (
                           <Badge
                             badgeContent={notificationCount}
                             color="primary"
-                            classes={{ badge: classes.customBadge }}
+                            sx={customBadgeSx}
                           >
                             <img
-                              alt={"..."}
+                              alt={item.name}
                               src={item.img}
-                              className={classes.icons}
+                              style={iconStyles}
                             />
                           </Badge>
                         ) : (
                           <img
-                            alt={"..."}
+                            alt={item.name}
                             src={item.img}
-                            className={classes.icons}
+                            style={iconStyles}
                           />
                         )}
                       </ListItemIcon>
                     )}
                     <ListItemText
                       data-testId={item.name}
-                      style={{
-                        fontWeight:
-                          item?.id && value === item?.id ? "bold" : "normal",
-                        color:
-                          item?.link == location.pathname ? "#0293d9" : "black"
-                      }}
+                      style={textStyle}
                       disableTypography
                     >
                       {item.name}
                     </ListItemText>
-                  </MenuItem>
-                </NavLink>
+                  </StyledMenuItem>
+                </NavLinkStyled>
               )}
-              {!item.link && !item.onClick && (
-                <MenuItem
-                  key={item.name}
-                  onClick={() => {
-                    if (onStateChange !== undefined) onStateChange(item);
 
+              {!item.link && !item.onClick && (
+                <StyledMenuItem
+                  onClick={() => {
+                    onStateChange(item);
                     toggleSlider();
                   }}
-                  className={classes.menuItem}
                 >
                   {item.img && (
-                    <ListItemIcon className={classes.listIcon}>
+                    <ListItemIcon style={listIconStyles}>
                       <Badge
                         badgeContent={
                           notificationCount &&
                           (notificationCount > 99 ? "99+" : notificationCount)
                         }
                         color="primary"
-                        classes={{ badge: classes.customBadge }}
+                        sx={customBadgeSx}
                       >
-                        <NotificationsIcon className={classes.notification} />
+                        <NotificationsIcon style={{ color: "#000000" }} />
                       </Badge>
                     </ListItemIcon>
                   )}
                   <ListItemText
                     data-testId={item.name}
-                    style={{
-                      fontWeight:
-                        item?.id && value === item?.id ? "bold" : "normal",
-                      color:
-                        item?.link == location.pathname ? "#0293d9" : "black"
-                    }}
+                    style={textStyle}
                     disableTypography
                   >
                     {item.name}
                   </ListItemText>
-                </MenuItem>
+                </StyledMenuItem>
               )}
+
               {!item.link && item.onClick && (
-                <MenuItem
-                  key={item.name}
+                <StyledMenuItem
                   onClick={() => {
-                    if (item.onClick) item.onClick(item);
+                    item.onClick(item);
                     onStateChange(item);
                   }}
-                  className={classes.menuItem}
                 >
                   {item.img && (
-                    <ListItemIcon className={classes.listIcon}>
+                    <ListItemIcon style={listIconStyles}>
                       <img
-                        alt={"..."}
+                        alt={item.name}
                         src={item.img}
-                        className={classes.icons}
+                        style={iconStyles}
                       />
                     </ListItemIcon>
                   )}
                   <ListItemText
                     data-testId={item.name}
-                    style={{
-                      fontWeight:
-                        item?.id && value === item?.id ? "bold" : "normal",
-                      color:
-                        item?.link == location.pathname ? "#0293d9" : "black"
-                    }}
+                    style={textStyle}
                     disableTypography
                   >
                     {item.name}
                   </ListItemText>
-                </MenuItem>
+                </StyledMenuItem>
               )}
             </div>
           );
         })}
-        {children}
-      </MenuList>
-    </Paper>
+        {React.Children.map(children, (child, i) =>
+          child ? React.cloneElement(child, { key: `sidebar-child-${i}` }) : null
+        )}
+      </StyledMenuList>
+    </StyledPaper>
   );
 };
 
