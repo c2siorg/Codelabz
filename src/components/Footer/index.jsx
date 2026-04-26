@@ -15,13 +15,11 @@ import MailOutlineOutlinedIcon from "@mui/icons-material/MailOutlineOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CopyrightOutlinedIcon from "@mui/icons-material/CopyrightOutlined";
 
-// ── Styled components (replaces deprecated makeStyles) ──────────
 const FooterItem = styled(Grid)(() => ({
   display: "flex",
   alignItems: "left",
   justifyContent: "flex-start"
 }));
-// ────────────────────────────────────────────────────────────────
 
 const Footer = () => {
   return (
