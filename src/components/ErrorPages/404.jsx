@@ -41,7 +41,6 @@ const OopsList = styled("ul")(() => ({
   "& li:nth-of-type(10)": { transform: "rotate(20deg)" },
   "& li:nth-of-type(11)": { transform: "rotate(1deg)" }
 }));
-// ────────────────────────────────────────────────────────────────
 
 const NotFound = ({ background = "white", textColor = "black" }) => {
   return (
