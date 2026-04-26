@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import BrandName from "../../helpers/brandName";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import { makeStyles } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import BugReportOutlinedIcon from "@mui/icons-material/BugReportOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
@@ -15,15 +15,15 @@ import MailOutlineOutlinedIcon from "@mui/icons-material/MailOutlineOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CopyrightOutlinedIcon from "@mui/icons-material/CopyrightOutlined";
 
+// ── Styled components (replaces deprecated makeStyles) ──────────
+const FooterItem = styled(Grid)(() => ({
+  display: "flex",
+  alignItems: "left",
+  justifyContent: "flex-start"
+}));
+// ────────────────────────────────────────────────────────────────
+
 const Footer = () => {
-  const useStyles = makeStyles({
-    item: {
-      display: "flex",
-      alignItems: "left",
-      justifyContent: "flex-start"
-    }
-  });
-  const classes = useStyles();
   return (
     <footer className="light-grey-bg pt-16 pb-16">
       <Grid container direction="row">
@@ -39,51 +39,51 @@ const Footer = () => {
         <Grid item xs={12} sm={12} md={3} className="col-pad-24">
           <h3 className="mb-16">About</h3>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://github.com/scorelab/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <HelpOutlineOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
                 About CodeLabz
-              </Grid>
+              </FooterItem>
             </a>
           </div>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://github.com/scorelab/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <CheckOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
                 Terms and conditions
-              </Grid>
+              </FooterItem>
             </a>
           </div>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://github.com/scorelab/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <LockOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
                 Privacy and security
-              </Grid>
+              </FooterItem>
             </a>
           </div>
         </Grid>
@@ -91,48 +91,48 @@ const Footer = () => {
         <Grid item xs={12} sm={12} md={3} className="col-pad-24">
           <h3 className="mb-16">Help</h3>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://github.com/scorelab/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
               className=" footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <ListOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />
                 FAQ
-              </Grid>
+              </FooterItem>
             </a>
           </div>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://github.com/scorelab/Codelabz"
               target="_blank"
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <GitHubIcon className="mr-8" style={{ color: "#455A64" }} />{" "}
                 GitHub
-              </Grid>
+              </FooterItem>
             </a>
           </div>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://github.com/scorelab/Codelabz/issues"
               target="_blank"
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <BugReportOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
                 Report a bug
-              </Grid>
+              </FooterItem>
             </a>
           </div>
         </Grid>
@@ -149,33 +149,33 @@ const Footer = () => {
             </a>
           </div>
           <div className="mt-8 mb-8">
-            <a
+            
               href="mailto: contact@codelabz.com"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <MailOutlineOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
                 contact@codelabz.io
-              </Grid>
+              </FooterItem>
             </a>
           </div>
           <div className="mt-8 mb-8">
-            <a
+            
               href="https://www.google.com/maps/place/Sri+Lanka/@7.8571778,78.4609778,7z/data=!3m1!4b1!4m5!3m4!1s0x3ae2593cf65a1e9d:0xe13da4b400e2d38c!8m2!3d7.873054!4d80.771797"
               target="_blank"
               rel="noreferrer noopener"
               className="mb-8 mt-8 footer-link"
             >
-              <Grid className={classes.item}>
+              <FooterItem>
                 <HomeOutlinedIcon
                   className="mr-8"
                   style={{ color: "#455A64" }}
                 />{" "}
                 64, Singh Labs, Kings Canyon
-              </Grid>
+              </FooterItem>
             </a>
           </div>
         </Grid>
