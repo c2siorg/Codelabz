@@ -1,51 +1,47 @@
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
-import Typography from "@mui/material/Typography";
-import React, { useEffect } from "react";
-import { makeStyles } from "@mui/styles";
+import React from "react";
+import { styled } from "@mui/material/styles";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: "flex",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    "& > *": {
-      margin: theme.spacing(0.5)
-    },
-    marginBottom: "1rem",
-    border: "none",
-    backgroundColor: "transparent",
-    boxShadow: "none"
+const StyledCard = styled(Card)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  flexWrap: "wrap",
+  "& > *": {
+    margin: theme.spacing(0.5)
   },
-  chip: {
-    margin: "0px 10px 10px 0px",
-    backgroundColor: "transparent",
-    border: "none",
-    cursor: "pointer"
-  }
+  marginBottom: "1rem",
+  border: "none",
+  backgroundColor: "transparent",
+  boxShadow: "none"
+}));
+
+const StyledChip = styled(Chip)(() => ({
+  margin: "0px 10px 10px 0px",
+  backgroundColor: "transparent",
+  border: "none",
+  cursor: "pointer"
 }));
 
 const FooterLinks = props => {
-  const classes = useStyles();
-
   return (
-    <Card className={classes.root}>
+    <StyledCard>
       <CardContent>
         {props.elements.map(function (el, index) {
           return (
-            <a href={el.link}>
-              <Chip
+            // Fix: added key prop to prevent React duplicate key warning
+            <a key={el.link || index} href={el.link}>
+              <StyledChip
                 size="small"
                 label={el.name}
                 id={index}
-                className={classes.chip}
               />
             </a>
           );
         })}
       </CardContent>
-    </Card>
+    </StyledCard>
   );
 };
 
