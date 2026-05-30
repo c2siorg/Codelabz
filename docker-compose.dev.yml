@@ -1,0 +1,34 @@
+services:
+  emulators:
+    image: andreysenov/firebase-tools
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "4000:4000"
+      - "9099:9099"
+      - "8080:8080"
+      - "9000:9000"
+      - "9199:9199"
+      - "5001:5001"
+    command: >
+      firebase emulators:start 
+      --import=./testdata 
+      --export-on-exit=./testdata 
+      --project demo-codelabz
+
+  app:
+    build:
+      context: .
+      target: dev # Hooks into the cached Dev stage of the Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules # Protects the container's modules from local overrides
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    environment:
+      - VITE_APP_USE_EMULATOR=true
+    depends_on:
+      - emulators

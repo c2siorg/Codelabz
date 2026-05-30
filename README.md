@@ -12,8 +12,7 @@
 
 # Deployment
 
-> ⚠️ **Note:** The live deployment is currently unavailable (DNS error).
-> Please set up the app locally using the [Contributing Guide](./CONTRIBUTING.md).
+You can see the app live at [https://dev.codelabz.io/](https://dev.codelabz.io/)
 
 # Community
 
