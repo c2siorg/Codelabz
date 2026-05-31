@@ -2,12 +2,22 @@ import * as actions from "./actionTypes";
 import _ from "lodash";
 import { functions } from "../../config";
 
+/**
+ * Helper to extract error message from error object
+ * @param {Error|Object|string} e
+ * @returns {string}
+ */
+const getErrorMessage = e => {
+  if (typeof e === "string") return e;
+  return _.get(e, "message", "An unexpected error occurred");
+};
+
 export const signIn = credentials => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SIGN_IN_START });
     dispatch({ type: actions.CLEAR_AUTH_VERIFY_EMAIL_STATE });
     const userData = await firebase.login(credentials);
-    if (_.get(userData, "user.user.emailVerified", false)) {
+    if (_.get(userData, "user.emailVerified", false)) {
       dispatch({ type: actions.SIGN_IN_SUCCESS });
     } else {
       await firebase.logout();
@@ -21,7 +31,7 @@ export const signIn = credentials => async (firebase, dispatch) => {
       });
     }
   } catch (e) {
-    dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
+    dispatch({ type: actions.SIGN_IN_FAIL, payload: getErrorMessage(e) });
   }
 };
 
@@ -34,7 +44,7 @@ export const signInWithGoogle = () => async (firebase, dispatch) => {
     });
     dispatch({ type: actions.SIGN_IN_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
+    dispatch({ type: actions.SIGN_IN_FAIL, payload: getErrorMessage(e) });
   }
 };
 
@@ -42,6 +52,10 @@ export const signInWithProviderID =
   providerID => async (firebase, dispatch) => {
     try {
       if (!["github", "twitter", "facebook"].includes(providerID)) {
+        dispatch({
+          type: actions.SIGN_IN_FAIL,
+          payload: "Invalid provider selected"
+        });
         return;
       }
       dispatch({ type: actions.SIGN_IN_START });
@@ -62,7 +76,7 @@ export const signInWithProviderID =
           )}. Log in with ${methods.join(", ")} to continue.`
         });
       } else {
-        dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
+        dispatch({ type: actions.SIGN_IN_FAIL, payload: getErrorMessage(e) });
       }
     }
   };
@@ -77,10 +91,8 @@ export const signOut = () => async (firebase, dispatch) => {
     dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
     dispatch({ type: actions.CLEAR_ORG_USER_STATE });
     await firebase.logout();
-    window.location.href = "/login";
-    // window.location.reload();
   } catch (e) {
-    console.log(e.message);
+    console.error("Sign out error:", e.message);
   }
 };
 
@@ -89,26 +101,27 @@ export const signUp = userData => async (firebase, dispatch) => {
     dispatch({ type: actions.SIGN_UP_START });
     const { email, password } = userData;
 
-    await firebase.createUser({ email, password }, { email });
-    const currentUser = firebase.auth().currentUser;
+    // createUser automatically handles document creation in cl_user 
+    // due to userProfile: "cl_user" and profileFactory in rrfConfig
+    const newUser = await firebase.createUser({ email, password }, { email });
+    const currentUser = newUser.user || firebase.auth().currentUser;
+    
     if (!currentUser) {
       throw new Error("User not found after signup");
     }
 
     try {
       await currentUser.sendEmailVerification();
-      console.log("Email verification sent successfully.");
     } catch (verificationError) {
       console.error("Error sending email verification:", verificationError);
-      dispatch({ type: actions.SIGN_UP_FAIL, payload: verificationError });
-      throw verificationError;
+      // We don't throw here to allow the signup to be considered successful,
+      // but we notify the user through state if necessary.
     }
 
     await firebase.logout();
-
     dispatch({ type: actions.SIGN_UP_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.SIGN_UP_FAIL, payload: e });
+    dispatch({ type: actions.SIGN_UP_FAIL, payload: getErrorMessage(e) });
   }
 };
 
@@ -121,20 +134,13 @@ export const clearRecoverPasswordError = () => async dispatch => {
   dispatch({ type: actions.CLEAR_AUTH_RECOVER_PASSWORD_STATE });
 };
 
-/**
- *Workflow to password reset
- * 1. call sendPasswordResetEmail with email
- * 2. call verifyPasswordResetCode with actionCode
- * 3. call confirmPasswordReset with actionCode and new password
- */
-
 export const sendPasswordResetEmail = email => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SEND_RESET_EMAIL_START });
     await firebase.resetPassword(email);
     dispatch({ type: actions.SEND_RESET_EMAIL_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.SEND_RESET_EMAIL_FAIL, payload: e });
+    dispatch({ type: actions.SEND_RESET_EMAIL_FAIL, payload: getErrorMessage(e) });
   }
 };
 
@@ -145,21 +151,21 @@ export const verifyPasswordResetCode =
       const email = await firebase.verifyPasswordResetCode(actionCode);
       dispatch({ type: actions.VERIFY_RESET_CODE_SUCCESS, payload: email });
     } catch (e) {
-      dispatch({ type: actions.VERIFY_RESET_CODE_FAIL, payload: e.message });
+      dispatch({ type: actions.VERIFY_RESET_CODE_FAIL, payload: getErrorMessage(e) });
     }
   };
 
 export const confirmPasswordReset =
   ({ actionCode, password }) =>
-  async (firebase, dispatch) => {
-    try {
-      dispatch({ type: actions.PASSWORD_RECOVERY_START });
-      await firebase.confirmPasswordReset(actionCode, password);
-      dispatch({ type: actions.PASSWORD_RECOVERY_SUCCESS });
-    } catch (e) {
-      dispatch({ type: actions.PASSWORD_RECOVERY_FAIL, payload: e.message });
-    }
-  };
+    async (firebase, dispatch) => {
+      try {
+        dispatch({ type: actions.PASSWORD_RECOVERY_START });
+        await firebase.confirmPasswordReset(actionCode, password);
+        dispatch({ type: actions.PASSWORD_RECOVERY_SUCCESS });
+      } catch (e) {
+        dispatch({ type: actions.PASSWORD_RECOVERY_FAIL, payload: getErrorMessage(e) });
+      }
+    };
 
 export const verifyEmail = actionCode => async (firebase, dispatch) => {
   try {
@@ -167,7 +173,7 @@ export const verifyEmail = actionCode => async (firebase, dispatch) => {
     await firebase.auth().applyActionCode(actionCode);
     dispatch({ type: actions.EMAIL_VERIFY_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.EMAIL_VERIFY_FAIL, payload: e.message });
+    dispatch({ type: actions.EMAIL_VERIFY_FAIL, payload: getErrorMessage(e) });
   }
 };
 
@@ -178,28 +184,22 @@ export const resendVerifyEmail = email => async dispatch => {
     const resendVerificationEmail = functions.httpsCallable(
       "resendVerificationEmail"
     );
-    await resendVerificationEmail({
-      email
-    });
+    await resendVerificationEmail({ email });
     dispatch({ type: actions.RESEND_VERIFY_EMAIL_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.RESEND_VERIFY_EMAIL_FAIL, payload: e.message });
+    dispatch({ type: actions.RESEND_VERIFY_EMAIL_FAIL, payload: getErrorMessage(e) });
   }
 };
 
-/**
- * Check user handle exists or not
- * @param userHandle
- * @returns {function(...[*]=):boolean}
- */
 export const checkUserHandleExists = userHandle => async firebase => {
   try {
     const handle = await firebase
+      .database()
       .ref(`/cl_user_handle/${userHandle}`)
       .once("value");
     return handle.exists();
   } catch (e) {
-    throw e.message;
+    throw new Error(getErrorMessage(e));
   }
 };
 
@@ -209,11 +209,9 @@ export const checkOrgHandleExists = orgHandle => async firestore => {
       .collection("cl_org_general")
       .doc(orgHandle)
       .get();
-
-    console.log(organizationHandle);
     return organizationHandle.exists;
   } catch (e) {
-    throw e.message;
+    throw new Error(getErrorMessage(e));
   }
 };
 
@@ -222,6 +220,10 @@ export const setUpInitialData =
     try {
       dispatch({ type: actions.INITIAL_SETUP_START });
       const userData = firebase.auth().currentUser;
+      if (!userData) {
+        throw new Error("No authenticated user found");
+      }
+
       const {
         orgData,
         name: displayName,
@@ -234,7 +236,6 @@ export const setUpInitialData =
       } = data;
 
       const isUserHandleExists = await checkUserHandleExists(handle)(firebase);
-
       if (isUserHandleExists) {
         dispatch({
           type: actions.INITIAL_SETUP_FAIL,
@@ -243,10 +244,10 @@ export const setUpInitialData =
         return;
       }
 
-      if (orgData) {
-        const isOrgHandleExists =
-          await checkOrgHandleExists(org_handle)(firestore);
+      const serverTimestamp = firestore.FieldValue.serverTimestamp();
 
+      if (orgData) {
+        const isOrgHandleExists = await checkOrgHandleExists(org_handle)(firestore);
         if (isOrgHandleExists) {
           dispatch({
             type: actions.INITIAL_SETUP_FAIL,
@@ -255,6 +256,7 @@ export const setUpInitialData =
           return;
         }
 
+        // Create Organization
         await firestore.set(
           { collection: "cl_org_general", doc: org_handle },
           {
@@ -263,52 +265,51 @@ export const setUpInitialData =
             org_website,
             org_country,
             org_email: userData.email,
-            org_created_date: firestore.FieldValue.serverTimestamp(),
-            createdAt: firestore.FieldValue.serverTimestamp(),
-            updatedAt: firestore.FieldValue.serverTimestamp()
+            org_created_date: serverTimestamp,
+            createdAt: serverTimestamp,
+            updatedAt: serverTimestamp
           }
         );
 
-        // Create organisation handle
-        await firestore.collection("org_users").doc(`${org_handle}_${userData.uid}`).set({
-          uid: userData.uid,
-          org_handle: org_handle,
-          permissions: [3]
-        });
+        // Add user as admin (permissions [3])
+        await firestore.set(
+          { collection: "org_users", doc: `${org_handle}_${userData.uid}` },
+          {
+            uid: userData.uid,
+            org_handle: org_handle,
+            permissions: [3]
+          }
+        );
 
-        const timeOutID = setTimeout(() => {
-          firebase
-            .updateProfile(
-              {
-                displayName,
-                handle,
-                country,
-                organizations: [org_handle],
-                updatedAt: firestore.FieldValue.serverTimestamp()
-              },
-              { useSet: false, merge: true }
-            )
-            .then(() => {
-              window.location.reload();
-              clearTimeout(timeOutID);
-              dispatch({ type: actions.INITIAL_SETUP_SUCCESS });
-            });
-        }, 7000);
+        // Update User Profile 
+        // Note: updateProfile automatically syncs with cl_user collection
+        await firebase.updateProfile(
+          {
+            displayName,
+            handle,
+            country,
+            organizations: [org_handle],
+            updatedAt: serverTimestamp
+          },
+          { useSet: false, merge: true }
+        );
       } else {
+        // Update User Profile without organization
         await firebase.updateProfile(
           {
             displayName,
             handle,
             country,
             organizations: [],
-            updatedAt: firestore.FieldValue.serverTimestamp()
+            updatedAt: serverTimestamp
           },
           { useSet: false, merge: true }
         );
-        dispatch({ type: actions.INITIAL_SETUP_SUCCESS });
       }
+      
+      dispatch({ type: actions.INITIAL_SETUP_SUCCESS });
     } catch (e) {
-      console.log(e);
-      dispatch({ type: actions.INITIAL_SETUP_FAIL, payload: e });
+      console.error("Setup initial data error:", e);
+      dispatch({ type: actions.INITIAL_SETUP_FAIL, payload: getErrorMessage(e) });
     }
   };
