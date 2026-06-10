@@ -212,7 +212,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
   }, [orgCountrySearch]);
 
   const onSubmit = async () => {
-    validateHandle(
+    const validateUserHandle = await validateHandle(
       checkUserHandleExists,
       firebase,
       handle,
@@ -222,46 +222,45 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
       "User handle can only contain lowercase alphanumeric characters",
       "User handle cannot be less than 6 characters",
       `The handle ${handle} is already taken`
-    ).then(async validateUserHandle => {
-      if (showOrgForm) {
-        validateHandle(
-          checkOrgHandleExists,
-          firebase,
-          dispatch,
-          orgHandle,
-          setOrgHandleValidateError,
-          setOrgHandleValidateErrorMessage,
-          "Please enter a handle",
-          "Organization handle can only contain lowercase alphanumeric characters",
-          "Organization handle cannot be less than 6 characters",
-          `The handle ${orgHandle} is already taken`
-        ).then(async validateOrgHandle => {
-          if (validated() && validateOrgHandle && validateUserHandle) {
-            setError("");
-            await setUpInitialData({
-              orgData: showOrgForm,
-              name,
-              handle,
-              country,
-              org_handle: orgHandle,
-              org_name: orgName,
-              org_website: orgWebsite,
-              org_country: orgCountry
-            })(firebase, firestore, dispatch);
-          }
-        });
-      } else {
-        if (validated() && validateUserHandle) {
-          setError("");
-          await setUpInitialData({
-            orgData: showOrgForm,
-            name,
-            handle,
-            country
-          })(firebase, firestore, dispatch);
-        }
+    );
+
+    if (showOrgForm) {
+      const validateOrgHandle = await validateHandle(
+        checkOrgHandleExists,
+        firebase,
+        orgHandle,
+        setOrgHandleValidateError,
+        setOrgHandleValidateErrorMessage,
+        "Please enter a handle",
+        "Organization handle can only contain lowercase alphanumeric characters",
+        "Organization handle cannot be less than 6 characters",
+        `The handle ${orgHandle} is already taken`
+      );
+
+      if (validated() && validateOrgHandle && validateUserHandle) {
+        setError("");
+        await setUpInitialData({
+          orgData: showOrgForm,
+          name,
+          handle,
+          country,
+          org_handle: orgHandle,
+          org_name: orgName,
+          org_website: orgWebsite,
+          org_country: orgCountry
+        })(firebase, firestore, dispatch);
       }
-    });
+    } else {
+      if (validated() && validateUserHandle) {
+        setError("");
+        await setUpInitialData({
+          orgData: showOrgForm,
+          name,
+          handle,
+          country
+        })(firebase, firestore, dispatch);
+      }
+    }
   };
 
   //If display Name is present then show that as value inside user name input
@@ -284,7 +283,6 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
     setHandleValidateError(false);
     setHandleValidateErrorMessage("");
   };
-  console.log(country);
 
   return (
     <div className="home-row" style={{ background: background }}>
@@ -418,6 +416,9 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                           {filteredData.map(item => {
                             return (
                               <div
+                                key={item.code}
+                                role="button"
+                                tabIndex={0}
                                 onClick={e => {
                                   setCountry(item.name);
                                   setCountrySearch("");
@@ -447,8 +448,8 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                     {showOrgForm === false
                       ? "I want to create an organization"
                       : showOrgForm === true
-                      ? "I don't want to create an organization"
-                      : "I want to create an organization"}
+                        ? "I don't want to create an organization"
+                        : "I want to create an organization"}
                   </Button>
                 </Box>
               </Card>
@@ -481,7 +482,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                       error={orgNameValidateError}
                       label="Organization Name"
                       variant="outlined"
-                      placeholder="Organiztion Name"
+                      placeholder="Organization Name"
                       value={orgName}
                       onChange={event => onChangeOrgName(event.target.value)}
                       helperText={
@@ -508,7 +509,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                       error={orgHandleValidateError}
                       label="Organization Handle"
                       variant="outlined"
-                      placeholder="Organiztion Handle"
+                      placeholder="Organization Handle"
                       value={orgHandle}
                       onChange={event => onChangeOrgHandle(event.target.value)}
                       helperText={
@@ -566,6 +567,9 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                             {orgFilteredData.map(item => {
                               return (
                                 <div
+                                  key={item.code}
+                                  tabIndex={0}
+                                  role="button"
                                   onClick={e => {
                                     setOrgCountry(item.name);
                                     setOrgCountrySearch("");
@@ -654,7 +658,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
   );
 };
 
-Dashboard.prototype = {
+Dashboard.propTypes = {
   background: PropTypes.string,
   textColor: PropTypes.string
 };
