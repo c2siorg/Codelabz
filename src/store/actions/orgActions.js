@@ -401,17 +401,16 @@ export const addFollower =
 
 export const deleteOrganization =
   org_handle =>
-  async (firebase = useFirebase(), dispatch) => {
+  async (firebase, dispatch) => {
     try {
       const auth = firebase.auth().currentUser;
-      // remove org from the organization collection
+
       await firebase
         .firestore()
         .collection("cl_org_general")
         .doc(org_handle)
         .delete();
 
-      // remove org from the user's orgs
       await firebase
         .firestore()
         .collection("cl_user")
@@ -419,6 +418,15 @@ export const deleteOrganization =
         .update({
           organizations: firebase.firestore.FieldValue.arrayRemove(org_handle)
         });
+
+      const orgUsersSnap = await firebase
+        .firestore()
+        .collection("org_users")
+        .where("org_handle", "==", org_handle)
+        .get();
+
+      await Promise.all(orgUsersSnap.docs.map(doc => doc.ref.delete()));
+
       dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
       dispatch({ type: actions.CLEAR_ORG_USER_STATE });
     } catch (e) {
