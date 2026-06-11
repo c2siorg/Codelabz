@@ -82,7 +82,9 @@ const Notification = ({ background = "white", textColor = "black" }) => {
   const notifications = useSelector(
     state => state.notifications.data.notifications
   );
-  const [localNotifications, setLocalNotifications] = useState(notifications);
+  const [localNotifications, setLocalNotifications] = useState(
+    notifications ?? []
+  );
 
   // for instant UI update
   const handleNotificationDelete = id => {
@@ -99,7 +101,7 @@ const Notification = ({ background = "white", textColor = "black" }) => {
     };
 
     getNotifications();
-    setLocalNotifications(notifications);
+    setLocalNotifications(notifications ?? []);
   }, [firebase, firestore, dispatch]);
 
   return (
