@@ -1,0 +1,8 @@
+FROM node:22-alpine
+
+RUN apk add --no-cache openjdk17-jre-headless
+
+RUN npm install -g firebase-tools@13.13.0 --no-audit --no-fund
+
+WORKDIR /app
+
