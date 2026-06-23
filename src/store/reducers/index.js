@@ -7,17 +7,18 @@ import orgReducer from "./orgReducer";
 import tutorialsReducer from "./tutorialsReducer";
 import tutorialPageReducers from "./tutorialPageReducers";
 import notificationReducers from "./notificationReducers";
+import adminReducer from "./adminReducer";
 
-// Add firebase to reducers
 const rootReducer = combineReducers({
   firebase: firebaseReducer,
-  firestore: firestoreReducer, // <- needed if using firestore
+  firestore: firestoreReducer, 
   auth: authReducer,
   profile: profileReducer,
   org: orgReducer,
   tutorials: tutorialsReducer,
   tutorialPage: tutorialPageReducers,
-  notifications: notificationReducers
+  notifications: notificationReducers,
+  admin: adminReducer
 });
 
 export default rootReducer;

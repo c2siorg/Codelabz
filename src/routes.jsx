@@ -10,9 +10,11 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import {
   UserIsAllowedUserDashboard,
   UserIsAllowOrgManager,
-  UserIsNotAllowedUserDashboard
+  UserIsNotAllowedUserDashboard,
+  UserIsAdminDashboard
 } from "./auth";
 import { AllowManageUser } from "./auth/manageUserAuth";
+import AdminDashboard from "./components/AdminDashboard";
 import AuthPage from "./components/AuthPage";
 import Dashboard from "./components/Dashboard";
 import Editor from "./components/Editor";
@@ -41,65 +43,21 @@ const AuthIsLoaded = ({ children }) => {
   const dispatch = useDispatch();
 
   const profile = useSelector(({ firebase: { profile } }) => profile);
-  const data = useSelector(({ profile: { data } }) => data);
-  const general = useSelector(({ org: { general } }) => general);
+  const profileLoaded = isLoaded(profile);
 
   useEffect(() => {
-    if (isLoaded(profile) && isLoaded(data) && isLoaded(general)) {
-      return; // Avoid fetching if data is already loaded
-    }
+    if (!profileLoaded) return;
+   
     getProfileData()(firebase, firestore, dispatch);
-  }, [profile, firestore, firebase, dispatch]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileLoaded]);
 
-  //case for not logged in user
-  if (
-    isLoaded(profile) &&
-    isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
+  if (!profileLoaded) {
+    return <Spinner />;
+  }
 
-  //case for logged in uncompleted user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
-
-  //case for authed org user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    !isEmpty(data) &&
-    isLoaded(general) &&
-    !isEmpty(general)
-  )
-    return children;
-
-  //case for authed normal user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
-
-  return <Spinner />;
+  return children;
 };
-
-// Remember to add the paths that the MINI navbar should
-// be shown in components/NavBar/navbarPaths.js
 
 const Routes = () => {
   return (
@@ -189,6 +147,11 @@ const Routes = () => {
             exact
             path={"/notification"}
             component={UserIsAllowedUserDashboard(Notification)}
+          />
+          <Route
+            exact
+            path={"/admin/dashboard"}
+            component={UserIsAdminDashboard(AdminDashboard)}
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>

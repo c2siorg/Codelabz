@@ -33,20 +33,24 @@ export const getProfileData = () => async (firebase, firestore, dispatch) => {
       dispatch
     );
     const organizations = userOrgs?.map(org => org.org_handle);
-    // console.log(organizations);
     if (organizations && organizations.length > 0) {
       const promises = organizations.map(org_handle =>
         getOrgBasicData(org_handle)(firebase)
       );
-      const orgs = await Promise.all(promises);
-      setCurrentOrgUserPermissions(
-        orgs[0].org_handle,
-        orgs[0].permissions
-      )(dispatch);
-      dispatch({
-        type: actions.GET_PROFILE_DATA_SUCCESS,
-        payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
-      });
+      const orgsRaw = await Promise.all(promises);
+      const orgs = orgsRaw.filter(Boolean);
+      if (orgs.length > 0) {
+        setCurrentOrgUserPermissions(
+          orgs[0].org_handle,
+          orgs[0].permissions
+        )(dispatch);
+        dispatch({
+          type: actions.GET_PROFILE_DATA_SUCCESS,
+          payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
+        });
+      } else {
+        dispatch({ type: actions.GET_PROFILE_DATA_END });
+      }
     } else {
       dispatch({ type: actions.GET_PROFILE_DATA_END });
     }
@@ -61,9 +65,8 @@ export const createOrganization =
       dispatch({ type: actions.PROFILE_EDIT_START });
       const userData = firebase.auth().currentUser;
       const { org_name, org_handle, org_country, org_website } = orgData;
-      const isOrgHandleExists =
-        await checkOrgHandleExists(org_handle)(firestore);
 
+      const isOrgHandleExists = await checkOrgHandleExists(org_handle)(firestore);
       if (isOrgHandleExists) {
         dispatch({
           type: actions.PROFILE_EDIT_FAIL,
@@ -72,33 +75,37 @@ export const createOrganization =
         return;
       }
 
-      await firestore.set(
-        { collection: "cl_org_general", doc: org_handle },
-        {
-          org_name,
-          org_handle,
-          org_website,
-          org_country,
-          org_email: userData.email,
-          org_created_date: firestore.FieldValue.serverTimestamp(),
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          updatedAt: firestore.FieldValue.serverTimestamp()
-        }
-      );
+      const db = firebase.firestore();
+      const batch = db.batch();
 
-      const timeOutID = setTimeout(() => {
-        firestore
-          .collection("cl_user")
-          .doc(userData.uid)
-          .update({
-            organizations: firestore.FieldValue.arrayUnion(org_handle)
-          })
-          .then(() => {
-            clearTimeout(timeOutID);
-            dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
-            window.location.reload();
-          });
-      }, 7000);
+      const orgRef = db.collection("cl_org_general").doc(org_handle);
+      batch.set(orgRef, {
+        org_name,
+        org_handle,
+        org_website,
+        org_country,
+        org_email: userData.email,
+        org_created_date: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      const orgUserRef = db.collection("org_users").doc(`${org_handle}_${userData.uid}`);
+      batch.set(orgUserRef, {
+        uid: userData.uid,
+        org_handle,
+        permissions: [3]
+      });
+
+      const userRef = db.collection("cl_user").doc(userData.uid);
+      batch.update(userRef, {
+        organizations: firebase.firestore.FieldValue.arrayUnion(org_handle)
+      });
+
+      await batch.commit();
+
+      dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
+      await getProfileData()(firebase, firestore, dispatch);
     } catch (e) {
       dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
     }
@@ -115,29 +122,29 @@ export const updateUserProfile =
     description,
     country
   }) =>
-  async (firebase, firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.PROFILE_EDIT_START });
-      await firebase.updateProfile(
-        {
-          displayName,
-          website,
-          link_facebook,
-          link_github,
-          link_linkedin,
-          link_twitter,
-          description,
-          country,
-          updatedAt: firestore.FieldValue.serverTimestamp()
-        },
-        { useSet: false, merge: true }
-      );
-      dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
-      dispatch({ type: actions.CLEAR_PROFILE_EDIT_STATE });
-    } catch (e) {
-      dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
-    }
-  };
+    async (firebase, firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.PROFILE_EDIT_START });
+        await firebase.updateProfile(
+          {
+            displayName,
+            website,
+            link_facebook,
+            link_github,
+            link_linkedin,
+            link_twitter,
+            description,
+            country,
+            updatedAt: firestore.FieldValue.serverTimestamp()
+          },
+          { useSet: false, merge: true }
+        );
+        dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
+        dispatch({ type: actions.CLEAR_PROFILE_EDIT_STATE });
+      } catch (e) {
+        dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
+      }
+    };
 
 export const uploadProfileImage =
   (file, user_handle) => async (firebase, dispatch) => {

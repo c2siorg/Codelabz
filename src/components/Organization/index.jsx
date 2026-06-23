@@ -9,6 +9,8 @@ import OrgUsersCard from "./OrgUsersCard/orgUsersCard";
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import useStyles from "./styles";
 import SwitchAccount from "../Profile/SwitchAccount/SwitchAccount";
 import { Container, IconButton } from "@mui/material";
@@ -24,9 +26,9 @@ import { useFirebase, useFirestore } from "react-redux-firebase";
 import { unPublishOrganization } from "../../store/actions";
 import useWindowSize from "../../helpers/customHooks/useWindowSize";
 import { useParams } from "react-router-dom";
+import RequiresRole from "../../helpers/RequiresRole";
 
 const Organizations = () => {
-  //Set All the organisations for this user
   const [organisations, setOrganisations] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [SettingsMenu, setSettingsMenu] = useState(1);
@@ -87,9 +89,7 @@ const Organizations = () => {
     );
   };
 
-  //Firstly we have to find the details of the current user
   const profileData = useSelector(({ firebase }) => firebase.profile);
-  //Then we will fetch the organisations from the document of the current user
   const orgsOfUser = profileData.organizations;
 
   return (
@@ -198,7 +198,20 @@ const Organizations = () => {
 
           <Grid item xs={windowSize.width <= 750 ? 12 : 10}>
             {SettingsMenu === 1 && <General />}
-            {SettingsMenu === 2 && <Users />}
+            {SettingsMenu === 2 && (
+              <RequiresRole
+                minLevel={2}
+                fallback={
+                  <Box p={4}>
+                    <Typography variant="h6" color="textSecondary">
+                      You need Admin or Owner permissions to manage members.
+                    </Typography>
+                  </Box>
+                }
+              >
+                <Users />
+              </RequiresRole>
+            )}
             {SettingsMenu === 3 && <Passwords />}
             {SettingsMenu === 4 && <Socialmedia />}
           </Grid>
