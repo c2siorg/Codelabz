@@ -9,7 +9,6 @@ permissions:
 
 jobs:
   build_and_preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -44,6 +43,6 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}
           projectId: ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}
           channelId: pr-${{ github.event.pull_request.number }}
-          expires: 7d
+          expires: 30d
           # Pinned to 13.35.1 as it is the last version that supports Node 18.
           firebaseToolsVersion: 13.35.1

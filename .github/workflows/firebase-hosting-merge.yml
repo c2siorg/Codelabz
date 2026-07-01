@@ -1,7 +1,8 @@
 name: Deploy to Firebase Hosting on merge
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
 
@@ -9,6 +10,11 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Fail if unintended trigger
+        if: ${{ !(github.event.pull_request.merged == true && github.event.pull_request.head.repo.full_name == github.repository) }}
+        run: |
+          echo "This workflow only runs when a PR from the same repository is merged into main."
+          exit 1
       - name: Checkout Repository
         uses: actions/checkout@v4
 
