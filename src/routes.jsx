@@ -33,7 +33,7 @@ import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
 import SearchResultsComponent from "./components/Tutorials/MyTutorials/Search/SearchResultsComponent";
-import { getProfileData } from "./store/actions";
+import { getProfileData, subscribeToNotifications, saveFcmToken } from "./store/actions";
 
 const AuthIsLoaded = ({ children }) => {
   const firebase = useFirebase();
@@ -41,61 +41,27 @@ const AuthIsLoaded = ({ children }) => {
   const dispatch = useDispatch();
 
   const profile = useSelector(({ firebase: { profile } }) => profile);
-  const data = useSelector(({ profile: { data } }) => data);
-  const general = useSelector(({ org: { general } }) => general);
+  const profileLoaded = isLoaded(profile);
 
   useEffect(() => {
-    if (isLoaded(profile) && isLoaded(data) && isLoaded(general)) {
-      return; // Avoid fetching if data is already loaded
-    }
+    if (!profileLoaded) return;
     getProfileData()(firebase, firestore, dispatch);
-  }, [profile, firestore, firebase, dispatch]);
+  }, [profileLoaded]);
 
-  //case for not logged in user
-  if (
-    isLoaded(profile) &&
-    isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
+  useEffect(() => {
+    if (!profileLoaded) return;
+    const uid = profile?.uid || firebase.auth().currentUser?.uid;
+    if (!uid) return;
+    subscribeToNotifications(uid)(firebase, dispatch);
+    if (!sessionStorage.getItem("fcm_requested")) {
+      sessionStorage.setItem("fcm_requested", "1");
+      saveFcmToken(uid)(firebase, firestore, dispatch);
+    }
+  }, [profileLoaded, profile?.uid]);
 
-  //case for logged in uncompleted user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
+  if (!profileLoaded) return <Spinner />;
 
-  //case for authed org user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    !isEmpty(data) &&
-    isLoaded(general) &&
-    !isEmpty(general)
-  )
-    return children;
-
-  //case for authed normal user
-  if (
-    isLoaded(profile) &&
-    !isEmpty(profile) &&
-    isLoaded(data) &&
-    isEmpty(data) &&
-    isLoaded(general) &&
-    isEmpty(general)
-  )
-    return children;
-
-  return <Spinner />;
+  return children;
 };
 
 // Remember to add the paths that the MINI navbar should

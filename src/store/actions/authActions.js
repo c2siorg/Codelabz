@@ -1,6 +1,8 @@
 import * as actions from "./actionTypes";
 import _ from "lodash";
 import { functions } from "../../config";
+import { unsubscribeFromNotifications } from "./notificationActions";
+import firebaseApp from "../../config"; // raw compat SDK — used for FieldValue in signOut
 
 export const signIn = credentials => async (firebase, dispatch) => {
   try {
@@ -69,6 +71,22 @@ export const signInWithProviderID =
 
 export const signOut = () => async (firebase, dispatch) => {
   try {
+    unsubscribeFromNotifications()(dispatch);
+
+    const auth = firebase.auth().currentUser;
+    const fcmToken = sessionStorage.getItem("fcm_token");
+    if (auth && fcmToken) {
+      try {
+        await firebase.firestore().collection("cl_user").doc(auth.uid).update({
+          fcmTokens: firebaseApp.firestore.FieldValue.arrayRemove(fcmToken)
+        });
+      } catch (e) {
+        console.log("FCM token removal failed:", e.message);
+      }
+    }
+    sessionStorage.removeItem("fcm_token");
+    sessionStorage.removeItem("fcm_requested");
+
     dispatch({ type: actions.CLEAR_AUTH_PROFILE_STATE });
     dispatch({ type: actions.CLEAR_AUTH_VERIFY_EMAIL_STATE });
     dispatch({ type: actions.CLEAR_AUTH_RECOVER_PASSWORD_STATE });
@@ -78,7 +96,6 @@ export const signOut = () => async (firebase, dispatch) => {
     dispatch({ type: actions.CLEAR_ORG_USER_STATE });
     await firebase.logout();
     window.location.href = "/login";
-    // window.location.reload();
   } catch (e) {
     console.log(e.message);
   }

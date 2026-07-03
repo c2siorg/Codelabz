@@ -27,6 +27,8 @@ import {
 import { useTheme } from "@mui/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import NotificationBell from "./NotificationBell";
+import NotificationDropdown from "./NotificationDropdown";
 
 const useStyles = makeStyles(theme => ({
   menu: {
@@ -51,9 +53,15 @@ const RightMenu = ({ mode, onClick }) => {
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const { pathname } = useLocation();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notifAnchor, setNotifAnchor] = React.useState(null);
 
   const open = Boolean(anchorEl);
-  //This will be responsible for closing the rightMenu automatically when route Changes
+
+  const unreadCount = useSelector(
+    state =>
+      (state.notifications?.data?.notifications ?? []).filter(n => !n.isRead)
+        .length
+  );
   useEffect(() => {
     setAnchorEl(null);
   }, [pathname]);
@@ -71,7 +79,6 @@ const RightMenu = ({ mode, onClick }) => {
   const profile = useSelector(({ firebase }) => firebase.profile);
   const acronym = avatarName(profile.displayName);
 
-  //Taking out the current organization handle of the user
   const currentOrg = useSelector(
     ({
       org: {
@@ -80,7 +87,6 @@ const RightMenu = ({ mode, onClick }) => {
     }) => current
   );
 
-  //Check if this current user is attached to some organization
   const isOrgPresent = currentOrg == null ? false : true;
 
   const organizations = useSelector(
@@ -117,6 +123,18 @@ const RightMenu = ({ mode, onClick }) => {
     return (
       <React.Fragment>
         <List>
+          {allowDashboard && (
+            <ListItem key="setting:notif">
+              <NotificationBell
+                unreadCount={unreadCount}
+                onClick={e => setNotifAnchor(e.currentTarget)}
+              />
+              <NotificationDropdown
+                anchorEl={notifAnchor}
+                onClose={() => setNotifAnchor(null)}
+              />
+            </ListItem>
+          )}
           {allowDashboard && (
             <ListItem key="setting:2">
               <Link to={"/tutorials"} onClick={onClick}>
@@ -237,7 +255,20 @@ const RightMenu = ({ mode, onClick }) => {
       style={{
         marginRight: "2rem"
       }}
+      alignItems="center"
     >
+      {allowDashboard && (
+        <>
+          <NotificationBell
+            unreadCount={unreadCount}
+            onClick={e => setNotifAnchor(e.currentTarget)}
+          />
+          <NotificationDropdown
+            anchorEl={notifAnchor}
+            onClose={() => setNotifAnchor(null)}
+          />
+        </>
+      )}
       <Avatar
         style={{
           backgroundColor:

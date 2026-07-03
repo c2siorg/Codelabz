@@ -15,6 +15,7 @@ const onCreateFunctions = require("./cloud_functions/onCreateFunctions");
 const onWriteFunctions = require("./cloud_functions/onWriteFunctions");
 const onUpdateFunctions = require("./cloud_functions/onUpdateFunctions");
 const pubSubFunctions = require("./cloud_functions/pubSubFunctions");
+const notificationFunctions = require("./cloud_functions/notificationFunctions");
 
 //+++++++++++++++++++++onCall Functions+++++++++++++++++++++++++++++++++
 exports.resendVerificationEmail = functions.https.onCall(
@@ -48,3 +49,20 @@ exports.updateOrgUser = functions.firestore
 exports.deleteTutorialSteps = functions.pubsub
   .schedule("every 7 days")
   .onRun(pubSubFunctions.deleteTutorialStepsHandler);
+
+//++++++++++++++++++++Notification Trigger Functions+++++++++++++++++
+exports.onFollowCreate = functions.firestore
+  .document("user_followers/{docId}")
+  .onCreate(notificationFunctions.onFollowCreate);
+
+exports.onCommentCreate = functions.firestore
+  .document("tutorials/{tutorialId}/comments/{commentId}")
+  .onCreate(notificationFunctions.onCommentCreate);
+
+exports.onOrgMemberJoin = functions.firestore
+  .document("org_users/{memberDoc}")
+  .onCreate(notificationFunctions.onOrgMemberJoin);
+
+exports.onNotificationCreate = functions.firestore
+  .document("cl_notifications/{notificationId}")
+  .onCreate(notificationFunctions.onNotificationCreate);
