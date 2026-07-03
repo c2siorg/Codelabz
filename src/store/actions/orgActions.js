@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { useFirebase } from "react-redux-firebase";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
@@ -46,68 +45,68 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
 // adds a user to organization's users list with a set of permissions
 export const addOrgUser =
   ({ org_handle, handle, permissions }) =>
-  async (firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.ADD_ORG_USER_START });
-      const userDoc = await firestore
-        .collection("cl_user")
-        .where("handle", "==", handle)
-        .get();
-      if (userDoc.docs.length === 1) {
-        const uid = userDoc.docs[0].get("uid");
-        await firestore
-          .collection("org_users")
-          .doc(`${org_handle}_${uid}`)
-          .set({
-            uid: uid,
-            org_handle: org_handle,
-            permissions: permissions
-          });
+    async (firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.ADD_ORG_USER_START });
+        const userDoc = await firestore
+          .collection("cl_user")
+          .where("handle", "==", handle)
+          .get();
+        if (userDoc.docs.length === 1) {
+          const uid = userDoc.docs[0].get("uid");
+          await firestore
+            .collection("org_users")
+            .doc(`${org_handle}_${uid}`)
+            .set({
+              uid: uid,
+              org_handle: org_handle,
+              permissions: permissions
+            });
 
-        await getOrgUserData(org_handle)(firestore, dispatch);
-        dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
-      } else {
-        dispatch({
-          type: actions.ADD_ORG_USER_FAIL,
-          payload: `User [${handle}] is not registered with CodeLabz`
-        });
+          await getOrgUserData(org_handle)(firestore, dispatch);
+          dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
+        } else {
+          dispatch({
+            type: actions.ADD_ORG_USER_FAIL,
+            payload: `User [${handle}] is not registered with CodeLabz`
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
       }
-    } catch (e) {
-      console.log(e);
-      dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
-    }
-  };
+    };
 
 // removes all permissions of a user from an organization
 export const removeOrgUser =
   ({ org_handle, handle }) =>
-  async (firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.ADD_ORG_USER_START });
-      const userDoc = await firestore
-        .collection("cl_user")
-        .where("handle", "==", handle)
-        .get();
-      if (userDoc.docs.length === 1) {
-        const uid = userDoc.docs[0].get("uid");
-        await firestore
-          .collection("org_users")
-          .doc(`${org_handle}_${uid}`)
-          .delete();
+    async (firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.ADD_ORG_USER_START });
+        const userDoc = await firestore
+          .collection("cl_user")
+          .where("handle", "==", handle)
+          .get();
+        if (userDoc.docs.length === 1) {
+          const uid = userDoc.docs[0].get("uid");
+          await firestore
+            .collection("org_users")
+            .doc(`${org_handle}_${uid}`)
+            .delete();
 
-        await getOrgUserData(org_handle)(firestore, dispatch);
-        dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
-      } else {
-        dispatch({
-          type: actions.ADD_ORG_USER_FAIL,
-          payload: `User [${handle}] is not registered with CodeLabz`
-        });
+          await getOrgUserData(org_handle)(firestore, dispatch);
+          dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
+        } else {
+          dispatch({
+            type: actions.ADD_ORG_USER_FAIL,
+            payload: `User [${handle}] is not registered with CodeLabz`
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
       }
-    } catch (e) {
-      console.log(e);
-      dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
-    }
-  };
+    };
 
 export const getOrgBasicData = org_handle => async firebase => {
   try {
@@ -141,7 +140,7 @@ export const getOrgBasicData = org_handle => async firebase => {
     };
   } catch (e) {
     console.log(e);
-    throw e;
+    return null;
   }
 };
 
@@ -178,26 +177,26 @@ export const clearEditGeneral = () => dispatch => {
 
 export const unPublishOrganization =
   (org_handle, published, currentOrgData) =>
-  async (firebase, firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.EDIT_ORG_GENERAL_START });
-      await firestore.collection("cl_org_general").doc(org_handle).update({
-        org_published: !published,
-        updatedAt: firestore.FieldValue.serverTimestamp()
-      });
+    async (firebase, firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.EDIT_ORG_GENERAL_START });
+        await firestore.collection("cl_org_general").doc(org_handle).update({
+          org_published: !published,
+          updatedAt: firestore.FieldValue.serverTimestamp()
+        });
 
-      const newData = await getOrgBasicData(org_handle)(firebase);
-      const update = _.unionBy([newData], currentOrgData, "org_handle");
-      dispatch({
-        type: actions.GET_PROFILE_DATA_SUCCESS,
-        payload: { organizations: _.orderBy(update, ["org_handle"], ["asc"]) }
-      });
+        const newData = await getOrgBasicData(org_handle)(firebase);
+        const update = _.unionBy([newData], currentOrgData, "org_handle");
+        dispatch({
+          type: actions.GET_PROFILE_DATA_SUCCESS,
+          payload: { organizations: _.orderBy(update, ["org_handle"], ["asc"]) }
+        });
 
-      dispatch({ type: actions.EDIT_ORG_GENERAL_SUCCESS });
-    } catch (e) {
-      dispatch({ type: actions.EDIT_ORG_GENERAL_FAIL, payload: e.message });
-    }
-  };
+        dispatch({ type: actions.EDIT_ORG_GENERAL_SUCCESS });
+      } catch (e) {
+        dispatch({ type: actions.EDIT_ORG_GENERAL_FAIL, payload: e.message });
+      }
+    };
 
 export const uploadOrgProfileImage =
   (file, org_handle, currentOrgData) => async (firebase, dispatch) => {
@@ -401,35 +400,38 @@ export const addFollower =
 
 export const deleteOrganization =
   org_handle =>
-  async (firebase, dispatch) => {
-    try {
-      const auth = firebase.auth().currentUser;
+    async (firebase, dispatch) => {
+      try {
+        dispatch({ type: actions.DELETE_ORG_START });
 
-      await firebase
-        .firestore()
-        .collection("cl_org_general")
-        .doc(org_handle)
-        .delete();
+        const auth = firebase.auth().currentUser;
+        const db = firebase.firestore();
 
-      await firebase
-        .firestore()
-        .collection("cl_user")
-        .doc(auth.uid)
-        .update({
+        const orgUsersSnap = await db
+          .collection("org_users")
+          .where("org_handle", "==", org_handle)
+          .get();
+
+        const batch = db.batch();
+
+        orgUsersSnap.docs.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+
+        batch.update(db.collection("cl_user").doc(auth.uid), {
           organizations: firebase.firestore.FieldValue.arrayRemove(org_handle)
         });
 
-      const orgUsersSnap = await firebase
-        .firestore()
-        .collection("org_users")
-        .where("org_handle", "==", org_handle)
-        .get();
+        batch.delete(db.collection("cl_org_general").doc(org_handle));
 
-      await Promise.all(orgUsersSnap.docs.map(doc => doc.ref.delete()));
+        await batch.commit();
 
-      dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
-      dispatch({ type: actions.CLEAR_ORG_USER_STATE });
-    } catch (e) {
-      console.log(e);
-    }
-  };
+        dispatch({ type: actions.DELETE_ORG_SUCCESS });
+        dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
+        dispatch({ type: actions.CLEAR_ORG_USER_STATE });
+        return true;
+      } catch (e) {
+        dispatch({ type: actions.DELETE_ORG_FAIL, payload: e.message });
+        throw e;
+      }
+    };

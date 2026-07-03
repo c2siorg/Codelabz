@@ -52,9 +52,13 @@ function OrgDeleteModal() {
   );
 
   const deleteOrganizationHandler = useCallback(async () => {
-    await deleteOrganization(CurrentOrg.org_handle)(firebase, dispatch);
-    await getProfileData()(firebase, firestore, dispatch);
-    history.push("/");
+    try {
+      await deleteOrganization(CurrentOrg.org_handle)(firebase, dispatch);
+      await getProfileData()(firebase, firestore, dispatch);
+      history.push("/");
+    } catch (e) {
+      console.log(e);
+    }
   }, [CurrentOrg.org_handle, dispatch, firebase, firestore, history]);
 
   return (

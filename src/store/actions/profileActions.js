@@ -33,20 +33,25 @@ export const getProfileData = () => async (firebase, firestore, dispatch) => {
       dispatch
     );
     const organizations = userOrgs?.map(org => org.org_handle);
-    // console.log(organizations);
     if (organizations && organizations.length > 0) {
       const promises = organizations.map(org_handle =>
         getOrgBasicData(org_handle)(firebase)
       );
-      const orgs = await Promise.all(promises);
-      setCurrentOrgUserPermissions(
-        orgs[0].org_handle,
-        orgs[0].permissions
-      )(dispatch);
-      dispatch({
-        type: actions.GET_PROFILE_DATA_SUCCESS,
-        payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
-      });
+      const resolvedOrgs = await Promise.all(promises);
+      const orgs = resolvedOrgs.filter(org => org !== null);
+
+      if (orgs.length > 0) {
+        setCurrentOrgUserPermissions(
+          orgs[0].org_handle,
+          orgs[0].permissions
+        )(dispatch);
+        dispatch({
+          type: actions.GET_PROFILE_DATA_SUCCESS,
+          payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
+        });
+      } else {
+        dispatch({ type: actions.GET_PROFILE_DATA_END });
+      }
     } else {
       dispatch({ type: actions.GET_PROFILE_DATA_END });
     }
