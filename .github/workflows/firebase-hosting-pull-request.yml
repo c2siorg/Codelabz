@@ -1,16 +1,19 @@
-name: Deploy to Firebase Hosting on PR
+name: Deploy to Firebase Hosting Preview Channel on PR
 
-on: pull_request
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - synchronize
 
 permissions:
-  checks: write
   contents: read
   pull-requests: write
 
 jobs:
   build_and_preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'safe-to-deploy-preview')
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -20,30 +23,18 @@ jobs:
         with:
           node-version: 18
 
-      - name: Create .env file with secrets
-        run: |
-          echo "VITE_APP_FIREBASE_API_KEY=${{ secrets.VITE_APP_FIREBASE_API_KEY }}" >> .env
-          echo "VITE_APP_FIREBASE_PROJECT_ID=${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}" >> .env
-          echo "VITE_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
-          echo "VITE_APP_FIREBASE_APP_ID=${{ secrets.VITE_APP_FIREBASE_APP_ID }}" >> .env
-          echo "VITE_APP_FIREBASE_MEASUREMENTID=${{ secrets.VITE_APP_FIREBASE_MEASUREMENTID }}" >> .env
-          echo "VITE_APP_FIREBASE_FCM_VAPID_KEY=${{ secrets.VITE_APP_FIREBASE_FCM_VAPID_KEY }}" >> .env
-          echo "VITE_APP_AUTH_DOMAIN=${{ secrets.VITE_APP_AUTH_DOMAIN }}" >> .env
-          echo "VITE_APP_DATABASE_URL=${{ secrets.VITE_APP_DATABASE_URL }}" >> .env
-          echo "VITE_APP_USE_EMULATOR=false" >> .env
-
       - name: Install Dependencies
         run: |
           npm install --legacy-peer-deps
-          npm run build || exit 1
+          npm run build
 
       - name: Deploy to Firebase Hosting Preview Channel
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}
-          projectId: ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}
+          projectId: ${{ vars.VITE_APP_FIREBASE_PROJECT_ID }}
           channelId: pr-${{ github.event.pull_request.number }}
-          expires: 7d
+          expires: 30d
           # Pinned to 13.35.1 as it is the last version that supports Node 18.
           firebaseToolsVersion: 13.35.1

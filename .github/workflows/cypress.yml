@@ -1,6 +1,9 @@
 name: Cypress End-to-End Tests
 
-on: push
+on: pull_request
+
+permissions:
+  contents: read
 
 jobs:
   cypress-tests:
@@ -14,6 +17,17 @@ jobs:
 
     env:
       CI: false
+      VITE_APP_FIREBASE_USE_EMULATOR: true
+
+      VITE_APP_FIREBASE_API_KEY: ${{ vars.VITE_APP_FIREBASE_API_KEY }}
+      VITE_APP_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_APP_FIREBASE_AUTH_DOMAIN }}
+      VITE_APP_FIREBASE_DATABASE_URL: ${{ vars.VITE_APP_FIREBASE_DATABASE_URL }}
+      VITE_APP_FIREBASE_PROJECT_ID: ${{ vars.VITE_APP_FIREBASE_PROJECT_ID }}
+      VITE_APP_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_APP_FIREBASE_STORAGE_BUCKET }}
+      VITE_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}
+      VITE_APP_FIREBASE_APP_ID: ${{ vars.VITE_APP_FIREBASE_APP_ID }}
+      VITE_APP_FIREBASE_MEASUREMENTID: ${{ vars.VITE_APP_FIREBASE_MEASUREMENTID }}
+      VITE_APP_FIREBASE_FCM_VAPID_KEY: ${{ vars.VITE_APP_FIREBASE_FCM_VAPID_KEY }}
 
     steps:
       - name: Checkout Repository
@@ -32,36 +46,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node }}-
 
-      - name: Create .env File
-        run: |
-          echo "VITE_APP_FIREBASE_API_KEY=${{ secrets.VITE_APP_FIREBASE_API_KEY }}" >> .env
-          echo "VITE_APP_FIREBASE_PROJECT_ID=${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }}" >> .env
-          echo "VITE_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}" >> .env
-          echo "VITE_APP_FIREBASE_APP_ID=${{ secrets.VITE_APP_FIREBASE_APP_ID }}" >> .env
-          echo "VITE_APP_FIREBASE_MEASUREMENTID=${{ secrets.VITE_APP_FIREBASE_MEASUREMENTID }}" >> .env
-          echo "VITE_APP_FIREBASE_FCM_VAPID_KEY=${{ secrets.VITE_APP_FIREBASE_FCM_VAPID_KEY }}" >> .env
-          echo "VITE_APP_AUTH_DOMAIN=${{ secrets.VITE_APP_AUTH_DOMAIN }}" >> .env
-          echo "VITE_APP_DATABASE_URL=${{ secrets.VITE_APP_DATABASE_URL }}" >> .env
-          echo "VITE_APP_USE_EMULATOR=true" >> .env
-          echo "SKIP_PREFLIGHT_CHECK=true" >> .env
-          echo "CI=false" >> .env
-          echo "CYPRESS_PROJECT_ID=${{ secrets.CYPRESS_PROJECT_ID }}" >> .env
-
-      - name: Prepare Firebase Service Account
-        run: |
-          mkdir -p functions/private
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CODELABZ }}" > functions/private/cl-dev-pk.json
-
       - name: Install Functions Dependencies
-        run: cd functions && npm install --legacy-peer-deps
+        run: npm install --legacy-peer-deps
+        working-directory: functions
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
       - name: Start Firebase Emulators
         run: |
-          firebase emulators:start --import=./testdata --project ${{ secrets.VITE_APP_FIREBASE_PROJECT_ID }} &
-          sleep 15
+          firebase emulators:start \
+            --import=./testdata \
+            --project "$VITE_APP_FIREBASE_PROJECT_ID" &
+            sleep 15
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
@@ -74,6 +71,5 @@ jobs:
           wait-on: "http://localhost:5173"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          CYPRESS_PROJECT_ID: ${{ vars.CYPRESS_PROJECT_ID }}
           COMMIT_INFO_BRANCH: ${{ github.ref_name }}
