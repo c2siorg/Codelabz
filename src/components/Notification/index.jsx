@@ -101,8 +101,11 @@ const Notification = ({ background = "white", textColor = "black" }) => {
     };
 
     getNotifications();
-    setLocalNotifications(notifications ?? []);
   }, [firebase, firestore, dispatch]);
+
+  useEffect(() => {
+    setLocalNotifications(notifications ?? []);
+  }, [notifications]);
 
   return (
     <>
