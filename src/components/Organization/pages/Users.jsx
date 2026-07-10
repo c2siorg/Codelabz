@@ -52,7 +52,7 @@ const ROLE_OPTIONS = [
   { label: "Admin", value: PERMISSION_LEVELS.ADMIN }
 ];
 
-function AddMemberForm({ orgHandle, currentUserLevel, actorUid }) {
+function AddMemberForm({ orgHandle, currentUserLevel }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const firestore = useFirestore();
@@ -68,10 +68,7 @@ function AddMemberForm({ orgHandle, currentUserLevel, actorUid }) {
   const handleSubmit = e => {
     e.preventDefault();
     if (!handle.trim()) return;
-    addOrgUser({ org_handle: orgHandle, handle: handle.trim(), permissions: [role], actorUid })(
-      firestore,
-      dispatch
-    );
+    addOrgUser({ org_handle: orgHandle, handle: handle.trim(), permissions: [role] })(firestore, dispatch);
   };
 
   useEffect(() => {
@@ -212,7 +209,6 @@ function Users() {
   const isLoaded = useSelector(({ org: { user: { isLoaded } } }) => isLoaded);
   const error = useSelector(({ org: { user: { error } } }) => error ?? null);
   const orgHandle = useSelector(({ org: { general: { current } } }) => current);
-  const actorUid = useSelector(({ firebase: { auth } }) => auth?.uid ?? null);
   const actorHandle = useSelector(({ firebase: { profile } }) => profile?.handle ?? null);
 
   const { level: currentUserLevel, permissions: actorPermissions } = useOrgPermission();
@@ -231,13 +227,12 @@ function Users() {
       org_handle: orgHandle,
       handle,
       newPermissions,
-      actorPermissions,
-      actorUid
+      actorPermissions
     })(firestore, dispatch);
   };
 
   const handleRemove = handle => {
-    removeOrgUser({ org_handle: orgHandle, handle, actorUid })(firestore, dispatch);
+    removeOrgUser({ org_handle: orgHandle, handle })(firestore, dispatch);
   };
 
   return (
@@ -305,11 +300,7 @@ function Users() {
         {/* Add Member Form */}
         <Grid item>
           <RequiresRole minLevel={2}>
-            <AddMemberForm
-              orgHandle={orgHandle}
-              currentUserLevel={currentUserLevel}
-              actorUid={actorUid}
-            />
+            <AddMemberForm orgHandle={orgHandle} currentUserLevel={currentUserLevel} />
           </RequiresRole>
         </Grid>
 

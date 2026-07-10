@@ -2,7 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ─── Helper functions ──────────────────────────────────────────────────
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -22,31 +21,57 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/org_users/$(org_handle + "_" + request.auth.uid));
     }
 
-    // ─── cl_org_general ────────────────────────────────────────────────────
-    match /cl_org_general/{org_handle} {
-      // Any authenticated user can read org data — needed for org page views,
-      // org switching, and the isPublished check in getOrgData.
-      // Write access is restricted to admins/owners.
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated();
-      allow update: if hasOrgPermission(org_handle, 2);
-      allow delete: if hasOrgPermission(org_handle, 3);
+    function isPlatformAdmin() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/cl_user/$(request.auth.uid)).data.get('is_platform_admin', false) == true;
     }
 
-    // ─── org_users ─────────────────────────────────────────────────────────
-    match /org_users/{memberDoc} {
-      // Any authenticated user can read org_users docs — needed to bootstrap
-      // org membership checks (getOrgBasicData reads this to load permissions).
-      // The data is non-sensitive (uid, org_handle, permissions level).
+    function isValidRole(role) {
+      return role is int && role >= 0 && role <= 3;
+    }
+
+    function isValidOrgUserDocument(data, memberDoc) {
+      return data.keys().hasOnly(['uid', 'org_handle', 'permissions'])
+        && data.uid is string
+        && data.org_handle is string
+        && data.permissions is list
+        && data.permissions.size() == 1
+        && isValidRole(data.permissions[0])
+        && memberDoc == data.org_handle + "_" + data.uid;
+    }
+
+    function actorCanManageOrgUser(org_handle, targetRole) {
+      return hasOrgPermission(org_handle, 2)
+        && targetRole < getOrgPermission(org_handle);
+    }
+
+    match /cl_org_general/{org_handle} {
       allow read: if isAuthenticated();
-      allow create: if hasOrgPermission(request.resource.data.org_handle, 2);
-      allow update: if hasOrgPermission(resource.data.org_handle, 2)
-        && request.resource.data.permissions[0] < getOrgPermission(resource.data.org_handle);
-      allow delete: if hasOrgPermission(resource.data.org_handle, 3)
+      allow create: if isAuthenticated();
+      allow update: if hasOrgPermission(org_handle, 2) || isPlatformAdmin();
+      allow delete: if hasOrgPermission(org_handle, 3) || isPlatformAdmin();
+    }
+
+    match /org_users/{memberDoc} {
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated()
+        && isValidOrgUserDocument(request.resource.data, memberDoc)
+        && actorCanManageOrgUser(request.resource.data.org_handle, request.resource.data.permissions[0]);
+
+      allow update: if isAuthenticated()
+        && isValidOrgUserDocument(resource.data, memberDoc)
+        && isValidOrgUserDocument(request.resource.data, memberDoc)
+        && actorCanManageOrgUser(resource.data.org_handle, resource.data.permissions[0])
+        && request.resource.data.permissions[0] < getOrgPermission(resource.data.org_handle)
+        && resource.data.org_handle == request.resource.data.org_handle
+        && resource.data.uid == request.resource.data.uid;
+
+      allow delete: if (isValidOrgUserDocument(resource.data, memberDoc)
+        && actorCanManageOrgUser(resource.data.org_handle, resource.data.permissions[0]))
         || (isAuthenticated() && resource.data.uid == request.auth.uid);
     }
 
-    // ─── cl_user ───────────────────────────────────────────────────────────
     match /cl_user/{userId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated()
@@ -54,22 +79,44 @@ service cloud.firestore {
         && !('is_platform_admin' in request.resource.data.diff(resource.data).affectedKeys());
     }
 
-    // ─── org_role_audit ────────────────────────────────────────────────────
     match /org_role_audit/{auditDoc} {
       allow read: if isAuthenticated()
-        && (get(/databases/$(database)/documents/cl_user/$(request.auth.uid)).data.get('is_platform_admin', false) == true
+        && (isPlatformAdmin()
             || exists(/databases/$(database)/documents/org_users/$(resource.data.org_handle + "_" + request.auth.uid)));
-      allow create: if isAuthenticated()
-        && exists(/databases/$(database)/documents/org_users/$(request.resource.data.org_handle + "_" + request.auth.uid));
-      allow update, delete: if false;
+
+      allow create, update, delete: if false;
     }
 
-    // ─── All other collections ─────────────────────────────────────────────
-    // Any authenticated user can read/write other collections.
-    // The security-critical collections (cl_user, cl_org_general, org_users,
-    // org_role_audit) are fully governed by the specific rules above.
-    match /{collection}/{docId} {
+    match /tutorials/{tutorialId} {
       allow read, write: if isAuthenticated();
+    }
+
+    match /cl_comments/{commentId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /org_subscribers/{subDoc} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /tag_frequencies/{tagId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /user_followers/{followDoc} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /testConnection/{docId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /{collection}/{docId} {
+      allow read, write: if false;
     }
   }
 }

@@ -6,21 +6,6 @@ import { hasPermission, getMaxPermission, PERMISSION_LEVELS } from "../../helper
 
 const elasticlunr = new Elasticlunr("handle", "handle", "name");
 
-const writeAuditEntry = async (firestore, { org_handle, target_uid, actor_uid, old_permissions, new_permissions }) => {
-  try {
-    await firestore.collection("org_role_audit").add({
-      org_handle,
-      target_uid,
-      actor_uid,
-      old_permissions: old_permissions ?? null,
-      new_permissions: new_permissions ?? null,
-      timestamp: firestore.FieldValue.serverTimestamp()
-    });
-  } catch (e) {
-    console.error("Audit write failed (non-fatal):", e);
-  }
-};
-
 export const searchFromIndex = query => {
   return elasticlunr.searchFromIndex(query);
 };
@@ -59,7 +44,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
 };
 
 export const addOrgUser =
-  ({ org_handle, handle, permissions, actorUid = null }) =>
+  ({ org_handle, handle, permissions }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
@@ -78,14 +63,6 @@ export const addOrgUser =
             permissions: permissions
           });
 
-        await writeAuditEntry(firestore, {
-          org_handle,
-          target_uid: uid,
-          actor_uid: actorUid,
-          old_permissions: null,
-          new_permissions: permissions
-        });
-
         await getOrgUserData(org_handle)(firestore, dispatch);
         dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
       } else {
@@ -101,7 +78,7 @@ export const addOrgUser =
   };
 
 export const removeOrgUser =
-  ({ org_handle, handle, actorUid = null }) =>
+  ({ org_handle, handle }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
@@ -113,9 +90,6 @@ export const removeOrgUser =
         const uid = userDoc.docs[0].get("uid");
         const docRef = firestore.collection("org_users").doc(`${org_handle}_${uid}`);
 
-        const existing = await docRef.get();
-        const old_permissions = existing.exists ? existing.get("permissions") : null;
-
         await docRef.delete();
 
         await firestore
@@ -124,14 +98,6 @@ export const removeOrgUser =
           .update({
             organizations: firestore.FieldValue.arrayRemove(org_handle)
           });
-
-        await writeAuditEntry(firestore, {
-          org_handle,
-          target_uid: uid,
-          actor_uid: actorUid,
-          old_permissions,
-          new_permissions: null
-        });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
         dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
@@ -491,7 +457,7 @@ export const deleteOrganization =
   };
 
 export const updateOrgUserPermissions =
-  ({ org_handle, handle, newPermissions, actorPermissions, actorUid }) =>
+  ({ org_handle, handle, newPermissions, actorPermissions }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_START });
@@ -526,18 +492,8 @@ export const updateOrgUserPermissions =
       const uid = userDoc.docs[0].get("uid");
 
       const docRef = firestore.collection("org_users").doc(`${org_handle}_${uid}`);
-      const existing = await docRef.get();
-      const old_permissions = existing.exists ? existing.get("permissions") : null;
 
       await docRef.update({ permissions: newPermissions });
-
-      await writeAuditEntry(firestore, {
-        org_handle,
-        target_uid: uid,
-        actor_uid: actorUid,
-        old_permissions,
-        new_permissions: newPermissions
-      });
 
       await getOrgUserData(org_handle)(firestore, dispatch);
       dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_SUCCESS });
