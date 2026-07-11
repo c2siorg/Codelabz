@@ -227,7 +227,7 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
     if (showOrgForm) {
       const validateOrgHandle = await validateHandle(
         checkOrgHandleExists,
-        firebase,
+        firestore,
         orgHandle,
         setOrgHandleValidateError,
         setOrgHandleValidateErrorMessage,
@@ -414,14 +414,22 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                       {filteredData.length !== 0 && (
                         <div className="dataOutput">
                           {filteredData.map(item => {
+                            const selectCountry = () => {
+                              setCountry(item.name);
+                              setCountrySearch("");
+                            };
+
                             return (
                               <div
                                 key={item.code}
                                 role="button"
                                 tabIndex={0}
-                                onClick={e => {
-                                  setCountry(item.name);
-                                  setCountrySearch("");
+                                onClick={selectCountry}
+                                onKeyDown={event => {
+                                  if (event.key === "Enter" || event.key === " ") {
+                                    event.preventDefault();
+                                    selectCountry();
+                                  }
                                 }}
                                 style={{ color: textColor }}
                               >
@@ -565,14 +573,22 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                         {orgFilteredData.length !== 0 && (
                           <div className="dataOutput">
                             {orgFilteredData.map(item => {
+                              const selectOrgCountry = () => {
+                                setOrgCountry(item.name);
+                                setOrgCountrySearch("");
+                              };
+
                               return (
                                 <div
                                   key={item.code}
                                   tabIndex={0}
                                   role="button"
-                                  onClick={e => {
-                                    setOrgCountry(item.name);
-                                    setOrgCountrySearch("");
+                                  onClick={selectOrgCountry}
+                                  onKeyDown={event => {
+                                    if (event.key === "Enter" || event.key === " ") {
+                                      event.preventDefault();
+                                      selectOrgCountry();
+                                    }
                                   }}
                                   style={{ color: textColor }}
                                 >
