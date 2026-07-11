@@ -101,11 +101,11 @@ export const signUp = userData => async (firebase, dispatch) => {
     dispatch({ type: actions.SIGN_UP_START });
     const { email, password } = userData;
 
-    // createUser automatically handles document creation in cl_user 
+    // createUser automatically handles document creation in cl_user
     // due to userProfile: "cl_user" and profileFactory in rrfConfig
     const newUser = await firebase.createUser({ email, password }, { email });
     const currentUser = newUser.user || firebase.auth().currentUser;
-    
+
     if (!currentUser) {
       throw new Error("User not found after signup");
     }
@@ -239,7 +239,7 @@ export const setUpInitialData =
       if (isUserHandleExists) {
         dispatch({
           type: actions.INITIAL_SETUP_FAIL,
-          payload: { message: `Handle [${handle}] is already taken` }
+          payload: `Handle [${handle}] is already taken`
         });
         return;
       }
@@ -251,7 +251,7 @@ export const setUpInitialData =
         if (isOrgHandleExists) {
           dispatch({
             type: actions.INITIAL_SETUP_FAIL,
-            payload: { message: `Handle [${org_handle}] is already taken` }
+            payload: `Handle [${org_handle}] is already taken`
           });
           return;
         }
@@ -281,32 +281,40 @@ export const setUpInitialData =
           }
         );
 
-        // Update User Profile 
-        // Note: updateProfile automatically syncs with cl_user collection
-        await firebase.updateProfile(
+        await firestore.set(
+          { collection: "cl_user", doc: userData.uid },
           {
+            uid: userData.uid,
+            email: userData.email,
             displayName,
             handle,
             country,
             organizations: [org_handle],
             updatedAt: serverTimestamp
           },
-          { useSet: false, merge: true }
+          { merge: true }
         );
       } else {
-        // Update User Profile without organization
-        await firebase.updateProfile(
+        await firestore.set(
+          { collection: "cl_user", doc: userData.uid },
           {
+            uid: userData.uid,
+            email: userData.email,
             displayName,
             handle,
             country,
             organizations: [],
             updatedAt: serverTimestamp
           },
-          { useSet: false, merge: true }
+          { merge: true }
         );
       }
-      
+
+      await firebase
+        .database()
+        .ref(`/cl_user_handle/${handle}`)
+        .set(userData.uid);
+
       dispatch({ type: actions.INITIAL_SETUP_SUCCESS });
     } catch (e) {
       console.error("Setup initial data error:", e);
