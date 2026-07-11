@@ -19,19 +19,43 @@ jobs:
       CI: false
       VITE_APP_FIREBASE_USE_EMULATOR: true
 
-      VITE_APP_FIREBASE_API_KEY: ${{ vars.VITE_APP_FIREBASE_API_KEY }}
-      VITE_APP_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_APP_FIREBASE_AUTH_DOMAIN }}
-      VITE_APP_FIREBASE_DATABASE_URL: ${{ vars.VITE_APP_FIREBASE_DATABASE_URL }}
-      VITE_APP_FIREBASE_PROJECT_ID: ${{ vars.VITE_APP_FIREBASE_PROJECT_ID }}
-      VITE_APP_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_APP_FIREBASE_STORAGE_BUCKET }}
-      VITE_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}
-      VITE_APP_FIREBASE_APP_ID: ${{ vars.VITE_APP_FIREBASE_APP_ID }}
-      VITE_APP_FIREBASE_MEASUREMENTID: ${{ vars.VITE_APP_FIREBASE_MEASUREMENTID }}
-      VITE_APP_FIREBASE_FCM_VAPID_KEY: ${{ vars.VITE_APP_FIREBASE_FCM_VAPID_KEY }}
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Register Log Masks
+        run: |
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_API_KEY }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_AUTH_DOMAIN }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_DATABASE_URL }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_PROJECT_ID }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_STORAGE_BUCKET }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_APP_ID }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_MEASUREMENTID }}"
+          echo "::add-mask::${{ vars.VITE_APP_FIREBASE_FCM_VAPID_KEY }}"
+          echo "::add-mask::${{ vars.CYPRESS_PROJECT_ID }}"
+
+      # Forked pull_request workflows cannot access repository variables or secrets,
+      # so public Firebase configuration is provided as a fallback to allow CI to run
+      # for external contributors.
+      # TODO: Remove the fallback values if GitHub adds support for repository
+      # variables in pull_request workflows for pull requests from forked repositories.
+      - name: Create .env
+        run: |
+          cat > .env <<EOF
+          VITE_APP_FIREBASE_USE_EMULATOR=true
+          VITE_APP_FIREBASE_API_KEY=${{ vars.VITE_APP_FIREBASE_API_KEY || 'AIzaSyASOtRR71J484CcXhvs3BBZByhIII8lNuU' }}
+          VITE_APP_FIREBASE_AUTH_DOMAIN=${{ vars.VITE_APP_FIREBASE_AUTH_DOMAIN || 'codelabz-966e5.firebaseapp.com' }}
+          VITE_APP_FIREBASE_DATABASE_URL=${{ vars.VITE_APP_FIREBASE_DATABASE_URL || 'https://codelabz-966e5-default-rtdb.asia-southeast1.firebasedatabase.app' }}
+          VITE_APP_FIREBASE_PROJECT_ID=${{ vars.VITE_APP_FIREBASE_PROJECT_ID || 'codelabz-966e5' }}
+          VITE_APP_FIREBASE_STORAGE_BUCKET=${{ vars.VITE_APP_FIREBASE_STORAGE_BUCKET || 'codelabz-966e5.appspot.com' }}
+          VITE_APP_FIREBASE_MESSAGING_SENDER_ID=${{ vars.VITE_APP_FIREBASE_MESSAGING_SENDER_ID || '1004651538159' }}
+          VITE_APP_FIREBASE_APP_ID=${{ vars.VITE_APP_FIREBASE_APP_ID || '1:1004651538159:web:9801af1b5c45c01aec9d1a' }}
+          VITE_APP_FIREBASE_MEASUREMENTID=${{ vars.VITE_APP_FIREBASE_MEASUREMENTID || 'G-N0P8Q281YB' }}
+          VITE_APP_FIREBASE_FCM_VAPID_KEY=${{ vars.VITE_APP_FIREBASE_FCM_VAPID_KEY || 'BBcdjIEOfdgGVCbK2-vpE_aDfNlJr5ffQ6UegCzH-QjMhpuEpCs6Zw7o1DFm9cYGCDF7ri0W4YwsyubL7owjhIQ' }}
+          CYPRESS_PROJECT_ID=${{ vars.CYPRESS_PROJECT_ID || 'gjfouu' }}
+          EOF
 
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
@@ -57,8 +81,8 @@ jobs:
         run: |
           firebase emulators:start \
             --import=./testdata \
-            --project "$VITE_APP_FIREBASE_PROJECT_ID" &
-            sleep 15
+            --project "${{ vars.VITE_APP_FIREBASE_PROJECT_ID || 'codelabz-966e5' }}" &
+          sleep 15
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
@@ -71,5 +95,5 @@ jobs:
           wait-on: "http://localhost:5173"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_PROJECT_ID: ${{ vars.CYPRESS_PROJECT_ID }}
+          CYPRESS_PROJECT_ID: ${{ vars.CYPRESS_PROJECT_ID || 'gjfouu' }}
           COMMIT_INFO_BRANCH: ${{ github.ref_name }}
