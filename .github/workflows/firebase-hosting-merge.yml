@@ -29,6 +29,16 @@ jobs:
         run: |
           npm install --legacy-peer-deps
           npm run build
+        env:
+          VITE_APP_FIREBASE_API_KEY: ${{ vars.VITE_APP_FIREBASE_API_KEY }}
+          VITE_APP_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_APP_FIREBASE_AUTH_DOMAIN }}
+          VITE_APP_FIREBASE_DATABASE_URL: ${{ vars.VITE_APP_FIREBASE_DATABASE_URL }}
+          VITE_APP_FIREBASE_PROJECT_ID: ${{ vars.VITE_APP_FIREBASE_PROJECT_ID }}
+          VITE_APP_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_APP_FIREBASE_STORAGE_BUCKET }}
+          VITE_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_APP_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_APP_FIREBASE_APP_ID: ${{ vars.VITE_APP_FIREBASE_APP_ID }}
+          VITE_APP_FIREBASE_MEASUREMENTID: ${{ vars.VITE_APP_FIREBASE_MEASUREMENTID }}
+          VITE_APP_FIREBASE_FCM_VAPID_KEY: ${{ vars.VITE_APP_FIREBASE_FCM_VAPID_KEY }}
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
