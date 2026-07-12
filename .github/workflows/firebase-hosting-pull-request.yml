@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,3 +40,17 @@ jobs:
           expires: 30d
           # Pinned to 13.35.1 as it is the last version that supports Node 18.
           firebaseToolsVersion: 13.35.1
+
+      - name: Remove safe-to-deploy-preview label
+        if: always()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              name: 'safe-to-deploy-preview'
+            }).catch((e) => {
+              core.info(`Label removal failed: ${e.message}`);
+            });
