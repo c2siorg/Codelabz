@@ -90,7 +90,7 @@ const CreateOrgModal = props => {
   return (
     <Dialog
       open={visible}
-      onClose={!handleCancel}
+      onClose={handleCancel}
       style={{
         zIndex: "1"
       }}
