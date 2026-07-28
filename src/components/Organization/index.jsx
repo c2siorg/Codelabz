@@ -29,6 +29,7 @@ import { useParams } from "react-router-dom";
 import RequiresRole from "../../helpers/RequiresRole";
 
 const Organizations = () => {
+  //Set All the organisations for this user
   const [organisations, setOrganisations] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [SettingsMenu, setSettingsMenu] = useState(1);
@@ -89,7 +90,9 @@ const Organizations = () => {
     );
   };
 
+  //Firstly we have to find the details of the current user
   const profileData = useSelector(({ firebase }) => firebase.profile);
+  //Then we will fetch the organisations from the document of the current user
   const orgsOfUser = profileData.organizations;
 
   return (

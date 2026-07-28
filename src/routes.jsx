@@ -59,6 +59,9 @@ const AuthIsLoaded = ({ children }) => {
   return children;
 };
 
+// Remember to add the paths that the MINI navbar should
+// be shown in components/NavBar/navbarPaths.js
+
 const Routes = () => {
   return (
     <Router>

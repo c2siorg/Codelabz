@@ -121,6 +121,13 @@ export const clearRecoverPasswordError = () => async dispatch => {
   dispatch({ type: actions.CLEAR_AUTH_RECOVER_PASSWORD_STATE });
 };
 
+/**
+ *Workflow to password reset
+ * 1. call sendPasswordResetEmail with email
+ * 2. call verifyPasswordResetCode with actionCode
+ * 3. call confirmPasswordReset with actionCode and new password
+ */
+
 export const sendPasswordResetEmail = email => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SEND_RESET_EMAIL_START });
@@ -180,6 +187,11 @@ export const resendVerifyEmail = email => async dispatch => {
   }
 };
 
+/**
+ * Check user handle exists or not
+ * @param userHandle
+ * @returns {function(...[*]=):boolean}
+ */
 export const checkUserHandleExists = userHandle => async firebase => {
   try {
     const handle = await firebase
@@ -256,6 +268,7 @@ export const setUpInitialData =
           }
         );
 
+        // Create organisation handle
         await firestore.collection("org_users").doc(`${org_handle}_${userData.uid}`).set({
           uid: userData.uid,
           org_handle: org_handle,

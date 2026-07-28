@@ -43,6 +43,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
   }
 };
 
+// adds a user to organization's users list with a set of permissions
 export const addOrgUser =
   ({ org_handle, handle, permissions }) =>
   async (firestore, dispatch) => {
@@ -77,6 +78,7 @@ export const addOrgUser =
     }
   };
 
+// removes all permissions of a user from an organization
 export const removeOrgUser =
   ({ org_handle, handle }) =>
   async (firestore, dispatch) => {

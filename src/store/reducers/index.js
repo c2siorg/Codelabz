@@ -9,9 +9,10 @@ import tutorialPageReducers from "./tutorialPageReducers";
 import notificationReducers from "./notificationReducers";
 import adminReducer from "./adminReducer";
 
+// Add firebase to reducers
 const rootReducer = combineReducers({
   firebase: firebaseReducer,
-  firestore: firestoreReducer, 
+  firestore: firestoreReducer, // <- needed if using firestore
   auth: authReducer,
   profile: profileReducer,
   org: orgReducer,

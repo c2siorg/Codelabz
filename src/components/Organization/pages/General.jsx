@@ -111,8 +111,13 @@ const base64StringToFile = (base64String, filename) => {
   return new File([u8arr], filename, { type: mime });
 };
 
+/**
+ * @description - This component is used to edit the general details of the organization.
+ * @returns {React.Component}
+ */
 function General() {
   const classes = useStyles();
+  // Firebase Hooks
   const firebase = useFirebase();
   const dispatch = useDispatch();
   const firestore = useFirestore();
@@ -132,8 +137,11 @@ function General() {
     ({ profile: { data: { organizations } } }) => organizations
   );
 
+  // Image Uploading And Cropping Hooks
   const [imageUploading, setImageUploading] = useState(false);
   const [showImageDialog, setShowImageDialog] = useState(false);
+
+  // State Hooks
   const [isUpdating, setIsUpdating] = useState(false);
   const [OrgData, setOrgData] = useState(CurrentOrg);
 
