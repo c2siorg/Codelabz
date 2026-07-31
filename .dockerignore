@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.env.local
+.env.*.local
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase
+coverage
+cypress/videos
+cypress/screenshots
