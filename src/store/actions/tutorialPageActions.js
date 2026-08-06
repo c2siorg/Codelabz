@@ -165,7 +165,9 @@ export const getCommentData =
         .doc(commentId)
         .get();
       const comment = data.data();
-      dispatch({ type: actions.GET_COMMENT_DATA_SUCCESS, payload: comment });
+      if (comment) {
+        dispatch({ type: actions.GET_COMMENT_DATA_SUCCESS, payload: comment });
+      }
     } catch (e) {
       dispatch({ type: actions.GET_COMMENT_DATA_FAIL });
       console.log(e);
@@ -218,6 +220,7 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
     }
 
     dispatch({ type: actions.ADD_COMMENT_SUCCESS });
+    return docref.id;
   } catch (e) {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
   }
