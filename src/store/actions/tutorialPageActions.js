@@ -114,6 +114,39 @@ export const getTutorialFeedData =
     }
   };
 
+export const getBookmarkedTutorialFeedData = bookmarkedTutorialIds => async (firebase, firestore, dispatch) => {
+  try {
+    dispatch({ type: actions.GET_BOOKMARKED_TUTORIAL_FEED_START });
+    const tutorials = await firestore
+      .collection("tutorials")
+      .where("tutorial_id", "in", bookmarkedTutorialIds)
+      .get();
+    if (tutorials.empty) {
+      dispatch({ type: actions.GET_BOOKMARKED_TUTORIAL_FEED_SUCCESS, payload: [] });
+    } else {
+      const feed = tutorials.docs.map(doc => {
+        const tutorial = doc.data();
+        const tutorialData = {
+          tutorial_id: tutorial?.tutorial_id,
+          title: tutorial?.title,
+          summary: tutorial?.summary,
+          owner: tutorial?.owner,
+          created_by: tutorial?.created_by,
+          createdAt: tutorial?.createdAt,
+          featured_image: tutorial?.featured_image,
+          tut_tags: tutorial?.tut_tags,
+          upVotes: tutorial?.upVotes || 0,
+          downVotes: tutorial?.downVotes || 0,
+        };
+        return tutorialData;
+      });
+      dispatch({ type: actions.GET_BOOKMARKED_TUTORIAL_FEED_SUCCESS, payload: feed });
+    }
+  } catch (e) {
+    dispatch({ type: actions.GET_BOOKMARKED_TUTORIAL_FEED_FAILED, payload: e });
+  }
+}
+
 export const getTutorialData =
   tutorialID => async (firebase, firestore, dispatch) => {
     try {

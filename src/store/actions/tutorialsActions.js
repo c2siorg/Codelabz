@@ -164,6 +164,7 @@ export const createTutorial =
           icon: "",
           tut_tags: tags,
           url: "",
+          bookmarked:false,
           background_color: "#ffffff",
           text_color: "#000000",
           createdAt: firestore.FieldValue.serverTimestamp(),
@@ -687,3 +688,22 @@ export const deleteNotification =
       console.log(e.message);
     }
   };
+
+export const toggleTutorialBookmark = (tutorial_id, user_id) => async (firebase, firestore, dispatch) => {
+  try {
+    const userRef = firestore.collection("cl_user").doc(user_id);
+    const userDoc = await userRef.get();
+    
+    const currBookmarkedArr = userDoc.exists && userDoc.data().bookmarked ? userDoc.data().bookmarked : [];
+
+    const newBookmarkedArr = currBookmarkedArr.includes(tutorial_id)
+      ? currBookmarkedArr.filter(id => id !== tutorial_id) // remove
+      : [...currBookmarkedArr, tutorial_id]; // add
+
+    await userRef.set({ bookmarked: newBookmarkedArr }, { merge: true });
+    
+  } catch (error) {
+    console.error("TOGGLE_TUTORIAL_BOOKMARK_FAIL", error);
+  }
+};
+  

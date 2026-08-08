@@ -14,12 +14,14 @@ import Chip from "@mui/material/Chip";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import TurnedInNotOutlinedIcon from "@mui/icons-material/TurnedInNotOutlined";
+import TurnedInIcon from "@mui/icons-material/TurnedIn";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { getUserProfileData } from "../../store/actions";
 import TutorialLikesDislikes from "../ui-helpers/TutorialLikesDislikes";
+import {toggleTutorialBookmark} from "../../store/actions/tutorialsActions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,11 +88,25 @@ export default function CardWithPicture({ tutorial }) {
       }
     }) => data
   );
-
+  const profile = useSelector(({ firebase: { profile } }) => profile);
+  const [isBookmarked, setIsBookmarked] = useState(false);  
+  
   const getTime = timestamp => {
     return timestamp.toDate().toDateString();
   };
 
+  const handleBookmark = (e) => {
+    // Need to make it atomic
+    toggleTutorialBookmark(tutorial?.tutorial_id, profile?.uid)(firebase, firestore, dispatch);
+    setIsBookmarked(prev => !prev)
+  }
+
+  useEffect(() => {
+    if (profile?.bookmarked) {
+      setIsBookmarked(profile.bookmarked.includes(tutorial?.tutorial_id));
+    }
+    }, [profile, tutorial?.tutorial_id]); 
+  
   return (
     <Card className={classes.root}>
       <Link to={`/tutorial/${tutorial?.tutorial_id}`}>
@@ -181,8 +197,8 @@ export default function CardWithPicture({ tutorial }) {
         <IconButton aria-label="add to favorites" data-testId="ShareIcon">
           <ShareOutlinedIcon />
         </IconButton>
-        <IconButton aria-label="share" data-testId="NotifIcon">
-          <TurnedInNotOutlinedIcon />
+        <IconButton aria-label="share" data-testId="NotifIcon" onClick={handleBookmark}>
+          {isBookmarked ? <TurnedInIcon /> : <TurnedInNotOutlinedIcon />}
         </IconButton>
         <IconButton aria-label="share" data-testId="MoreIcon">
           <MoreVertOutlinedIcon />
