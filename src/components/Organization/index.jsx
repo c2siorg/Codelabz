@@ -107,8 +107,8 @@ const Organizations = () => {
               currentOrgUpdate
                 ? "Loading.."
                 : currentOrgData.org_published
-                ? "Unpublish"
-                : "Publish"
+                  ? "Unpublish"
+                  : "Publish"
             }
             buttonClick={unpublishOrganization}
           />

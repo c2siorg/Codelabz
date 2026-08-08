@@ -47,7 +47,7 @@ function HomePage({ background = "white", textColor = "black" }) {
   const tutorialFeedArray = useSelector(
     ({ tutorialPage }) => tutorialPage.feed.homepageFeedArray
   );
-  const [tutorials, setTutorials] = useState(tutorialFeedArray);
+
   const [selectedTab, setSelectedTab] = useState("1");
   const [visibleModal, setVisibleModal] = useState(false);
   const [footerContent, setFooterContent] = useState([
@@ -61,7 +61,7 @@ function HomePage({ background = "white", textColor = "black" }) {
       link: "https://dev.codelabz.io/"
     }
   ]);
-  let tutorialIdArray;
+
   const windowSize = useWindowSize();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
@@ -117,20 +117,17 @@ function HomePage({ background = "white", textColor = "black" }) {
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
   useEffect(() => {
+    if (!profileData.uid) return;
     const getFeed = async () => {
-      tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+      const ids = await getTutorialFeedIdArray(profileData.uid)(
         firebase,
         firestore,
         dispatch
       );
-      getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+      getTutorialFeedData(ids)(firebase, firestore, dispatch);
     };
     getFeed();
-  }, []);
-
-  useEffect(() => {
-    setTutorials(tutorialFeedArray);
-  }, [tutorialFeedArray]);
+  }, [profileData.uid]);
 
   const notifications = useSelector(
     state => state.notifications.data.notifications
@@ -231,7 +228,7 @@ function HomePage({ background = "white", textColor = "black" }) {
           <Box item sx={{ display: { md: "none" } }}>
             <TagCard tags={tags} />
           </Box>
-          {tutorials.map(tutorial => {
+          {(tutorialFeedArray || []).map(tutorial => {
             return !tutorial?.featured_image ? (
               <CardWithoutPicture tutorial={tutorial} />
             ) : (

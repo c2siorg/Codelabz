@@ -401,7 +401,10 @@ const ProfileInfoCard = () => {
                       }}
                     >
                       <Box mr={1}>
-                        <GitHubIcon fontSize="small" className="github-color" />{" "}
+                        <GitHubIcon
+                          fontSize="small"
+                          className="github-color"
+                        />{" "}
                       </Box>
                       {profileData.link_github}
                     </div>
@@ -464,7 +467,10 @@ const ProfileInfoCard = () => {
                       }}
                     >
                       <Box mr={1}>
-                        <FlagIcon fontSize="small" className="website-color" />{" "}
+                        <FlagIcon
+                          fontSize="small"
+                          className="website-color"
+                        />{" "}
                       </Box>
                       {profileData.country}
                     </div>
