@@ -16,34 +16,40 @@
   "emulators": {
     "functions": {
       "port": 5001,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
     },
     "ui": {
-      "enabled": true
+      "enabled": true,
+      "host": "0.0.0.0",
+      "port": 4000
     },
     "auth": {
       "port": 9099,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
     },
     "firestore": {
       "port": 8080,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
     },
     "database": {
       "port": 9000,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
     },
     "hosting": {
       "port": 5000,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
     },
     "pubsub": {
       "port": 8085,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
     },
     "storage": {
       "port": 9199,
-      "host": "127.0.0.1"
+      "host": "0.0.0.0"
+    },
+    "hub": {
+      "port": 4400,
+      "host": "0.0.0.0"
     }
   },
   "storage": {
