@@ -71,8 +71,8 @@ const useStyles = makeStyles(theme => ({
 const SideList = ({
   menuItems = [],
   value,
-  onStateChange = () => {},
-  toggleSlider = () => {},
+  onStateChange = () => { },
+  toggleSlider = () => { },
   style,
   children,
   notificationCount
@@ -94,13 +94,13 @@ const SideList = ({
         {menuItems.map(function (item, index) {
           return (
             <div
-              key="menu-items"
+              key={item.id || item.link || item.name || index}
               style={
                 item.link == location.pathname
                   ? { background: "#d9f1fc", borderRadius: "100px" }
                   : {}
               }
-              data-testId={item?.dataTestId}
+              data-testid={item?.dataTestId}
             >
               {item.link && (
                 <NavLink to={item.link} className={classes.navLink}>
