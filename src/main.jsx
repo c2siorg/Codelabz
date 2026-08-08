@@ -10,15 +10,19 @@ import { Provider } from "react-redux";
 import { ThemeProvider } from "@mui/styles";
 import { theme } from "./helpers/themes";
 
+if (import.meta.env.DEV && "serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => registration.unregister());
+  });
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <ReactReduxFirebaseProvider {...rrfProps}>
-          <App />
-        </ReactReduxFirebaseProvider>
-      </ThemeProvider>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <ThemeProvider theme={theme}>
+      <ReactReduxFirebaseProvider {...rrfProps}>
+        <App />
+      </ReactReduxFirebaseProvider>
+    </ThemeProvider>
+  </Provider>
 );
 serviceWorker.unregister();

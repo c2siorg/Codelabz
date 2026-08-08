@@ -121,7 +121,7 @@ function MiniNavbar() {
     return () => {
       window.removeEventListener("resize", setDimension);
     };
-  }, [screenSize]);
+  }, []);
 
   return (
     <Headroom disableInlineStyles>
