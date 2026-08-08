@@ -1,28 +1,31 @@
-version: "3.3"
-
+version: "3.8"
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      target: production
     ports:
-      - 5173:5173
-    volumes:
-      - .:/app
+      - "3000:3000"
+    env_file:
+      - .env
     networks:
       - main
+    depends_on:
+      - emulator
+
   emulator:
     image: spine3/firebase-emulator
     environment:
-      ENABLE_UI: true
-      GCP_PROJECT: demo-sampark
+      ENABLE_UI: "true"
+      GCP_PROJECT: demo-codelabz
     ports:
-      - 5001:5001
-      - 9000:9000
-      - 8080:8080
-      - 8085:8085
-      - 5000:5000
-      - 4000:4000
+      - "5001:5001"
+      - "9000:9000"
+      - "8080:8080"
+      - "8085:8085"
+      - "5000:5000"
+      - "4000:4000"
     networks:
       - main
 

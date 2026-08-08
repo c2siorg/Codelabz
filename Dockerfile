@@ -1,19 +1,25 @@
-FROM node:14
+# Stage 1: Build
+FROM node:18-alpine AS builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
 COPY package*.json ./
 
-# Install the project dependencies
-RUN npm install
+RUN CYPRESS_INSTALL_BINARY=0 npm install --legacy-peer-deps
 
-# Copy the entire project directory to the container
 COPY . .
 
-# Expose the desired port for the Node.js server
-EXPOSE 5173
+RUN npm run build
 
-# Run the Node.js server
-CMD [ "npm", "run", "dev", "--host" ]
+# Stage 2: Production
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+RUN npm install -g serve
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]
