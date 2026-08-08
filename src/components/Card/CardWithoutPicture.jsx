@@ -16,7 +16,7 @@ import TurnedInNotOutlinedIcon from "@mui/icons-material/TurnedInNotOutlined";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
-import { getUserProfileData } from "../../store/actions";
+import { clearUserProfile, getUserProfileData } from "../../store/actions";
 import TutorialLikesDislikes from "../ui-helpers/TutorialLikesDislikes";
 
 const useStyles = makeStyles(theme => ({
@@ -68,21 +68,19 @@ export default function CardWithoutPicture({ tutorial }) {
   const dispatch = useDispatch();
   const firebase = useFirebase();
   const firestore = useFirestore();
+  const [user, setUser] = useState(null);
 
+  // Get profile data
   useEffect(() => {
-    getUserProfileData(tutorial?.created_by)(firebase, firestore, dispatch);
-  }, [tutorial]);
-
-  const user = useSelector(
-    ({
-      profile: {
-        user: { data }
+    getUserProfileData(tutorial.created_by)(firebase, firestore, dispatch).then(
+      data => {
+        if (data) setUser(data);
       }
-    }) => data
-  );
+    );
+  }, [firebase, firestore, dispatch, tutorial.created_by]);
 
   const getTime = timestamp => {
-    return timestamp.toDate().toDateString();
+    return timestamp.toDate().toLocaleString();
   };
 
   return (

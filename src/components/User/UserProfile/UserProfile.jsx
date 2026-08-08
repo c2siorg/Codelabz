@@ -8,13 +8,14 @@ import { makeStyles } from "@mui/styles";
 import OrgUser from "../../../assets/images/org-user.svg";
 import { userList } from "../../HomePage/userList";
 import Card from "@mui/material/Card";
-import UserHighlights from "./UserHighlights";
+import UserHighlights from "../../Profile/ViewProfile/UserHighlights";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import {
   getTutorialFeedData,
   getTutorialFeedIdArray
 } from "../../../store/actions/tutorialPageActions";
+import { clearUserProfile, getUserProfileData } from "../../../store/actions";
 
 const useStyles = makeStyles(theme => ({
   parentBody: {
@@ -63,13 +64,20 @@ function UserProfile(props) {
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
+  // Get profile data
+  useEffect(() => {
+    getUserProfileData(profileData.handle)(firebase, firestore, dispatch);
+    return () => {
+      clearUserProfile()(dispatch);
+    };
+  }, [firebase, firestore, dispatch, profileData.handle]);
+
   useEffect(() => {
     const getFeed = async () => {
-      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
-        firebase,
-        firestore,
-        dispatch
-      );
+      const tutorialIdArray = await getTutorialFeedIdArray(
+        null,
+        profileData.handle
+      )(firebase, firestore, dispatch);
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
     getFeed();
