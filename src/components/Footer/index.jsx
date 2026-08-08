@@ -1,9 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import BrandName from "../../helpers/brandName";
-import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
-import { makeStyles } from "@mui/styles";
+import { Box, Container, Grid, Typography, Divider } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import BugReportOutlinedIcon from "@mui/icons-material/BugReportOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
@@ -15,189 +12,123 @@ import MailOutlineOutlinedIcon from "@mui/icons-material/MailOutlineOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CopyrightOutlinedIcon from "@mui/icons-material/CopyrightOutlined";
 
+const FooterLink = ({ icon, text, link }) => (
+  <Box display="flex" alignItems="center" mb={1}>
+    {icon}
+    <Typography
+      variant="body2"
+      component="a"
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      sx={{
+        color: "#B0B0B0",
+        textDecoration: "none",
+        ml: 1,
+        transition: "color 0.3s",
+        "&:hover": { color: "#FFFFFF" },
+      }}
+    >
+      {text}
+    </Typography>
+  </Box>
+);
+
 const Footer = () => {
-  const useStyles = makeStyles({
-    item: {
-      display: "flex",
-      alignItems: "left",
-      justifyContent: "flex-start"
-    }
-  });
-  const classes = useStyles();
   return (
-    <footer className="light-grey-bg pt-16 pb-16">
-      <Grid container direction="row">
-        <Grid item sm={12} xs={12} md={3} className="col-pad-24">
-          <h2 style={{ color: "#3AAFA9" }} className="brand-font mb-0">
-            <Link to={"/"}>
-              <BrandName />
-            </Link>
-          </h2>
-          <p className="mb-">Live to learn, learn to live.</p>
+    <Box
+      component="footer"
+      sx={{
+        background: "linear-gradient(135deg, #2C2C2C, #1E1E1E)",
+        color: "#E0E0E0",
+        py: 6,
+        mt: 8,
+      }}
+    >
+      <Container maxWidth="lg">
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={3}>
+            <Typography
+              variant="h5"
+              sx={{ color: "#FFFACD", fontWeight: "bold" }}
+              gutterBottom
+            >
+              <Link to="/" style={{ textDecoration: "none", color: "#FFFACD" }}>
+                CodeLabz
+              </Link>
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#B0B0B0" }}>
+              Live to learn, learn to live.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+              About
+            </Typography>
+            <FooterLink
+              icon={<HelpOutlineOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="About CodeLabz"
+              link="https://github.com/scorelab/Codelabz"
+            />
+            <FooterLink
+              icon={<CheckOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="Terms and Conditions"
+              link="https://github.com/scorelab/Codelabz"
+            />
+            <FooterLink
+              icon={<LockOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="Privacy and Security"
+              link="https://github.com/scorelab/Codelabz"
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+              Help
+            </Typography>
+            <FooterLink
+              icon={<ListOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="FAQ"
+              link="https://github.com/scorelab/Codelabz"
+            />
+            <FooterLink
+              icon={<GitHubIcon sx={{ color: "#B0B0B0" }} />}
+              text="GitHub"
+              link="https://github.com/scorelab/Codelabz"
+            />
+            <FooterLink
+              icon={<BugReportOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="Report a Bug"
+              link="https://github.com/scorelab/Codelabz/issues"
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+              Contact
+            </Typography>
+            <FooterLink
+              icon={<PhoneEnabledOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="+94 712 345 678"
+              link="tel:+94712345678"
+            />
+            <FooterLink
+              icon={<MailOutlineOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="contact@codelabz.io"
+              link="mailto:contact@codelabz.io"
+            />
+            <FooterLink
+              icon={<HomeOutlinedIcon sx={{ color: "#B0B0B0" }} />}
+              text="64, Singh Labs, Kings Canyon"
+              link="https://www.google.com/maps/place/Sri+Lanka/@7.8571778,78.4609778,7z/data=!3m1!4b1!4m5!3m4!1s0x3ae2593cf65a1e9d:0xe13da4b400e2d38c!8m2!3d7.873054!4d80.771797"
+            />
+          </Grid>
         </Grid>
-
-        <Grid item xs={12} sm={12} md={3} className="col-pad-24">
-          <h3 className="mb-16">About</h3>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://github.com/scorelab/Codelabz"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <HelpOutlineOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />{" "}
-                About CodeLabz
-              </Grid>
-            </a>
-          </div>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://github.com/scorelab/Codelabz"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <CheckOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />{" "}
-                Terms and conditions
-              </Grid>
-            </a>
-          </div>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://github.com/scorelab/Codelabz"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <LockOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />{" "}
-                Privacy and security
-              </Grid>
-            </a>
-          </div>
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={3} className="col-pad-24">
-          <h3 className="mb-16">Help</h3>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://github.com/scorelab/Codelabz"
-              target="_blank"
-              rel="noreferrer noopener"
-              className=" footer-link"
-            >
-              <Grid className={classes.item}>
-                <ListOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />
-                FAQ
-              </Grid>
-            </a>
-          </div>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://github.com/scorelab/Codelabz"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <GitHubIcon className="mr-8" style={{ color: "#455A64" }} />{" "}
-                GitHub
-              </Grid>
-            </a>
-          </div>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://github.com/scorelab/Codelabz/issues"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <BugReportOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />{" "}
-                Report a bug
-              </Grid>
-            </a>
-          </div>
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={3} className="col-pad-24">
-          <h3 className="mb-16">Contact</h3>
-          <div className="mt-8 mb-8">
-            <a href="tel: +94712345678" className="mb-8 mt-8 footer-link">
-              <PhoneEnabledOutlinedIcon
-                className="mr-8"
-                style={{ color: "#455A64" }}
-              />{" "}
-              +94 712 345 678
-            </a>
-          </div>
-          <div className="mt-8 mb-8">
-            <a
-              href="mailto: contact@codelabz.com"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <MailOutlineOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />{" "}
-                contact@codelabz.io
-              </Grid>
-            </a>
-          </div>
-          <div className="mt-8 mb-8">
-            <a
-              href="https://www.google.com/maps/place/Sri+Lanka/@7.8571778,78.4609778,7z/data=!3m1!4b1!4m5!3m4!1s0x3ae2593cf65a1e9d:0xe13da4b400e2d38c!8m2!3d7.873054!4d80.771797"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mb-8 mt-8 footer-link"
-            >
-              <Grid className={classes.item}>
-                <HomeOutlinedIcon
-                  className="mr-8"
-                  style={{ color: "#455A64" }}
-                />{" "}
-                64, Singh Labs, Kings Canyon
-              </Grid>
-            </a>
-          </div>
-        </Grid>
-      </Grid>
-
-      <Divider />
-      <Grid container className="pt-16 pb-0">
-        <Grid
-          item
-          xs={12}
-          className="center"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            textAlign: "center",
-            justifyContent: "center"
-          }}
-        >
-          <CopyrightOutlinedIcon /> {new Date().getFullYear()} CodeLabz
-        </Grid>
-      </Grid>
-    </footer>
+        <Divider sx={{ backgroundColor: "#444", my: 4 }} />
+        <Box textAlign="center">
+          <CopyrightOutlinedIcon sx={{ verticalAlign: "middle", color: "#B0B0B0" }} />{" "}
+          {new Date().getFullYear()} CodeLabz
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

@@ -34,6 +34,7 @@ import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
 import SearchResultsComponent from "./components/Tutorials/MyTutorials/Search/SearchResultsComponent";
 import { getProfileData } from "./store/actions";
+import Footer from "./components/Footer";
 
 const AuthIsLoaded = ({ children }) => {
   const firebase = useFirebase();
@@ -144,7 +145,6 @@ const Routes = () => {
             path={"/profile"}
             component={UserIsAllowedUserDashboard(Profile)}
           />
-
           <Route
             exact
             path={"/org/settings/:handle"}
@@ -192,7 +192,7 @@ const Routes = () => {
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>
-        {/* <Footer /> */}
+        {/* add this (<Footer />) to include footer */}
       </AuthIsLoaded>
     </Router>
   );
