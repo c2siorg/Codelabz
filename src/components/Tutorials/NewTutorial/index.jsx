@@ -96,17 +96,17 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }));
   }, [tags]);
 
-  const organizations = useSelector(
+  const {organizations, isEmpty} = useSelector(
     ({
       profile: {
-        data: { organizations }
+        data: { organizations, isEmpty }
       }
-    }) => organizations
+    }) => ({ organizations, isEmpty })
   );
   // console.log("organizations", organizations);
 
   useEffect(() => {
-    if (!organizations) {
+    if (!organizations && !isEmpty) {
       getProfileData()(firebase, firestore, dispatch);
     }
   }, [firestore, firebase, dispatch, organizations]);
