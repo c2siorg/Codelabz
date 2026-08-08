@@ -26,6 +26,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
         name: userDoc.get("displayName"),
         handle: userDoc.get("handle"),
         image: userDoc.get("photoURL"),
+        uid: userDoc.get("uid"),
         permission_level: user.permissions
       };
     });
@@ -46,22 +47,25 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
 // adds a user to organization's users list with a set of permissions
 export const addOrgUser =
   ({ org_handle, handle, permissions }) =>
-  async (firestore, dispatch) => {
+  async (firestore, firebase, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
-      const userDoc = await firestore
+      const userDoc = await firebase
+        .firestore()
         .collection("cl_user")
-        .where("handle", "==", handle)
+        .doc(handle)
         .get();
-      if (userDoc.docs.length === 1) {
-        const uid = userDoc.docs[0].get("uid");
+
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        const uid = userData.uid;
         await firestore
           .collection("org_users")
           .doc(`${org_handle}_${uid}`)
           .set({
             uid: uid,
             org_handle: org_handle,
-            permissions: permissions
+            permissions: [permissions]
           });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
@@ -78,21 +82,36 @@ export const addOrgUser =
     }
   };
 
+  export const updateUserPermissions =
+  ({ org_handle, userId, permissions }) =>
+  async (firestore, dispatch) => {
+    try {
+      const userDoc = await firestore.collection("cl_user").doc(userId).get();
+      if (userDoc.exists) {
+        await firestore
+          .collection("org_users")
+          .doc(`${org_handle}_${userId}`)
+          .update({
+            permissions: [permissions]
+          });
+        await getOrgUserData(org_handle)(firestore, dispatch);
+      }
+    } catch (e) {
+      console.error("Error updating org user permissions:", e);
+    }
+  };
+
 // removes all permissions of a user from an organization
 export const removeOrgUser =
   ({ org_handle, handle }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
-      const userDoc = await firestore
-        .collection("cl_user")
-        .where("handle", "==", handle)
-        .get();
-      if (userDoc.docs.length === 1) {
-        const uid = userDoc.docs[0].get("uid");
+      const userDoc = await firestore.collection("cl_user").doc(handle).get();
+      if (userDoc.exists) {
         await firestore
           .collection("org_users")
-          .doc(`${org_handle}_${uid}`)
+          .doc(`${org_handle}_${handle}`)
           .delete();
 
         await getOrgUserData(org_handle)(firestore, dispatch);

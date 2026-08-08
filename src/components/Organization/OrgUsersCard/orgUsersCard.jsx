@@ -45,6 +45,7 @@ import { Link } from "react-router-dom";
 import { isLoaded, isEmpty } from "react-redux-firebase";
 import AddOrgUserModal from "./addOrgUserModal";
 import _ from "lodash";
+import { updateUserPermissions } from "../../../store/actions/orgActions";
 
 const permissionLevelIcons = [
   <VisibilityIcon />,
@@ -194,17 +195,17 @@ const OrgUsersCard = () => {
     { name: "Delete", icon: <DeleteIcon />, value: "remove_user" }
   ];
 
-  const handlePermissionChange = (key, permission_level, handle) => {
+  const handlePermissionChange = async (key, permission_level, handle) => {
     console.log(handle);
     if (key === "remove_user") {
-      removeOrgUser({
+      await removeOrgUser({
         org_handle: currentOrgHandle,
         handle
       })(firestore, dispatch);
     } else if (parseInt(key.split("_")[1]) !== permission_level[0]) {
-      addOrgUser({
+      await updateUserPermissions({
         org_handle: currentOrgHandle,
-        handle,
+        userId : handle,
         permissions: parseInt(key.split("_")[1])
       })(firestore, dispatch);
     }
@@ -364,7 +365,7 @@ const OrgUsersCard = () => {
                                     handlePermissionChange(
                                       option.value,
                                       item.permission_level[0],
-                                      item.handle
+                                      item.uid
                                     )
                                   }
                                 >

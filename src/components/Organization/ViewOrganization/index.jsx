@@ -124,6 +124,7 @@ const ViewOrganization = () => {
       });
   }, [db, profileData.uid]);
 
+  const [currentOrgData, setCurrentOrgData] = useState(CurrentOrg);
   const handleOrgSubscription = async () => {
     if (!currentOrgData.userSubscription)
       await subscribeOrg(handle)(firebase, firestore, dispatch);
@@ -138,13 +139,13 @@ const ViewOrganization = () => {
     }) => loading
   );
 
-  const currentOrgData = useSelector(
-    ({
-      org: {
-        data: { data }
-      }
-    }) => data
-  );
+  // const currentOrgData = useSelector(
+  //   ({
+  //     org: {
+  //       data: { data }
+  //     }
+  //   }) => data
+  // );
 
   const organizations = useSelector(
     ({
