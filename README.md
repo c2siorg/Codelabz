@@ -1,108 +1,217 @@
-# Table of Content 📑
+<h1 align="center">CodeLabz</h1>
 
-1. [CodeLabz](#codelabz)
-2. [Deployment](#deployment)
-3. [Community](#community)
-4. [Contribute](#contribute)
-5. [FAQs (Frequently Asked Questions)](#faqs)
+<p align="center">
+  <b>A platform for interactive online tutorials — built for organizations and learners alike.</b>
+</p>
 
-# CodeLabz
+<p align="center">
+  <a href="https://c2si-org.slack.com"><img src="https://img.shields.io/badge/Slack-Join%20Us-blue?logo=slack" alt="Slack"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/c2siorg/Codelabz"><img src="https://img.shields.io/github/stars/c2siorg/Codelabz?style=social" alt="GitHub Stars"></a>
+</p>
 
-**CodeLabz** is a platform where the users can engage with online tutorials and the organizations can create tutorials for the users. The platform will be developed using ReactJS frontend library and the backend will be developed using the Google Cloud Firestore and Google Firebase Real-Time database.
+---
 
-# Deployment
+## 📑 Table of Contents
 
+- [📖 Overview](#-overview)
+- [🖥️ App Preview](#️-app-preview)
+- [✨ Key Features](#-key-features)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [📁 Project Structure](#-project-structure)
+- [🚀 Quick Start](#-quick-start)
+- [🤝 Contributing](#-contributing)
+- [📜 License](#-license)
+- [💬 Community & Support](#-community--support)
 > ⚠️ **Note:** The live deployment is currently unavailable (DNS error).
 > Please set up the app locally using the [Contributing Guide](./CONTRIBUTING.md).
 
-# Community
+---
 
-Join and communicate with other members on our community. We communicate on gitter.
+## 📖 Overview
 
-[![Gitter](https://badges.gitter.im/scorelab/CodeLabz.svg)](https://gitter.im/scorelab/CodeLabz?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+**CodeLabz** is an open-source platform where **organizations can create and publish coding tutorials** and **users can engage with them interactively**. It provides a seamless environment for hands-on learning through step-by-step guided tutorials, a collaborative rich-text editor, and real-time organization management.
 
-# Contribute
+The project is developed and maintained under [c2siorg](https://github.com/c2siorg) and welcomes contributors from around the world.
 
-Contributions are always welcome!
+---
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for ways to get started.
+## 🖥️ App Preview
 
-Please adhere to this project's [code of conduct](./code_of_conduct.md).
+Here's a quick walkthrough of the user experience:
 
-# FAQs
+### ⚠️ Email Verification (Known Issue)
 
-### 1. Do I need to purchase Blaze plan to run the app ?
+<p align="center">
+  <img src="docs/screenshots/verification-email.png" alt="Verification Email Prompt" width="600"/>
+</p>
 
-### Answer -
+<p align="center"><i>If you register with an email, you'll be asked to verify it — but the email is never sent.</i></p>
 
-No, you don't need to purchase Blaze plan to run the app. You need to purchase it only if you want to deploy firebase cloud functions.
+> [!WARNING]
+> **Heads up!** Email verification is **not yet implemented**. If you sign up using email and password, you'll see a prompt asking you to verify your email, but the verification link will never arrive. **Use the Google Sign-In method below instead.**
 
-<hr/>
+### 📝 Create an Account
 
-### 2. `npm install` command is not executing successfully in my system.
+<p align="center">
+  <img src="docs/screenshots/new-account.png" alt="Create Account" width="600"/>
+</p>
 
-### Answer -
+<p align="center"><i>The account creation screen — you can sign up with email, but Google is recommended for now.</i></p>
 
-First of all make sure that your are using version 14 of node. If the problem still persists try `npm install --legacy-peer-deps`.
+### ✅ Sign In with Google (Recommended)
 
-<hr/>
+<p align="center">
+  <img src="docs/screenshots/google-signin.png" alt="Google Sign-In" width="600"/>
+</p>
 
-### 3. Login/Signup is not working.
+<p align="center"><i>The easiest way to get started — sign in with your Google account and you're in!</i></p>
 
-<img src="https://files.gitter.im/5eb21f15d73408ce4fe2cb37/Jl4t/image.png" width="600">
+### 🏠 Dashboard
 
-### Solution :-
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="CodeLabz Dashboard — Discover Organizations" width="800"/>
+</p>
 
-This problem generally arises when you have not setuped/started the Firebase emulators.
+<p align="center"><i>Once logged in, explore organizations by category and discover tutorials through popular tags.</i></p>
 
-1. [Setup firebase emulator](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#firebase-setup).
-2. [Start the Emulators](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#run-firebase-emulator)
-3. Run the app using `npm run dev`.
+---
 
-> 📝**NOTE** : Remember to start the emulators before running the app.
+## ✨ Key Features
 
-- To start emulators - `firebase emulators:start --import=firebase.json --project <your-project-id>`. <br/>
-- In some case all the emulator will not start. So you can execute a separate command for a particular emulator<br/>
-For example if auth emulator is not starting you can use this command - <br/> `firebase emulators:start --import=firebase.json --project <your-project-id> --only auth`.
-<hr/>
+- **Interactive Guided Tutorials** — Engaging step-by-step coding lessons for users.
+- **Organization Management** — Tools for organizations to create, manage, and publish content.
+- **Collaborative Editor** — A powerful rich-text editor for seamless tutorial creation.
+- **Real-time Synchronization** — Powered by Firebase and Yjs for collaborative workflows.
+- **Progress Tracking** — Users can track their engagement and learning journey.
+- **Modern & Responsive UI** — A sleek, user-friendly interface built with React and Material UI.
 
-### 4. I am creating new account and it says that confirmation mail is sent to my email but I didn't got any mail.
+---
 
-### Answer :-
+## 🛠️ Tech Stack
 
-This feature is not implemented completely and we are currently working on this. If you still want to login/signup, you can try login/signup with google option.
+| Category | Technologies |
+|---|---|
+| **Frontend** | React, Vite, Redux, Material UI (MUI), Ant Design Icons |
+| **Backend** | Firebase (Firestore, Real-time DB, Cloud Functions) |
+| **Collaboration** | Yjs, Quill (Rich Text Editor) |
+| **Testing** | Cypress (E2E), Storybook (Component Dev) |
+| **Tooling** | ESLint, Prettier, Husky |
 
-<hr/>
+---
 
-### 5. I have done the environment setup, but when I start the app it is showing white/blank screen.
+## 📁 Project Structure
 
-### Solution :-
+The codebase is organized into clear sections:
 
-This problem can arise in multiple scenarios :-
+### 🎨 Frontend (`src/`)
 
-1. Check the browser console and see what error are you getting there and try to fix it.
-2. Make sure that you have created `.env` file and placed all values to the keys.
-3. In some cases it can also arise due to any active ad-blocker extension in your browser. So make sure to turn it off.
-<hr/>
+This is where the main application lives.
 
-### 6. make command not found
+| Folder / File | What it does |
+|---|---|
+| `components/` | All the UI components, organized by feature (e.g., Organization, Tutorial, Editor) |
+| `store/` | Redux state management — actions, reducers, and global app state |
+| `auth/` | Authentication logic — Google sign-in, email/password, etc. |
+| `helpers/` | Utility functions and validation helpers |
+| `globalComponents/` | Reusable UI building blocks (Buttons, Inputs, Cards) |
+| `assets/` | Images, SVGs, and static resources |
+| `css/` | Global styles and component-level LESS/CSS |
+| `stories/` | Storybook stories for component development |
+| `config/` | App-level configuration files |
+| `App.jsx` | Root component — wraps the entire app |
+| `routes.jsx` | All route definitions and page navigation |
+| `main.jsx` | Entry point — bootstraps the React app |
 
-![image](https://user-images.githubusercontent.com/88550925/224977291-25101480-608b-41e6-a0b6-f03ff23f66b4.png)
+### ⚙️ Backend (`functions/`)
 
-### Solution :-
+Firebase Cloud Functions that handle server-side logic.
 
-The Make Command Not Found error indicates that the make utility is either not installed on the system or it’s not present in the PATH variable.
+### 🧪 Testing & Quality
 
-Follow this link to fix this issue.
-[Click here](https://www.technewstoday.com/fix-make-command-not-found/)
+| Folder / File | What it does |
+|---|---|
+| `cypress/` | End-to-end (E2E) test suite |
+| `testdata/` | Sample data used by Firebase emulators for local testing |
+| `.storybook/` | Storybook configuration for visual component testing |
+| `.husky/` | Git hooks — auto-runs linters before each commit |
 
-### 7. I want to contribute but don't know where to start.
+### 🔧 Configuration (Root Files)
 
-### Answer :-
+| File | What it does |
+|---|---|
+| `.env.sample` | Template for environment variables — copy this to `.env` |
+| `firebase.json` | Firebase emulator and service configuration |
+| `vite.config.js` | Vite bundler settings (dev server, build, etc.) |
+| `Makefile` | Shortcut commands for common dev tasks |
+| `package.json` | Dependencies, scripts, and project metadata |
 
-1. First of all try to make yourself comfortable with the app and explore its functionalities.
-2. Have a look into issues that are already raised and are not assigned to anyone and ask the mentors to get it assigned it to you.
-3. If you want to work on a new issue, first try to discuss it in the gitter channel with the mentors and then raise the issue.
-<hr/>
+### 📂 Other Folders
 
-### ❓ Got more questions, ask it in our [gitter channel](https://matrix.to/#/#scorelab_CodeLabz:gitter.im) and we will love ❤ to answer them.
+| Folder | What it does |
+|---|---|
+| `.github/` | CI/CD workflows, issue templates, and PR templates |
+| `designs/` | UI/UX design specs and mockups |
+| `public/` | Static files served directly (favicon, `index.html`) |
+| `docs/` | Documentation and screenshots |
+
+---
+
+## 🚀 Quick Start
+
+Get the project up and running on your local machine in just a few steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/c2siorg/Codelabz.git
+   cd Codelabz
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Set up Environment Variables**:
+   Create a `.env` file based on `.env.sample` and add your Firebase configuration.
+
+4. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+> [!TIP]
+> For a detailed, step-by-step guide on setting up Firebase, local emulators, and troubleshooting, please refer to our **[INSTALLATION.md](./INSTALLATION.md)**.
+
+---
+
+## 🤝 Contributing
+
+Contributions make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Please read our **[CONTRIBUTING.md](./CONTRIBUTING.md)** for details on our code of conduct and the process for submitting pull requests.
+2. Adhere to our **[CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)** to ensure a welcoming environment for all.
+
+---
+
+## 📜 License
+
+Distributed under the **Apache 2.0 License**. See **[LICENSE](./LICENSE)** for more information.
+
+---
+
+## 💬 Community & Support
+
+We'd love to have you in our community! Here's how to connect:
+
+- **Slack**: [Join our Slack workspace](https://c2si-org.slack.com) to ask questions, share ideas, and chat with contributors.
+
+- **GitHub Issues**: Found a bug or have a feature request? Open an issue on the [Issues page](https://github.com/c2siorg/Codelabz/issues).
+
+- **GitHub Discussions**: Have a question or want to share something? Head over to [Discussions](https://github.com/c2siorg/Codelabz/discussions).
+
+- ⭐ **Star This Repo**: If you find CodeLabz useful, please consider [giving it a star](https://github.com/c2siorg/Codelabz) — it helps the project grow!
+
+---
+
+<p align="center">Built with ❤️ by <b>c2siorg</b></p>
