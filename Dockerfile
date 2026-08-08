@@ -1,19 +1,19 @@
-FROM node:14
+# Stage 1: Build
+FROM node:18-alpine AS builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the container
 COPY package*.json ./
+RUN npm install --legacy-peer-deps
 
-# Install the project dependencies
-RUN npm install
-
-# Copy the entire project directory to the container
 COPY . .
+RUN npm run build
 
-# Expose the desired port for the Node.js server
-EXPOSE 5173
+# Stage 2: Production
+FROM nginx:alpine
 
-# Run the Node.js server
-CMD [ "npm", "run", "dev", "--host" ]
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

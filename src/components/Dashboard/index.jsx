@@ -447,8 +447,8 @@ const Dashboard = ({ background = "white", textColor = "black" }) => {
                     {showOrgForm === false
                       ? "I want to create an organization"
                       : showOrgForm === true
-                      ? "I don't want to create an organization"
-                      : "I want to create an organization"}
+                        ? "I don't want to create an organization"
+                        : "I want to create an organization"}
                   </Button>
                 </Box>
               </Card>

@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { AppstoreAddOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createTutorial, getProfileData } from "../../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useHistory } from "react-router-dom";
 import Button from "@mui/material/Button";
-import { Alert, Box, Chip } from "@mui/material";
+import { Alert, Box, Chip, Tooltip } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import Divider from "@mui/material/Divider";
 import { IconButton } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import Avatar from "@mui/material/Avatar";
 import { makeStyles } from "@mui/styles";
 import { deepPurple } from "@mui/material/colors";
 import { Typography } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import DescriptionIcon from "@mui/icons-material/Description";
 import MovieIcon from "@mui/icons-material/Movie";
+import CloseIcon from "@mui/icons-material/Close";
 import Select from "react-select";
 import { common } from "@mui/material/colors";
-import CloseIcon from "@mui/icons-material/Close";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -59,11 +57,20 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   const [error, setError] = useState(false);
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
+  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [mediaType, setMediaType] = useState(null);
+
+  const imageInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const docInputRef = useRef(null);
+
   const [formValue, setformValue] = useState({
     title: "",
     summary: "",
     owner: "",
-    tags: []
+    tags: [],
+    media: null
   });
 
   const loadingProp = useSelector(
@@ -84,16 +91,11 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   useEffect(() => {
     setLoading(loadingProp);
   }, [loadingProp]);
-
   useEffect(() => {
     setError(errorProp);
   }, [errorProp]);
-
   useEffect(() => {
-    setformValue(prev => ({
-      ...prev,
-      tags: tags
-    }));
+    setformValue(prev => ({ ...prev, tags }));
   }, [tags]);
 
   const organizations = useSelector(
@@ -103,7 +105,6 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       }
     }) => organizations
   );
-  // console.log("organizations", organizations);
 
   useEffect(() => {
     if (!organizations) {
@@ -119,42 +120,42 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
     }) => handle
   );
 
-  const displayName = useSelector(
-    ({
-      firebase: {
-        profile: { displayName }
-      }
-    }) => displayName
-  );
-
-  //This name should be replaced by displayName when implementing backend
-  const sampleName = "User Name Here";
-  const allowOrgs = organizations && organizations.length > 0;
-
-  const orgList =
-    allowOrgs > 0
-      ? organizations
-          .map((org, i) => {
-            if (org.permissions.includes(3) || org.permissions.includes(2)) {
-              return org;
-            } else {
-              return null;
-            }
-          })
-          .filter(Boolean)
-      : null;
-
   useEffect(() => {
     setTags([]);
     setNewTag("");
-    setformValue({
-      title: "",
-      summary: "",
-      owner: "",
-      tags: []
-    });
+    setMediaFile(null);
+    setMediaPreview(null);
+    setMediaType(null);
+    setformValue({ title: "", summary: "", owner: "", tags: [], media: null });
     setVisible(viewModal);
   }, [viewModal]);
+
+  const handleMediaChange = (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setMediaFile(file);
+    setMediaPreview(url);
+    setMediaType(type);
+    setformValue(prev => ({
+      ...prev,
+      media: {
+        type,
+        name: file.name,
+        size: file.size,
+        url,
+        thumbnail: type === "image" ? url : null
+      }
+    }));
+  };
+
+  const handleRemoveMedia = () => {
+    setMediaFile(null);
+    setMediaPreview(null);
+    setMediaType(null);
+    setformValue(prev => ({ ...prev, media: null }));
+  };
 
   const onSubmit = formData => {
     formData.preventDefault();
@@ -164,24 +165,16 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
       is_org: userHandle !== formValue.owner,
       completed: false
     };
-    console.log(tutorialData);
     createTutorial(tutorialData)(firebase, firestore, dispatch, history);
   };
 
   const onOwnerChange = value => {
-    setformValue(prev => ({
-      ...prev,
-      owner: value
-    }));
+    setformValue(prev => ({ ...prev, owner: value }));
   };
 
   const handleChange = e => {
     const { name, value } = e.target;
-
-    setformValue(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setformValue(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAddTag = () => {
@@ -203,6 +196,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
   };
 
   const classes = useStyles();
+
   return (
     <Modal
       open={visible}
@@ -232,24 +226,15 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
           </Alert>
         )}
         <Typography variant="h5">Create a Tutorial</Typography>
-        <Box
-          sx={{
-            py: 2,
-            width: "50%"
-          }}
-        >
-          <Typography>
-            <Select
-              options={organizations?.map(org => ({
-                value: org.org_handle,
-                label: org.org_name
-              }))}
-              onChange={data => {
-                onOwnerChange(data.value);
-              }}
-              id="orgSelect"
-            />
-          </Typography>
+        <Box sx={{ py: 2, width: "50%" }}>
+          <Select
+            options={organizations?.map(org => ({
+              value: org.org_handle,
+              label: org.org_name
+            }))}
+            onChange={data => onOwnerChange(data.value)}
+            id="orgSelect"
+          />
         </Box>
 
         <form id="tutorialNewForm">
@@ -312,15 +297,125 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
             ))}
           </div>
 
-          <IconButton>
-            <ImageIcon />
-          </IconButton>
-          <IconButton>
-            <MovieIcon />
-          </IconButton>
-          <IconButton>
-            <DescriptionIcon />
-          </IconButton>
+          {/* Hidden file inputs */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={imageInputRef}
+            style={{ display: "none" }}
+            onChange={e => handleMediaChange(e, "image")}
+          />
+          <input
+            type="file"
+            accept="video/*"
+            ref={videoInputRef}
+            style={{ display: "none" }}
+            onChange={e => handleMediaChange(e, "video")}
+          />
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx,.txt"
+            ref={docInputRef}
+            style={{ display: "none" }}
+            onChange={e => handleMediaChange(e, "document")}
+          />
+
+          {/* Media upload buttons */}
+          <div style={{ marginBottom: "1rem" }}>
+            <Typography
+              variant="caption"
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                color: "#637381"
+              }}
+            >
+              Attach Media
+            </Typography>
+            <Tooltip title="Upload Image">
+              <IconButton
+                onClick={() => imageInputRef.current.click()}
+                color={mediaType === "image" ? "primary" : "default"}
+              >
+                <ImageIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Upload Video">
+              <IconButton
+                onClick={() => videoInputRef.current.click()}
+                color={mediaType === "video" ? "primary" : "default"}
+              >
+                <MovieIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Upload Document">
+              <IconButton
+                onClick={() => docInputRef.current.click()}
+                color={mediaType === "document" ? "primary" : "default"}
+              >
+                <DescriptionIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+
+          {/* Media preview */}
+          {mediaFile && (
+            <div
+              style={{
+                marginBottom: "1rem",
+                border: "1px solid #e0e0e0",
+                borderRadius: "8px",
+                padding: "8px",
+                position: "relative"
+              }}
+            >
+              <IconButton
+                size="small"
+                onClick={handleRemoveMedia}
+                style={{ position: "absolute", top: "4px", right: "4px" }}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+
+              {mediaType === "image" && (
+                <img
+                  src={mediaPreview}
+                  alt="preview"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "150px",
+                    borderRadius: "4px"
+                  }}
+                />
+              )}
+              {mediaType === "video" && (
+                <video
+                  src={mediaPreview}
+                  controls
+                  style={{ maxWidth: "100%", maxHeight: "150px" }}
+                />
+              )}
+              {mediaType === "document" && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "8px"
+                  }}
+                >
+                  <DescriptionIcon style={{ color: "#455A64" }} />
+                  <Typography variant="body2">{mediaFile.name}</Typography>
+                </div>
+              )}
+              <Typography
+                variant="caption"
+                style={{ color: "#637381", display: "block", marginTop: "4px" }}
+              >
+                {mediaType} • {(mediaFile.size / 1024).toFixed(1)} KB
+              </Typography>
+            </div>
+          )}
 
           <div className="mb-0">
             <div style={{ float: "right" }}>
@@ -330,11 +425,15 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
                   onSidebarClick();
                   setTags([]);
                   setNewTag("");
+                  setMediaFile(null);
+                  setMediaPreview(null);
+                  setMediaType(null);
                   setformValue({
                     title: "",
                     summary: "",
                     owner: "",
-                    tags: []
+                    tags: [],
+                    media: null
                   });
                 }}
                 id="cancelAddTutorial"
@@ -354,9 +453,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
                   bgcolor: "#03AAFA",
                   borderRadius: "30px",
                   color: common.white,
-                  "&:hover": {
-                    bgcolor: "#03AAFA"
-                  }
+                  "&:hover": { bgcolor: "#03AAFA" }
                 }}
                 disabled={
                   formValue.title === "" ||
