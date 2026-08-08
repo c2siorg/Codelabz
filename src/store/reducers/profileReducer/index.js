@@ -8,5 +8,5 @@ export default combineReducers({
   edit: profileEditReducer,
   data: dataReducer,
   user: userReducer,
-  userFeed: userFeedReducer,
+  userFeed: userFeedReducer
 });

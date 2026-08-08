@@ -33,11 +33,7 @@ describe("User Dashboard Test | CodeLabz", () => {
 
   it("Check Profile", function () {
     cy.visit(`${this.base_url}user-dashboard/profile`);
-    cy.get(
-      '[data-testid="profile"]'
-    )
-      .should("exist")
-      .click();
+    cy.get('[data-testid="profile"]').should("exist").click();
     cy.wait(2000);
     cy.get("[data-testId=profilePage]").should("exist");
     cy.get("[data-testid=name]").children().clear().type("testname");
@@ -67,11 +63,7 @@ describe("User Dashboard Test | CodeLabz", () => {
   it("Check User Settings", function () {
     cy.visit(`${this.base_url}user-dashboard/profile`);
 
-    cy.get(
-      '[data-testid="userSettings"]'
-    )
-      .should("exist")
-      .click();
+    cy.get('[data-testid="userSettings"]').should("exist").click();
     cy.get("[data-testId=userSettingsPage]").should("exist");
     cy.get("[data-testId=exportData]").should("exist");
     cy.get("[data-testId=startExport]").should("exist");

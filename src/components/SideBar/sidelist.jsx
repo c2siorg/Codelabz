@@ -71,8 +71,8 @@ const useStyles = makeStyles(theme => ({
 const SideList = ({
   menuItems = [],
   value,
-  onStateChange = () => {},
-  toggleSlider = () => {},
+  onStateChange = () => { },
+  toggleSlider = () => { },
   style,
   children,
   notificationCount
@@ -94,13 +94,13 @@ const SideList = ({
         {menuItems.map(function (item, index) {
           return (
             <div
-              key="menu-items"
+              key={item.id || item.link || item.name || index}
               style={
                 item.link == location.pathname
                   ? { background: "#d9f1fc", borderRadius: "100px" }
                   : {}
               }
-              data-testId={item?.dataTestId}
+              data-testid={item?.dataTestId}
             >
               {item.link && (
                 <NavLink to={item.link} className={classes.navLink}>
@@ -121,14 +121,22 @@ const SideList = ({
                             classes={{ badge: classes.customBadge }}
                           >
                             <img
-                              alt={"..."}
+                              alt={
+                                user?.displayName
+                                  ? `${user.displayName}'s profile picture`
+                                  : "Profile picture"
+                              }
                               src={item.img}
                               className={classes.icons}
                             />
                           </Badge>
                         ) : (
                           <img
-                            alt={"..."}
+                            alt={
+                              org?.org_name
+                                ? `${org.org_name} logo`
+                                : "Organization logo"
+                            }
                             src={item.img}
                             className={classes.icons}
                           />
@@ -200,7 +208,7 @@ const SideList = ({
                   {item.img && (
                     <ListItemIcon className={classes.listIcon}>
                       <img
-                        alt={"..."}
+                        alt={item?.displayName || item?.name || "User avatar"}
                         src={item.img}
                         className={classes.icons}
                       />

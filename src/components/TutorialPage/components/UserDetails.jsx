@@ -29,7 +29,7 @@ const User = ({ id, timestamp, size }) => {
   const [isFollowed, setIsFollowed] = useState(true);
   useEffect(() => {
     getUserProfileData(id)(firebase, firestore, dispatch);
-    return () => {};
+    return () => { };
   }, [id]);
 
   const profileData = useSelector(({ firebase: { profile } }) => profile);
@@ -54,7 +54,7 @@ const User = ({ id, timestamp, size }) => {
     if (id && user && profileData) {
       checkIsFollowed();
     }
-    return () => {};
+    return () => { };
   }, [profileData, user]);
 
   const followUser = async () => {
@@ -85,7 +85,14 @@ const User = ({ id, timestamp, size }) => {
             }}
           >
             {user?.photoURL && user?.photoURL.length > 0 ? (
-              <img src={user?.photoURL} />
+              <img
+                src={user?.photoURL}
+                alt={
+                  user?.displayName
+                    ? `${user.displayName}'s profile picture`
+                    : "Author profile picture"
+                }
+              />
             ) : (
               user?.displayName[0]
             )}

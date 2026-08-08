@@ -65,6 +65,11 @@ const UserElement = ({ user, index, useStyles }) => {
       >
         <img
           src={user.img[0]}
+          alt={
+            user?.displayName
+              ? `${user.displayName}'s profile picture`
+              : "User profile picture"
+          }
           className={classes.userImg}
           data-testId={index == 0 ? "UsersCardImg" : ""}
         />
@@ -92,7 +97,7 @@ const UserElement = ({ user, index, useStyles }) => {
       >
         <img
           src={followed ? CheckUser : AddUser}
-          alt={followed ? "Following" : "Add User"}
+          alt={followed ? "Unfollow user" : "Follow user"}
         />
       </Box>
     </Box>

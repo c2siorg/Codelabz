@@ -146,7 +146,11 @@ const ViewOrganization = () => {
                             display: imageLoading ? "none" : "block"
                           }}
                           src={currentOrgData.org_image}
-                          alt={currentOrgData.org_name}
+                          alt={
+                            currentOrgData?.org_name
+                              ? `${currentOrgData.org_name} logo`
+                              : "Organization logo"
+                          }
                           className="org-image"
                           onLoad={() => {
                             setImageLoading(false);
@@ -161,7 +165,11 @@ const ViewOrganization = () => {
                           borderRadius: "8px"
                         }}
                         src={noImageAvailable}
-                        alt={"Not Available"}
+                        alt={
+                          currentOrgData?.org_name
+                            ? `${currentOrgData.org_name} cover image`
+                            : "Organization cover image"
+                        }
                         className="org-image"
                       />
                     )}

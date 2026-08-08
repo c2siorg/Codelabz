@@ -108,11 +108,7 @@ const Home = () => {
         </Grid>
         <Grid item md={6} lg={6} order={1} className="home-right-col">
           <Fade left>
-            <img
-              src={homeMain1}
-              alt="Background for auth"
-              className="homepage-image"
-            />
+            <img src={homeMain1} alt="CodeLabz homepage illustration" className="homepage-image" />
           </Fade>
         </Grid>
       </Grid>
@@ -131,11 +127,7 @@ const Home = () => {
             Follow them to the dot and you wouldn't miss anything
           </h2>
           <Fade bottom>
-            <img
-              src={isDesktop ? homeInterface : homePhone}
-              alt="Background for auth"
-              className="homepage-interface"
-            />
+            <img src={isDesktop ? homeInterface : homePhone} alt="CodeLabz interface preview" className="homepage-interface" />
           </Fade>
         </Grid>
       </Grid>

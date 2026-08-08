@@ -25,7 +25,11 @@ export default function ProfileCardThree({
                 <img
                   className={classes.profileUserImg}
                   src={profileImage}
-                  alt="User Profile Avatar"
+                  alt={
+                    userData?.displayName
+                      ? `${userData.displayName}'s profile picture`
+                      : "Profile picture"
+                  }
                   data-testId="user_profile_card_three_avatar"
                 />
               </Grid>
