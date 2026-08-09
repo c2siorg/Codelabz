@@ -3,11 +3,48 @@ import { messaging } from "../../config";
 
 let notificationUnsubscribe = null;
 
+/**
+ * Writes a notification doc directly from the client — no Cloud Function
+ * trigger involved, so this stays on the free Firestore plan. Delivery to
+ * the recipient happens via their subscribeToNotifications onSnapshot listener.
+ */
+export const createNotification = async (
+  firestore,
+  {
+    recipient_uid,
+    sender_uid,
+    type,
+    content,
+    username,
+    org = "",
+    tutorial_id = null
+  }
+) => {
+  if (!recipient_uid || recipient_uid === sender_uid) return;
+  try {
+    const ref = await firestore.collection("cl_notifications").add({
+      recipient_uid,
+      type,
+      content,
+      username,
+      org,
+      tutorial_id,
+      isRead: false,
+      createdAt: firestore.FieldValue.serverTimestamp()
+    });
+    await ref.update({ notification_id: ref.id });
+  } catch (e) {
+    console.error(`createNotification (${type}) error:`, e.message);
+  }
+};
+
 export const subscribeToNotifications = uid => (firebase, dispatch) => {
   if (notificationUnsubscribe) {
     notificationUnsubscribe();
     notificationUnsubscribe = null;
   }
+
+  dispatch({ type: actions.SUBSCRIBE_NOTIFICATIONS_START });
 
   const db = firebase.firestore();
   notificationUnsubscribe = db
@@ -23,49 +60,60 @@ export const subscribeToNotifications = uid => (firebase, dispatch) => {
             const bTime = b.createdAt?.toDate?.()?.getTime() ?? 0;
             return bTime - aTime;
           });
-        dispatch({ type: actions.GET_NOTIFICATION_DATA_SUCCESS, payload: notifications });
+        dispatch({
+          type: actions.SUBSCRIBE_NOTIFICATIONS_SUCCESS,
+          payload: notifications
+        });
       },
       error => {
         console.error("Notification listener error:", error.message);
-        dispatch({ type: actions.GET_NOTIFICATION_DATA_FAIL, payload: error.message });
+        dispatch({
+          type: actions.SUBSCRIBE_NOTIFICATIONS_FAIL,
+          payload: error.message
+        });
       }
     );
 };
 
 export const unsubscribeFromNotifications = () => dispatch => {
+  dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS_START });
   if (notificationUnsubscribe) {
     notificationUnsubscribe();
     notificationUnsubscribe = null;
   }
-  dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS });
+  dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS_SUCCESS });
 };
 
-export const markAllNotificationsRead = uid => async (firebase, firestore, dispatch) => {
-  try {
-    dispatch({ type: actions.MARK_ALL_NOTIFICATIONS_READ_START });
+export const markAllNotificationsRead =
+  uid => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.MARK_ALL_NOTIFICATIONS_READ_START });
 
-    const snapshot = await firestore
-      .collection("cl_notifications")
-      .where("recipient_uid", "==", uid)
-      .where("isRead", "==", false)
-      .get();
+      const snapshot = await firestore
+        .collection("cl_notifications")
+        .where("recipient_uid", "==", uid)
+        .where("isRead", "==", false)
+        .get();
 
-    if (snapshot.empty) {
+      if (snapshot.empty) {
+        dispatch({ type: actions.MARK_ALL_NOTIFICATIONS_READ_SUCCESS });
+        return;
+      }
+
+      const db = firebase.firestore();
+      const batch = db.batch();
+      snapshot.docs.forEach(doc => batch.update(doc.ref, { isRead: true }));
+      await batch.commit();
+
       dispatch({ type: actions.MARK_ALL_NOTIFICATIONS_READ_SUCCESS });
-      return;
+    } catch (e) {
+      console.error("markAllNotificationsRead error:", e.message);
+      dispatch({
+        type: actions.MARK_ALL_NOTIFICATIONS_READ_FAIL,
+        payload: e.message
+      });
     }
-
-    const db = firebase.firestore();
-    const batch = db.batch();
-    snapshot.docs.forEach(doc => batch.update(doc.ref, { isRead: true }));
-    await batch.commit();
-
-    dispatch({ type: actions.MARK_ALL_NOTIFICATIONS_READ_SUCCESS });
-  } catch (e) {
-    console.error("markAllNotificationsRead error:", e.message);
-    dispatch({ type: actions.MARK_ALL_NOTIFICATIONS_READ_FAIL, payload: e.message });
-  }
-};
+  };
 
 export const saveFcmToken = uid => async (firebase, firestore, dispatch) => {
   try {
@@ -81,9 +129,12 @@ export const saveFcmToken = uid => async (firebase, firestore, dispatch) => {
     const token = await getToken(messaging, { vapidKey });
 
     if (token) {
-      await firestore.collection("cl_user").doc(uid).update({
-        fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)
-      });
+      await firestore
+        .collection("cl_user")
+        .doc(uid)
+        .update({
+          fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)
+        });
       sessionStorage.setItem("fcm_token", token);
       dispatch({ type: actions.SAVE_FCM_TOKEN_SUCCESS });
     }
@@ -96,9 +147,12 @@ export const saveFcmToken = uid => async (firebase, firestore, dispatch) => {
 export const removeFcmToken = (uid, token) => async (firebase, firestore) => {
   if (!token || !uid) return;
   try {
-    await firestore.collection("cl_user").doc(uid).update({
-      fcmTokens: firebase.firestore.FieldValue.arrayRemove(token)
-    });
+    await firestore
+      .collection("cl_user")
+      .doc(uid)
+      .update({
+        fcmTokens: firebase.firestore.FieldValue.arrayRemove(token)
+      });
   } catch (e) {
     console.error("removeFcmToken error:", e.message);
   }

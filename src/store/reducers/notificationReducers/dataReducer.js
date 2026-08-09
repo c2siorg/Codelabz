@@ -23,6 +23,26 @@ const NotificationsDataReducer = (state = initialState, { type, payload }) => {
     case actions.GET_NOTIFICATION_DATA_FAIL:
       return { ...state, loading: false, error: payload };
 
+    case actions.SUBSCRIBE_NOTIFICATIONS_START:
+      return { ...state, loading: true };
+
+    case actions.SUBSCRIBE_NOTIFICATIONS_SUCCESS:
+      return {
+        ...state,
+        notifications: payload,
+        loading: false,
+        error: false
+      };
+
+    case actions.SUBSCRIBE_NOTIFICATIONS_FAIL:
+      return { ...state, loading: false, error: payload };
+
+    case actions.UNSUBSCRIBE_NOTIFICATIONS_START:
+      return { ...state, loading: true };
+
+    case actions.UNSUBSCRIBE_NOTIFICATIONS_SUCCESS:
+      return { ...state, notifications: [], loading: false };
+
     case actions.READ_NOTIFICATION:
       return {
         ...state,

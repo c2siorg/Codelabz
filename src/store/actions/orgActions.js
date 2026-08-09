@@ -3,8 +3,16 @@ import { useFirebase } from "react-redux-firebase";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
+import { createNotification } from "./notificationActions";
 
 const elasticlunr = new Elasticlunr("handle", "handle", "name");
+
+const PERMISSION_LABELS = {
+  0: "Reviewer",
+  1: "Editor",
+  2: "Admin",
+  3: "Owner"
+};
 
 export const searchFromIndex = query => {
   return elasticlunr.searchFromIndex(query);
@@ -55,6 +63,14 @@ export const addOrgUser =
         .get();
       if (userDoc.docs.length === 1) {
         const uid = userDoc.docs[0].get("uid");
+        const newMemberName = userDoc.docs[0].get("displayName") || handle;
+
+        const existingMemberDoc = await firestore
+          .collection("org_users")
+          .doc(`${org_handle}_${uid}`)
+          .get();
+        const isNewMember = !existingMemberDoc.exists;
+
         await firestore
           .collection("org_users")
           .doc(`${org_handle}_${uid}`)
@@ -63,6 +79,46 @@ export const addOrgUser =
             org_handle: org_handle,
             permissions: permissions
           });
+
+        if (isNewMember) {
+          const isNewMemberOwner =
+            Array.isArray(permissions) && permissions.includes(3);
+          if (!isNewMemberOwner) {
+            const ownersSnap = await firestore
+              .collection("org_users")
+              .where("org_handle", "==", org_handle)
+              .where("permissions", "array-contains", 3)
+              .get();
+
+            await Promise.all(
+              ownersSnap.docs
+                .filter(ownerDoc => ownerDoc.get("uid") !== uid)
+                .map(ownerDoc =>
+                  createNotification(firestore, {
+                    recipient_uid: ownerDoc.get("uid"),
+                    sender_uid: uid,
+                    type: "org_join",
+                    content: `${newMemberName} joined your organization ${org_handle}`,
+                    username: newMemberName,
+                    org: org_handle
+                  })
+                )
+            );
+          }
+        } else {
+          const permissionLevel = Array.isArray(permissions)
+            ? permissions[0]
+            : permissions;
+          const permissionLabel =
+            PERMISSION_LABELS[permissionLevel] || "a new role";
+          await createNotification(firestore, {
+            recipient_uid: uid,
+            type: "permission_change",
+            content: `Your role in ${org_handle} was changed to ${permissionLabel}`,
+            username: "",
+            org: org_handle
+          });
+        }
 
         await getOrgUserData(org_handle)(firestore, dispatch);
         dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
@@ -94,6 +150,14 @@ export const removeOrgUser =
           .collection("org_users")
           .doc(`${org_handle}_${uid}`)
           .delete();
+
+        await createNotification(firestore, {
+          recipient_uid: uid,
+          type: "org_removed",
+          content: `You were removed from ${org_handle}`,
+          username: "",
+          org: org_handle
+        });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
         dispatch({ type: actions.ADD_ORG_USER_SUCCESS });

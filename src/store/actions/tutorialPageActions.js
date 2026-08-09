@@ -1,4 +1,5 @@
 import * as actions from "./actionTypes";
+import { createNotification } from "./notificationActions";
 
 export const getTutorialFeedIdArray = uid => async (_, firestore) => {
   try {
@@ -217,6 +218,53 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
         .update({
           comments: firebase.firestore.FieldValue.arrayUnion(docref.id)
         });
+    }
+
+    const commenter = firebase.auth().currentUser;
+    const isTopLevelComment = comment.replyTo === comment.tutorial_id;
+
+    if (commenter && comment.tutorial_id) {
+      if (isTopLevelComment) {
+        const tutorialDoc = await firestore
+          .collection("tutorials")
+          .doc(comment.tutorial_id)
+          .get();
+        const authorUid = tutorialDoc.exists
+          ? tutorialDoc.get("created_by")
+          : null;
+        if (authorUid) {
+          await createNotification(firestore, {
+            recipient_uid: authorUid,
+            sender_uid: commenter.uid,
+            type: "comment",
+            content: `${commenter.displayName || "Someone"} commented on "${
+              tutorialDoc.get("title") || "your tutorial"
+            }"`,
+            username: commenter.displayName || "Someone",
+            tutorial_id: comment.tutorial_id
+          });
+        }
+      } else {
+        const parentCommentDoc = await firestore
+          .collection("cl_comments")
+          .doc(comment.replyTo)
+          .get();
+        const parentAuthorUid = parentCommentDoc.exists
+          ? parentCommentDoc.get("userId")
+          : null;
+        if (parentAuthorUid) {
+          await createNotification(firestore, {
+            recipient_uid: parentAuthorUid,
+            sender_uid: commenter.uid,
+            type: "reply",
+            content: `${
+              commenter.displayName || "Someone"
+            } replied to your comment`,
+            username: commenter.displayName || "Someone",
+            tutorial_id: comment.tutorial_id
+          });
+        }
+      }
     }
 
     dispatch({ type: actions.ADD_COMMENT_SUCCESS });
