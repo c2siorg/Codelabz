@@ -111,7 +111,7 @@ const ViewOrganization = () => {
       .where("org_handle", "==", handle)
       .get()
       .then(querySnapshot => {
-        setPeople(querySnapshot.forEach(doc => doc.data()));
+        setPeople(querySnapshot.docs.map(doc => doc.data()));
       });
   }, [db, handle]);
 
@@ -120,7 +120,7 @@ const ViewOrganization = () => {
       .where("uid", "==", profileData.uid)
       .get()
       .then(querySnapshot => {
-        setOrgFollowed(querySnapshot.forEach(doc => doc.data()));
+        setOrgFollowed(querySnapshot.docs.map(doc => doc.data()));
       });
   }, [db, profileData.uid]);
 
