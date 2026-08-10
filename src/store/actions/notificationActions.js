@@ -39,50 +39,77 @@ export const createNotification = async (
 };
 
 export const subscribeToNotifications = uid => (firebase, dispatch) => {
-  if (notificationUnsubscribe) {
-    notificationUnsubscribe();
-    notificationUnsubscribe = null;
-  }
+  try {
+    if (notificationUnsubscribe) {
+      notificationUnsubscribe();
+      notificationUnsubscribe = null;
+    }
 
-  dispatch({ type: actions.SUBSCRIBE_NOTIFICATIONS_START });
+    dispatch({ type: actions.SUBSCRIBE_NOTIFICATIONS_START });
 
-  const db = firebase.firestore();
-  notificationUnsubscribe = db
-    .collection("cl_notifications")
-    .where("recipient_uid", "==", uid)
-    .limit(50)
-    .onSnapshot(
-      snapshot => {
-        const notifications = snapshot.docs
-          .map(doc => ({ notification_id: doc.id, ...doc.data() }))
-          .sort((a, b) => {
-            const aTime = a.createdAt?.toDate?.()?.getTime() ?? 0;
-            const bTime = b.createdAt?.toDate?.()?.getTime() ?? 0;
-            return bTime - aTime;
+    const db = firebase.firestore();
+    notificationUnsubscribe = db
+      .collection("cl_notifications")
+      .where("recipient_uid", "==", uid)
+      .limit(50)
+      .onSnapshot(
+        snapshot => {
+          const notifications = snapshot.docs
+            .map(doc => ({ notification_id: doc.id, ...doc.data() }))
+            .sort((a, b) => {
+              const aTime = a.createdAt?.toDate?.()?.getTime() ?? 0;
+              const bTime = b.createdAt?.toDate?.()?.getTime() ?? 0;
+              return bTime - aTime;
+            });
+          dispatch({
+            type: actions.SUBSCRIBE_NOTIFICATIONS_SUCCESS,
+            payload: notifications
           });
-        dispatch({
-          type: actions.SUBSCRIBE_NOTIFICATIONS_SUCCESS,
-          payload: notifications
-        });
-      },
-      error => {
-        console.error("Notification listener error:", error.message);
-        dispatch({
-          type: actions.SUBSCRIBE_NOTIFICATIONS_FAIL,
-          payload: error.message
-        });
-      }
-    );
+        },
+        error => {
+          console.error("Notification listener error:", error.message);
+          dispatch({
+            type: actions.SUBSCRIBE_NOTIFICATIONS_FAIL,
+            payload: error.message
+          });
+        }
+      );
+  } catch (e) {
+    console.error("subscribeToNotifications error:", e.message);
+    dispatch({
+      type: actions.SUBSCRIBE_NOTIFICATIONS_FAIL,
+      payload: e.message
+    });
+  }
 };
 
-export const unsubscribeFromNotifications = () => dispatch => {
-  dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS_START });
-  if (notificationUnsubscribe) {
-    notificationUnsubscribe();
-    notificationUnsubscribe = null;
-  }
-  dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS_SUCCESS });
-};
+export const unsubscribeFromNotifications =
+  uid => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS_START });
+
+      if (notificationUnsubscribe) {
+        notificationUnsubscribe();
+        notificationUnsubscribe = null;
+      }
+
+      // Drop this device's FCM token so the user stops receiving pushes here.
+      const token = sessionStorage.getItem("fcm_token");
+      if (uid && token) {
+        await removeFcmToken(uid, token)(firebase, firestore);
+      }
+      sessionStorage.removeItem("fcm_token");
+      sessionStorage.removeItem("fcm_requested");
+
+      dispatch({ type: actions.UNSUBSCRIBE_NOTIFICATIONS_SUCCESS });
+    } catch (e) {
+      console.error("unsubscribeFromNotifications error:", e.message);
+      dispatch({
+        type: actions.UNSUBSCRIBE_NOTIFICATIONS_FAIL,
+        payload: e.message
+      });
+    }
+  };
 
 export const markAllNotificationsRead =
   uid => async (firebase, firestore, dispatch) => {

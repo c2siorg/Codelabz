@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useFirebase } from "react-redux-firebase";
 import { signOut } from "../../../../store/actions";
 import Avatar from "@mui/material/Avatar";
@@ -57,11 +57,15 @@ const RightMenu = ({ mode, onClick }) => {
 
   const open = Boolean(anchorEl);
 
-  const unreadCount = useSelector(
-    state =>
-      (state.notifications?.data?.notifications ?? []).filter(n => !n.isRead)
-        .length
+  const notifications = useSelector(
+    state => state.notifications?.data?.notifications ?? []
   );
+  const unreadCount = useMemo(
+    () => notifications.filter(n => !n.isRead).length,
+    [notifications]
+  );
+
+  //This will be responsible for closing the rightMenu automatically when route Changes
   useEffect(() => {
     setAnchorEl(null);
   }, [pathname]);
@@ -79,6 +83,7 @@ const RightMenu = ({ mode, onClick }) => {
   const profile = useSelector(({ firebase }) => firebase.profile);
   const acronym = avatarName(profile.displayName);
 
+  //Taking out the current organization handle of the user
   const currentOrg = useSelector(
     ({
       org: {
@@ -87,6 +92,7 @@ const RightMenu = ({ mode, onClick }) => {
     }) => current
   );
 
+  //Check if this current user is attached to some organization
   const isOrgPresent = currentOrg == null ? false : true;
 
   const organizations = useSelector(

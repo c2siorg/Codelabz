@@ -35,7 +35,8 @@ const timeAgo = timestamp => {
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     return `${Math.floor(seconds / 86400)}d ago`;
-  } catch {
+  } catch (e) {
+    console.error("timeAgo: could not parse timestamp", timestamp, e);
     return "";
   }
 };
@@ -50,11 +51,8 @@ const NotificationDropdown = ({ anchorEl, onClose }) => {
   const notifications = useSelector(
     state => state.notifications?.data?.notifications ?? []
   );
-  const markAllError = useSelector(state =>
-    state.notifications?.data?.error &&
-    state.notifications?.data?.error !== false
-      ? state.notifications.data.error
-      : null
+  const markAllError = useSelector(
+    state => state.notifications?.data?.error || null
   );
 
   // Local boolean so Snackbar can be dismissed without leaving stale Redux error

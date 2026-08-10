@@ -31,7 +31,6 @@ yarn.lock
 .vscode/settings.json
 INTERNAL.md
 RULES.md
-firebase-debug.log
 pnpm-lock.yaml
 
 firebase-sw-private.js
@@ -43,8 +42,6 @@ cypress/videos
 
 # firebase
 database-debug.log
-firebase-debug.log
-firebase-debug.log
 .firebaserc
 firestore-debug.log
 pubsub-debug.log
