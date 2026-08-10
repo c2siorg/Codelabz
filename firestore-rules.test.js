@@ -175,6 +175,55 @@ describe("org_role_audit forgery protection", () => {
   });
 });
 
+/**
+ * Denial tests alone cannot tell you whether the product still works, which is
+ * how signup came to be locked out by its own rule. These walk the flows a real
+ * user performs.
+ */
+describe("cl_user profile lifecycle", () => {
+  test("a new user can create their own cl_user profile at signup", async () => {
+    const db = testEnv.authenticatedContext("newUid").firestore();
+    await assertSucceeds(
+      db.doc("cl_user/newUid").set({
+        uid: "newUid",
+        handle: "newuser",
+        displayName: "New User",
+      })
+    );
+  });
+
+  test("a user cannot grant themselves platform admin at signup", async () => {
+    const db = testEnv.authenticatedContext("sneakyUid").firestore();
+    await assertFails(
+      db.doc("cl_user/sneakyUid").set({
+        uid: "sneakyUid",
+        handle: "sneaky",
+        is_platform_admin: true,
+      })
+    );
+  });
+
+  test("a user cannot grant themselves platform admin later", async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("cl_user/plainUid").set({ uid: "plainUid" });
+    });
+    const db = testEnv.authenticatedContext("plainUid").firestore();
+    await assertFails(
+      db.doc("cl_user/plainUid").update({ is_platform_admin: true })
+    );
+  });
+
+  test("a user cannot write someone else's profile", async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().doc("cl_user/victimUid").set({ uid: "victimUid" });
+    });
+    const db = testEnv.authenticatedContext("attackerUid").firestore();
+    await assertFails(
+      db.doc("cl_user/victimUid").update({ displayName: "Hacked" })
+    );
+  });
+});
+
 describe("catch-all fallback removed", () => {
   test("unauthenticated user cannot read/write arbitrary collection", async () => {
     const db = testEnv.unauthenticatedContext().firestore();

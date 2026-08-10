@@ -74,9 +74,19 @@ service cloud.firestore {
 
     match /cl_user/{userId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated()
+
+      // Create and update are kept separate on purpose: on create `resource` is
+      // null, so calling diff() against it raises a null error and denies the
+      // write -- which would block profile creation at signup.
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && !('is_platform_admin' in request.resource.data);
+
+      allow update: if isAuthenticated()
         && request.auth.uid == userId
         && !('is_platform_admin' in request.resource.data.diff(resource.data).affectedKeys());
+
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
     match /org_role_audit/{auditDoc} {
