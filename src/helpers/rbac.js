@@ -29,3 +29,28 @@ export const getRoleName = (permissions) =>
 
 export const hasPermission = (permissions, minLevel) =>
   getPermissionLevel(permissions) >= minLevel;
+
+export const ROLE_OPTIONS = [
+  { label: "Viewer", value: PERMISSION_LEVELS.VIEWER },
+  { label: "Editor", value: PERMISSION_LEVELS.EDITOR },
+  { label: "Admin", value: PERMISSION_LEVELS.ADMIN },
+  { label: "Owner", value: PERMISSION_LEVELS.OWNER },
+];
+
+/**
+ * Mirrors canAssignRole() in firestore.rules: admins may only hand out roles
+ * below their own, owners may also grant ownership so that an org can hand it
+ * over. Kept in one place so the picker and the rules cannot drift apart.
+ */
+export const getAssignableRoles = (actorLevel) =>
+  ROLE_OPTIONS.filter(
+    (option) =>
+      option.value < actorLevel || actorLevel === PERMISSION_LEVELS.OWNER
+  );
+
+/**
+ * Mirrors canActOnTarget() in firestore.rules: you may never edit or remove a
+ * member at or above your own level.
+ */
+export const canManageMember = (actorLevel, targetLevel) =>
+  actorLevel >= PERMISSION_LEVELS.ADMIN && targetLevel < actorLevel;

@@ -15,14 +15,12 @@ import {
   Typography
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { getRoleName, getPermissionLevel } from "../../../helpers/rbac";
-
-const ROLE_OPTIONS = [
-  { label: "Viewer", value: 0 },
-  { label: "Editor", value: 1 },
-  { label: "Admin", value: 2 },
-  { label: "Owner", value: 3 }
-];
+import {
+  getRoleName,
+  getPermissionLevel,
+  getAssignableRoles,
+  canManageMember
+} from "../../../helpers/rbac";
 
 const ROLE_COLORS = {
   owner: "error",
@@ -77,15 +75,13 @@ function MemberCard({
   const memberLevel = getPermissionLevel(member.permission_level);
   const roleName = getRoleName(member.permission_level);
 
-  const canEditRole =
-    currentUserLevel >= 2 && memberLevel < currentUserLevel;
+  const canEditRole = canManageMember(currentUserLevel, memberLevel);
 
-  const allowedOptions = ROLE_OPTIONS.filter(o => o.value < currentUserLevel);
+  const allowedOptions = getAssignableRoles(currentUserLevel);
 
   const isSelf = member.handle === currentUserHandle;
-  const canRemove =
-    !isSelf &&
-    ((currentUserLevel === 3) || (currentUserLevel === 2 && memberLevel < 2));
+  // An owner cannot remove a fellow owner, so this tracks canEditRole exactly.
+  const canRemove = !isSelf && canManageMember(currentUserLevel, memberLevel);
 
   const handleRoleChange = e => {
     const newLevel = Number(e.target.value);

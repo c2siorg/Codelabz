@@ -31,7 +31,11 @@ import { getOrgAuditLog } from "../../../store/actions/adminActions";
 import MemberCard from "../OrgUsers/MemberCard";
 import useOrgPermission from "../../../helpers/customHooks/useOrgPermission";
 import RequiresRole from "../../../helpers/RequiresRole";
-import { getRoleName, PERMISSION_LEVELS } from "../../../helpers/rbac";
+import {
+  getRoleName,
+  PERMISSION_LEVELS,
+  getAssignableRoles
+} from "../../../helpers/rbac";
 
 const useStyles = makeStyles(theme => ({
   root: { padding: 20 },
@@ -46,12 +50,6 @@ const useStyles = makeStyles(theme => ({
   auditPaper: { padding: theme.spacing(2), marginTop: theme.spacing(3) }
 }));
 
-const ROLE_OPTIONS = [
-  { label: "Viewer", value: PERMISSION_LEVELS.VIEWER },
-  { label: "Editor", value: PERMISSION_LEVELS.EDITOR },
-  { label: "Admin", value: PERMISSION_LEVELS.ADMIN }
-];
-
 function AddMemberForm({ orgHandle, currentUserLevel }) {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -63,7 +61,7 @@ function AddMemberForm({ orgHandle, currentUserLevel }) {
   const isLoaded = useSelector(({ org: { user: { isLoaded } } }) => isLoaded);
   const error = useSelector(({ org: { user: { error } } }) => error ?? null);
 
-  const availableRoles = ROLE_OPTIONS.filter(o => o.value < currentUserLevel);
+  const availableRoles = getAssignableRoles(currentUserLevel);
 
   const handleSubmit = e => {
     e.preventDefault();

@@ -471,8 +471,14 @@ export const updateOrgUserPermissions =
         });
         return;
       }
-      const actorMax = getPermissionLevel(actorPermissions);
-      if (newPermissions[0] >= actorMax) {
+      // Mirrors canAssignRole() in firestore.rules: an admin may only hand out
+      // roles below their own, while an owner may also grant ownership so that
+      // an org can transfer or share it. The rules remain the real enforcement;
+      // this only keeps the UI from firing a write that would be rejected.
+      const actorLevel = getPermissionLevel(actorPermissions);
+      const canGrant =
+        newPermissions[0] < actorLevel || actorLevel === PERMISSION_LEVELS.OWNER;
+      if (!canGrant) {
         dispatch({
           type: actions.UPDATE_ORG_USER_PERMISSIONS_FAIL,
           payload: "Cannot assign a role equal to or higher than your own"

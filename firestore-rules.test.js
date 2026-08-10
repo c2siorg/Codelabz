@@ -180,6 +180,57 @@ describe("org_role_audit forgery protection", () => {
  * how signup came to be locked out by its own rule. These walk the flows a real
  * user performs.
  */
+describe("ownership transfer and last-owner protection", () => {
+  test("owner CAN promote an admin to owner", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    await seedOrgUser("adminUid", "org1", 2);
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertSucceeds(
+      db.doc("org_users/org1_adminUid").update({ permissions: [3] })
+    );
+  });
+
+  test("owner cannot demote a fellow owner", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    await seedOrgUser("coOwnerUid", "org1", 3);
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertFails(
+      db.doc("org_users/org1_coOwnerUid").update({ permissions: [1] })
+    );
+  });
+
+  test("owner cannot remove a fellow owner", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    await seedOrgUser("coOwnerUid", "org1", 3);
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertFails(db.doc("org_users/org1_coOwnerUid").delete());
+  });
+
+  test("an owner cannot walk out and orphan the org", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertFails(db.doc("org_users/org1_ownerUid").delete());
+  });
+
+  test("an admin can still leave freely", async () => {
+    await seedOrgUser("adminUid", "org1", 2);
+    const db = testEnv.authenticatedContext("adminUid").firestore();
+    await assertSucceeds(db.doc("org_users/org1_adminUid").delete());
+  });
+
+  test("an admin can add a viewer, the everyday membership flow", async () => {
+    await seedOrgUser("adminUid", "org1", 2);
+    const db = testEnv.authenticatedContext("adminUid").firestore();
+    await assertSucceeds(
+      db.doc("org_users/org1_viewerUid").set({
+        uid: "viewerUid",
+        org_handle: "org1",
+        permissions: [0],
+      })
+    );
+  });
+});
+
 describe("organization creation", () => {
   test("createOrganization's batch succeeds now that it no longer mints its own owner record", async () => {
     await testEnv.withSecurityRulesDisabled(async (ctx) => {

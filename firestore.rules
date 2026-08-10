@@ -40,9 +40,25 @@ service cloud.firestore {
         && memberDoc == data.org_handle + "_" + data.uid;
     }
 
-    function actorCanManageOrgUser(org_handle, targetRole) {
+    /**
+     * Nobody may act on a member at or above their own level. This is what
+     * stops an admin from demoting/removing an owner, and stops one owner
+     * from staging a coup against another.
+     */
+    function canActOnTarget(org_handle, targetRole) {
       return hasOrgPermission(org_handle, 2)
         && targetRole < getOrgPermission(org_handle);
+    }
+
+    /**
+     * Admins (2) may only hand out roles strictly below their own, so they can
+     * never mint an owner. Owners (3) may also grant ownership, which is what
+     * makes ownership transfer possible -- without this the owner role would be
+     * unreachable for everyone except the org founder.
+     */
+    function canAssignRole(org_handle, newRole) {
+      return hasOrgPermission(org_handle, 2)
+        && (newRole < getOrgPermission(org_handle) || getOrgPermission(org_handle) == 3);
     }
 
     match /cl_org_general/{org_handle} {
@@ -55,21 +71,31 @@ service cloud.firestore {
     match /org_users/{memberDoc} {
       allow read: if isAuthenticated();
 
+      // The founder's own owner record is written by the createOrganization
+      // Cloud Function via the Admin SDK, which bypasses these rules. A client
+      // can therefore never bootstrap itself into an org.
       allow create: if isAuthenticated()
         && isValidOrgUserDocument(request.resource.data, memberDoc)
-        && actorCanManageOrgUser(request.resource.data.org_handle, request.resource.data.permissions[0]);
+        && canAssignRole(request.resource.data.org_handle, request.resource.data.permissions[0]);
 
       allow update: if isAuthenticated()
         && isValidOrgUserDocument(resource.data, memberDoc)
         && isValidOrgUserDocument(request.resource.data, memberDoc)
-        && actorCanManageOrgUser(resource.data.org_handle, resource.data.permissions[0])
-        && request.resource.data.permissions[0] < getOrgPermission(resource.data.org_handle)
         && resource.data.org_handle == request.resource.data.org_handle
-        && resource.data.uid == request.resource.data.uid;
+        && resource.data.uid == request.resource.data.uid
+        && canActOnTarget(resource.data.org_handle, resource.data.permissions[0])
+        && canAssignRole(resource.data.org_handle, request.resource.data.permissions[0]);
 
-      allow delete: if (isValidOrgUserDocument(resource.data, memberDoc)
-        && actorCanManageOrgUser(resource.data.org_handle, resource.data.permissions[0]))
-        || (isAuthenticated() && resource.data.uid == request.auth.uid);
+      // Members may leave on their own, but an owner may not -- otherwise the
+      // last owner could walk out and leave the org permanently unmanageable
+      // (org deletion requires level 3, and admins cannot promote anyone to it).
+      // To step down, an owner promotes a successor to owner first.
+      allow delete: if isAuthenticated()
+        && isValidOrgUserDocument(resource.data, memberDoc)
+        && (
+          canActOnTarget(resource.data.org_handle, resource.data.permissions[0])
+          || (resource.data.uid == request.auth.uid && resource.data.permissions[0] < 3)
+        );
     }
 
     match /cl_user/{userId} {
