@@ -31,13 +31,27 @@ describe("Real-time notifications | client-side writes", () => {
   it("mahender follows sarfaraz -> sarfaraz's profile shows follow button flip", () => {
     loginAs(MAHENDER);
     cy.visit(`${BASE_URL}user/sarfaraz`);
-    cy.contains("button", "follow").click();
-    cy.wait(1000);
-    // ViewProfile doesn't refetch isFollowing after the click (pre-existing,
-    // unrelated to notifications) — reload to see the persisted state instead
-    // of asserting an in-place UI flip that was never wired up.
-    cy.reload();
-    cy.contains("button", "unfollow", { timeout: 10000 }).should("be.visible");
+
+    // Exact-match regexes: cy.contains does substring matching, and "unfollow"
+    // contains "follow", so a loose match could click the wrong button.
+    // If a previous run left the follow in place, clear it first.
+    cy.contains("button", /^(un)?follow$/i, { timeout: 15000 })
+      .should("be.visible")
+      .invoke("text")
+      .then(text => {
+        if (/^unfollow$/i.test(text.trim())) {
+          cy.contains("button", /^unfollow$/i).click();
+          cy.contains("button", /^follow$/i, { timeout: 10000 }).should(
+            "be.visible"
+          );
+        }
+      });
+
+    cy.contains("button", /^follow$/i, { timeout: 15000 }).click();
+    // The button flips in place now that ViewProfile refetches after the write.
+    cy.contains("button", /^unfollow$/i, { timeout: 10000 }).should(
+      "be.visible"
+    );
     cy.screenshot("01-mahender-followed-sarfaraz");
   });
 
@@ -113,8 +127,15 @@ describe("Real-time notifications | client-side writes", () => {
     cy.contains("Thanks for the feedback!", { timeout: 10000 }).should(
       "be.visible"
     );
-    cy.get('[aria-label="like"]').last().click();
-    cy.wait(2000);
+    // Scope the like to mahender's reply specifically. Using .last() here is
+    // racy: if the reply's like button hasn't mounted yet, .last() lands on
+    // sarfaraz's own comment, the self-like guard skips the notification, and
+    // the next test fails. aria-pressed confirms the like actually registered.
+    cy.contains("Thanks for the feedback!")
+      .closest(".MuiPaper-root")
+      .find('[aria-label="like"]')
+      .click()
+      .should("have.attr", "aria-pressed", "true");
     cy.screenshot("07-sarfaraz-liked-reply");
   });
 
