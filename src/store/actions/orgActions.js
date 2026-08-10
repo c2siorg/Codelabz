@@ -2,7 +2,7 @@ import _ from "lodash";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
-import { hasPermission, getMaxPermission, PERMISSION_LEVELS } from "../../helpers/rbac";
+import { hasPermission, getPermissionLevel, PERMISSION_LEVELS } from "../../helpers/rbac";
 
 const elasticlunr = new Elasticlunr("handle", "handle", "name");
 
@@ -471,7 +471,7 @@ export const updateOrgUserPermissions =
         });
         return;
       }
-      const actorMax = getMaxPermission(actorPermissions);
+      const actorMax = getPermissionLevel(actorPermissions);
       if (newPermissions[0] >= actorMax) {
         dispatch({
           type: actions.UPDATE_ORG_USER_PERMISSIONS_FAIL,

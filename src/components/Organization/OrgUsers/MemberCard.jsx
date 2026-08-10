@@ -15,7 +15,7 @@ import {
   Typography
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { getRoleName, getMaxPermission } from "../../../helpers/rbac";
+import { getRoleName, getPermissionLevel } from "../../../helpers/rbac";
 
 const ROLE_OPTIONS = [
   { label: "Viewer", value: 0 },
@@ -74,7 +74,7 @@ function MemberCard({
   const classes = useStyles();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const memberLevel = getMaxPermission(member.permission_level);
+  const memberLevel = getPermissionLevel(member.permission_level);
   const roleName = getRoleName(member.permission_level);
 
   const canEditRole =

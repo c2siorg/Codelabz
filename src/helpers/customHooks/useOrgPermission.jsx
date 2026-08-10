@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { getMaxPermission, getRoleName } from "../rbac";
+import { getPermissionLevel, getRoleName } from "../rbac";
 
 const useOrgPermission = () => {
   const permissions = useSelector(
@@ -8,7 +8,7 @@ const useOrgPermission = () => {
 
   return {
     permissions,
-    level: getMaxPermission(permissions),
+    level: getPermissionLevel(permissions),
     roleName: getRoleName(permissions),
   };
 };
