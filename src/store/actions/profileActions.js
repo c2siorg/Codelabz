@@ -90,13 +90,11 @@ export const createOrganization =
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      const orgUserRef = db.collection("org_users").doc(`${org_handle}_${userData.uid}`);
-      batch.set(orgUserRef, {
-        uid: userData.uid,
-        org_handle,
-        permissions: [3]
-      });
-
+      // The founder's owner record is deliberately NOT written here. Security
+      // rules forbid a client from minting a level-3 membership, and because
+      // this is a batch that single denial would roll back the whole org.
+      // The createOrganization Cloud Function creates it via the Admin SDK on
+      // cl_org_general create, alongside the RTDB handle and org metrics.
       const userRef = db.collection("cl_user").doc(userData.uid);
       batch.update(userRef, {
         organizations: firebase.firestore.FieldValue.arrayUnion(org_handle)

@@ -180,6 +180,37 @@ describe("org_role_audit forgery protection", () => {
  * how signup came to be locked out by its own rule. These walk the flows a real
  * user performs.
  */
+describe("organization creation", () => {
+  test("createOrganization's batch succeeds now that it no longer mints its own owner record", async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx
+        .firestore()
+        .doc("cl_user/founderUid")
+        .set({ uid: "founderUid", organizations: [] });
+    });
+    const db = testEnv.authenticatedContext("founderUid").firestore();
+    const batch = db.batch();
+    batch.set(db.doc("cl_org_general/neworg"), {
+      org_name: "New Org",
+      org_handle: "neworg",
+      org_email: "founder@example.com",
+    });
+    batch.update(db.doc("cl_user/founderUid"), { organizations: ["neworg"] });
+    await assertSucceeds(batch.commit());
+  });
+
+  test("a client still cannot mint an owner record for itself", async () => {
+    const db = testEnv.authenticatedContext("founderUid").firestore();
+    await assertFails(
+      db.doc("org_users/neworg_founderUid").set({
+        uid: "founderUid",
+        org_handle: "neworg",
+        permissions: [3],
+      })
+    );
+  });
+});
+
 describe("cl_user profile lifecycle", () => {
   test("a new user can create their own cl_user profile at signup", async () => {
     const db = testEnv.authenticatedContext("newUid").firestore();
