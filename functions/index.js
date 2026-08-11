@@ -39,6 +39,10 @@ exports.registerUserHandle = functions.firestore
   .document("cl_user/{uid}")
   .onWrite(onWriteFunctions.registerUserHandleHandler);
 
+exports.syncOrgUserWrite = functions.firestore
+  .document("org_users/{memberDoc}")
+  .onWrite(onWriteFunctions.syncOrgUserWriteHandler);
+
 //++++++++++++++++++++onUpdate Functions++++++++++++++++++++++++++++++
 exports.updateOrgUser = functions.firestore
   .document("cl_org_general/{org_handle}/cl_org_users/users")

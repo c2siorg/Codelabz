@@ -120,6 +120,10 @@ service cloud.firestore {
         && (isPlatformAdmin()
             || exists(/databases/$(database)/documents/org_users/$(resource.data.org_handle + "_" + request.auth.uid)));
 
+      // Entries are written exclusively by the syncOrgUserWrite Cloud Function
+      // through the Admin SDK, which bypasses these rules. Denying every client
+      // write is what makes the trail trustworthy: a member cannot forge an
+      // actor, a target, or a timestamp, and cannot erase their own history.
       allow create, update, delete: if false;
     }
 

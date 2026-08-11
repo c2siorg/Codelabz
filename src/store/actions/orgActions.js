@@ -92,14 +92,12 @@ export const removeOrgUser =
         const uid = userDoc.docs[0].get("uid");
         const docRef = firestore.collection("org_users").doc(`${org_handle}_${uid}`);
 
+        // Only the membership record is removed here. Stripping the handle from
+        // the removed user's cl_user.organizations is done by the
+        // syncOrgUserWrite Cloud Function -- a client may only write its own
+        // cl_user document, so doing it here would be denied and leave a
+        // dangling org handle on the removed member.
         await docRef.delete();
-
-        await firestore
-          .collection("cl_user")
-          .doc(uid)
-          .update({
-            organizations: firestore.FieldValue.arrayRemove(org_handle)
-          });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
         dispatch({ type: actions.ADD_ORG_USER_SUCCESS });

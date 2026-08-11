@@ -229,6 +229,23 @@ describe("ownership transfer and last-owner protection", () => {
       })
     );
   });
+
+  test("removing a member no longer touches their cl_user document", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    await seedOrgUser("editorUid", "org1", 1);
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx
+        .firestore()
+        .doc("cl_user/editorUid")
+        .set({ uid: "editorUid", organizations: ["org1"] });
+    });
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertSucceeds(db.doc("org_users/org1_editorUid").delete());
+    // the organizations array is reconciled by syncOrgUserWrite, never by the client
+    await assertFails(
+      db.doc("cl_user/editorUid").update({ organizations: [] })
+    );
+  });
 });
 
 describe("organization creation", () => {
