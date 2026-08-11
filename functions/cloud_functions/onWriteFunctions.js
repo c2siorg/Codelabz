@@ -40,6 +40,26 @@ const describeChange = (before, after) => {
 };
 
 /**
+ * works out who performed the change
+ *
+ * The actor is read from the document's own updated_by field, which security
+ * rules force to equal the caller's uid, so it cannot be forged. context.auth
+ * is deliberately not used: Firestore triggers never populate it, only
+ * Realtime Database triggers and callable functions do.
+ *
+ * A delete leaves no document to read, so removals cannot be attributed this
+ * way and are recorded as unknown. Attributing those too would mean routing
+ * removals through a callable function.
+ *
+ * @param after {Object|null} the document after the write, null on delete
+ * @return {string}
+ */
+const actorOf = after => {
+  if (!after) return "unknown";
+  return after.updated_by || "system";
+};
+
+/**
  * Runs on every org_users write and owns the two things a client is not
  * allowed to do for itself:
  *
@@ -52,7 +72,7 @@ const describeChange = (before, after) => {
  *
  * @type {Promise<void>}
  */
-exports.syncOrgUserWriteHandler = async (change, context) => {
+exports.syncOrgUserWriteHandler = async change => {
   try {
     const before = change.before.exists ? change.before.data() : null;
     const after = change.after.exists ? change.after.data() : null;
@@ -88,13 +108,11 @@ exports.syncOrgUserWriteHandler = async (change, context) => {
 
     /**
      * append the immutable audit entry
-     * context.auth is absent when the write came from the Admin SDK itself,
-     * e.g. the founder record created by createOrganizationHandler
      * @type {Promise<FirebaseFirestore.DocumentReference>}
      */
     const recordAuditEntry = db.collection("org_role_audit").add({
       org_handle,
-      actor_uid: (context.auth && context.auth.uid) || "system",
+      actor_uid: actorOf(after),
       target_uid: uid,
       action: describeChange(before, after),
       old_permissions: before ? before.permissions : null,

@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   auditPaper: { padding: theme.spacing(2), marginTop: theme.spacing(3) }
 }));
 
-function AddMemberForm({ orgHandle, currentUserLevel }) {
+function AddMemberForm({ orgHandle, currentUserLevel, actorUid }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const firestore = useFirestore();
@@ -66,7 +66,12 @@ function AddMemberForm({ orgHandle, currentUserLevel }) {
   const handleSubmit = e => {
     e.preventDefault();
     if (!handle.trim()) return;
-    addOrgUser({ org_handle: orgHandle, handle: handle.trim(), permissions: [role] })(firestore, dispatch);
+    addOrgUser({
+      org_handle: orgHandle,
+      handle: handle.trim(),
+      permissions: [role],
+      actor_uid: actorUid
+    })(firestore, dispatch);
   };
 
   useEffect(() => {
@@ -208,6 +213,7 @@ function Users() {
   const error = useSelector(({ org: { user: { error } } }) => error ?? null);
   const orgHandle = useSelector(({ org: { general: { current } } }) => current);
   const actorHandle = useSelector(({ firebase: { profile } }) => profile?.handle ?? null);
+  const actorUid = useSelector(({ firebase: { auth } }) => auth?.uid ?? null);
 
   const { level: currentUserLevel, permissions: actorPermissions } = useOrgPermission();
 
@@ -225,7 +231,8 @@ function Users() {
       org_handle: orgHandle,
       handle,
       newPermissions,
-      actorPermissions
+      actorPermissions,
+      actor_uid: actorUid
     })(firestore, dispatch);
   };
 
@@ -298,7 +305,11 @@ function Users() {
         {/* Add Member Form */}
         <Grid item>
           <RequiresRole minLevel={2}>
-            <AddMemberForm orgHandle={orgHandle} currentUserLevel={currentUserLevel} />
+            <AddMemberForm
+              orgHandle={orgHandle}
+              currentUserLevel={currentUserLevel}
+              actorUid={actorUid}
+            />
           </RequiresRole>
         </Grid>
 

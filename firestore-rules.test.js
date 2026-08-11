@@ -36,7 +36,10 @@ describe("org_users RBAC", () => {
     await seedOrgUser("targetUid", "org1", 1);
     const db = testEnv.authenticatedContext("viewerUid").firestore();
     await assertFails(
-      db.doc("org_users/org1_targetUid").update({ permissions: [0] })
+      db.doc("org_users/org1_targetUid").update({
+        permissions: [0],
+        updated_by: "viewerUid",
+      })
     );
   });
 
@@ -48,6 +51,7 @@ describe("org_users RBAC", () => {
         uid: "newUid",
         org_handle: "org1",
         permissions: [3],
+        updated_by: "adminUid",
       })
     );
   });
@@ -57,7 +61,10 @@ describe("org_users RBAC", () => {
     await seedOrgUser("ownerUid", "org1", 3);
     const db = testEnv.authenticatedContext("adminUid").firestore();
     await assertFails(
-      db.doc("org_users/org1_ownerUid").update({ permissions: [1] })
+      db.doc("org_users/org1_ownerUid").update({
+        permissions: [1],
+        updated_by: "adminUid",
+      })
     );
   });
 
@@ -66,7 +73,10 @@ describe("org_users RBAC", () => {
     await seedOrgUser("targetUid", "org1", 1);
     const db = testEnv.authenticatedContext("adminUid").firestore();
     await assertFails(
-      db.doc("org_users/org1_targetUid").update({ permissions: [3] })
+      db.doc("org_users/org1_targetUid").update({
+        permissions: [3],
+        updated_by: "adminUid",
+      })
     );
   });
 
@@ -82,7 +92,10 @@ describe("org_users RBAC", () => {
     await seedOrgUser("adminUid", "org1", 2);
     const db = testEnv.authenticatedContext("ownerUid").firestore();
     await assertSucceeds(
-      db.doc("org_users/org1_adminUid").update({ permissions: [1] })
+      db.doc("org_users/org1_adminUid").update({
+        permissions: [1],
+        updated_by: "ownerUid",
+      })
     );
   });
 
@@ -94,6 +107,7 @@ describe("org_users RBAC", () => {
         uid: "newAdminUid",
         org_handle: "org1",
         permissions: [2],
+        updated_by: "ownerUid",
       })
     );
   });
@@ -106,6 +120,61 @@ describe("org_users RBAC", () => {
         uid: "newAdminUid",
         org_handle: "org1",
         permissions: [2],
+        updated_by: "ownerUid",
+      })
+    );
+  });
+});
+
+/**
+ * The audit trail's actor comes from the document's own updated_by field,
+ * because context.auth is never populated on Firestore triggers. That is only
+ * trustworthy if rules make the field impossible to forge, which is what these
+ * cover.
+ */
+describe("actor stamping cannot be forged", () => {
+  test("an admin cannot blame someone else for a role change", async () => {
+    await seedOrgUser("adminUid", "org1", 2);
+    await seedOrgUser("targetUid", "org1", 0);
+    const db = testEnv.authenticatedContext("adminUid").firestore();
+    await assertFails(
+      db.doc("org_users/org1_targetUid").update({
+        permissions: [1],
+        updated_by: "someoneElseUid",
+      })
+    );
+  });
+
+  test("an admin cannot omit the actor stamp entirely", async () => {
+    await seedOrgUser("adminUid", "org1", 2);
+    await seedOrgUser("targetUid", "org1", 0);
+    const db = testEnv.authenticatedContext("adminUid").firestore();
+    await assertFails(
+      db.doc("org_users/org1_targetUid").update({ permissions: [1] })
+    );
+  });
+
+  test("a forged actor is rejected on create too", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertFails(
+      db.doc("org_users/org1_newUid").set({
+        uid: "newUid",
+        org_handle: "org1",
+        permissions: [1],
+        updated_by: "somebodyElse",
+      })
+    );
+  });
+
+  test("stamping yourself honestly is accepted", async () => {
+    await seedOrgUser("ownerUid", "org1", 3);
+    await seedOrgUser("targetUid", "org1", 0);
+    const db = testEnv.authenticatedContext("ownerUid").firestore();
+    await assertSucceeds(
+      db.doc("org_users/org1_targetUid").update({
+        permissions: [2],
+        updated_by: "ownerUid",
       })
     );
   });
@@ -186,7 +255,10 @@ describe("ownership transfer and last-owner protection", () => {
     await seedOrgUser("adminUid", "org1", 2);
     const db = testEnv.authenticatedContext("ownerUid").firestore();
     await assertSucceeds(
-      db.doc("org_users/org1_adminUid").update({ permissions: [3] })
+      db.doc("org_users/org1_adminUid").update({
+        permissions: [3],
+        updated_by: "ownerUid",
+      })
     );
   });
 
@@ -195,7 +267,10 @@ describe("ownership transfer and last-owner protection", () => {
     await seedOrgUser("coOwnerUid", "org1", 3);
     const db = testEnv.authenticatedContext("ownerUid").firestore();
     await assertFails(
-      db.doc("org_users/org1_coOwnerUid").update({ permissions: [1] })
+      db.doc("org_users/org1_coOwnerUid").update({
+        permissions: [1],
+        updated_by: "ownerUid",
+      })
     );
   });
 
@@ -226,6 +301,7 @@ describe("ownership transfer and last-owner protection", () => {
         uid: "viewerUid",
         org_handle: "org1",
         permissions: [0],
+        updated_by: "adminUid",
       })
     );
   });
@@ -274,6 +350,7 @@ describe("organization creation", () => {
         uid: "founderUid",
         org_handle: "neworg",
         permissions: [3],
+        updated_by: "founderUid",
       })
     );
   });
@@ -336,6 +413,7 @@ describe("catch-all fallback removed", () => {
         uid: "randomUid",
         org_handle: "org1",
         permissions: [3],
+        updated_by: "randomUid",
       })
     );
   });
@@ -419,7 +497,10 @@ describe("org_users update/delete across all roles", () => {
     await seedOrgUser("targetUid", "org1", 0);
     const db = testEnv.authenticatedContext("editorUid").firestore();
     await assertFails(
-      db.doc("org_users/org1_targetUid").update({ permissions: [1] })
+      db.doc("org_users/org1_targetUid").update({
+        permissions: [1],
+        updated_by: "editorUid",
+      })
     );
   });
 

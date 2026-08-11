@@ -45,7 +45,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
 
 // adds a user to organization's users list with a set of permissions
 export const addOrgUser =
-  ({ org_handle, handle, permissions }) =>
+  ({ org_handle, handle, permissions, actor_uid }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
@@ -61,7 +61,10 @@ export const addOrgUser =
           .set({
             uid: uid,
             org_handle: org_handle,
-            permissions: permissions
+            permissions: permissions,
+            // rules reject any value but the caller's own uid, which is what
+            // makes this trustworthy as the audit trail's actor
+            updated_by: actor_uid
           });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
@@ -384,8 +387,11 @@ export const removeFollower =
 export const addFollower =
   (value, people, handle, orgFollowed, profileId) => firestore => {
     try {
+      // already a follower, nothing to do
       if (people && people.includes(value)) {
-      } else if (people) {
+        return;
+      }
+      if (people) {
         const arr = [...people];
         arr.push(value);
         firestore.collection("cl_org_general").doc(handle).update({
@@ -457,7 +463,7 @@ export const deleteOrganization =
   };
 
 export const updateOrgUserPermissions =
-  ({ org_handle, handle, newPermissions, actorPermissions }) =>
+  ({ org_handle, handle, newPermissions, actorPermissions, actor_uid }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_START });
@@ -499,7 +505,10 @@ export const updateOrgUserPermissions =
 
       const docRef = firestore.collection("org_users").doc(`${org_handle}_${uid}`);
 
-      await docRef.update({ permissions: newPermissions });
+      await docRef.update({
+        permissions: newPermissions,
+        updated_by: actor_uid
+      });
 
       await getOrgUserData(org_handle)(firestore, dispatch);
       dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_SUCCESS });

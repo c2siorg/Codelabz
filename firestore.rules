@@ -31,13 +31,26 @@ service cloud.firestore {
     }
 
     function isValidOrgUserDocument(data, memberDoc) {
-      return data.keys().hasOnly(['uid', 'org_handle', 'permissions'])
+      return data.keys().hasOnly(['uid', 'org_handle', 'permissions', 'updated_by'])
         && data.uid is string
         && data.org_handle is string
         && data.permissions is list
         && data.permissions.size() == 1
         && isValidRole(data.permissions[0])
         && memberDoc == data.org_handle + "_" + data.uid;
+    }
+
+    /**
+     * Every client write must stamp its own author. The value cannot be forged
+     * because anything other than the caller's own uid is rejected here, which
+     * is what lets the audit Cloud Function trust it.
+     *
+     * This exists because context.auth is never populated on Firestore
+     * triggers -- only on Realtime Database triggers and callable functions --
+     * so the function has no other way to learn who made the change.
+     */
+    function stampsActor(data) {
+      return data.updated_by == request.auth.uid;
     }
 
     /**
@@ -76,11 +89,13 @@ service cloud.firestore {
       // can therefore never bootstrap itself into an org.
       allow create: if isAuthenticated()
         && isValidOrgUserDocument(request.resource.data, memberDoc)
+        && stampsActor(request.resource.data)
         && canAssignRole(request.resource.data.org_handle, request.resource.data.permissions[0]);
 
       allow update: if isAuthenticated()
         && isValidOrgUserDocument(resource.data, memberDoc)
         && isValidOrgUserDocument(request.resource.data, memberDoc)
+        && stampsActor(request.resource.data)
         && resource.data.org_handle == request.resource.data.org_handle
         && resource.data.uid == request.resource.data.uid
         && canActOnTarget(resource.data.org_handle, resource.data.permissions[0])
