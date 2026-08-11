@@ -34,7 +34,7 @@ function OrgManagement() {
   const [page, setPage] = useState(0);
   const [unpublishTarget, setUnpublishTarget] = useState(null);
 
-  // Client-side filter with debounce via useMemo + search state
+  // Client-side filter, recomputed only when the list or the query changes
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     if (!q) return allOrgs;

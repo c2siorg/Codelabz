@@ -197,6 +197,13 @@ export const UserIsAllowOrgManager = compose(
 );
 
 /**
+ * when the user is logged in the user will be default redirected to /dashboard then
+ * if the user has completed the workflow, the user will be redirected to /dashboard/my_feed,
+ * if the user has not completed the workflow, the user must completed the workflow
+ * to move to another protected route
+ */
+
+/**
  * This auth wrapper restricts access to admin-only routes.
  * If the user is not a platform admin, they are redirected to /dashboard/my_feed.
  */
