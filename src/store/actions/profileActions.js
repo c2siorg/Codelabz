@@ -65,8 +65,9 @@ export const createOrganization =
       dispatch({ type: actions.PROFILE_EDIT_START });
       const userData = firebase.auth().currentUser;
       const { org_name, org_handle, org_country, org_website } = orgData;
+      const isOrgHandleExists =
+        await checkOrgHandleExists(org_handle)(firestore);
 
-      const isOrgHandleExists = await checkOrgHandleExists(org_handle)(firestore);
       if (isOrgHandleExists) {
         dispatch({
           type: actions.PROFILE_EDIT_FAIL,

@@ -431,11 +431,13 @@ export const deleteOrganization =
       const db = firebase.firestore();
       const batch = db.batch();
 
+      // every membership row belonging to this org
       const orgUsersSnap = await db
         .collection("org_users")
         .where("org_handle", "==", org_handle)
         .get();
 
+      // remove org from each member's orgs, not just the owner's
       const memberUpdates = orgUsersSnap.docs.map(async memberDoc => {
         batch.delete(memberDoc.ref);
         const memberUid = memberDoc.data().uid;
@@ -448,6 +450,8 @@ export const deleteOrganization =
       });
       await Promise.all(memberUpdates);
 
+      // remove org from the organization collection last, so a partial
+      // failure above does not leave the memberships orphaned
       const orgRef = db.collection("cl_org_general").doc(org_handle);
       batch.delete(orgRef);
 

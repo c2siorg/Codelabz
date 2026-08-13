@@ -1,28 +1,26 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Alert,
-  Avatar,
-  Box,
+  Grid,
+  Typography,
+  InputBase,
   Button,
-  CardContent,
+  Fab,
+  Avatar,
   CircularProgress,
+  Alert,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  Fab,
-  Grid,
-  InputBase,
-  LinearProgress,
-  TextField,
-  Typography
+  DialogTitle
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AddIcon from "@mui/icons-material/Add";
+import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
+import CardContent from "@mui/material/CardContent";
+import TextField from "@mui/material/TextField";
 import { useDispatch, useSelector } from "react-redux";
-import { useFirebase, useFirestore } from "react-redux-firebase";
-import { useHistory } from "react-router-dom";
 import { NoImage } from "../../../helpers/images";
 import {
   uploadOrgProfileImage,
@@ -31,6 +29,8 @@ import {
   getProfileData,
   deleteOrganization
 } from "../../../store/actions";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import { useHistory } from "react-router-dom";
 import ChangeProfile from "../../Profile/ChangeProfile/ChangeProfile";
 import { useDebouncedEffect } from "../../../helpers/customHooks/useDebounce";
 import useWindowSize from "../../../helpers/customHooks/useWindowSize";
@@ -45,11 +45,18 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     gap: 10,
-    [theme.breakpoints.down("md")]: { width: "99%" },
-    [theme.breakpoints.down("xs")]: { width: "99%" },
+    [theme.breakpoints.down("md")]: {
+      width: "99%"
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "99%"
+    },
     marginTop: "20px"
   },
-  heading: { fontSize: "1.5rem", fontWeight: 100 },
+  heading: {
+    fontSize: "1.5rem",
+    fontWeight: 100
+  },
   input: {
     padding: 10,
     border: "1px solid #ccc",
@@ -68,8 +75,12 @@ const useStyles = makeStyles(theme => ({
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: "10px",
     padding: 5,
-    [theme.breakpoints.down("md")]: { width: "80%" },
-    [theme.breakpoints.down("xs")]: { width: "99%" }
+    [theme.breakpoints.down("md")]: {
+      width: "80%"
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "99%"
+    }
   },
   hashtag: {
     boxShadow: "none",
@@ -322,11 +333,15 @@ function General() {
                 <Grid item container alignItems="center">
                   <Grid item xs={2} className={classes.ProfileContainer}>
                     {CurrentOrg.org_image ? (
-                      <Avatar src={CurrentOrg.org_image} className={classes.ProfilePhotoImage} />
+                      <Avatar
+                        src={CurrentOrg.org_image}
+                        className={classes.ProfilePhotoImage}
+                      />
                     ) : (
                       <img src={NoImage} alt="Not Available" />
                     )}
                   </Grid>
+
                   <Grid item>
                     {imageUploading ? (
                       <LinearProgress />
