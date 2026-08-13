@@ -34,6 +34,7 @@ if (import.meta.env.VITE_APP_FIREBASE_USE_EMULATOR === "true") {
     .auth()
     .useEmulator("http://localhost:9099", { disableWarnings: true });
   firebase.database().useEmulator("localhost", 9000);
+  // firebase.functions().useEmulator("localhost", 5001);
   db.settings({ merge: true });
 }
 
@@ -118,7 +119,7 @@ const testStorage = () => {
     });
 };
 
-const checkFirebaseServices = false;
+const checkFirebaseServices = false; // set true to run all tests for checking whether your firebase services are connected and working properly
 if (checkFirebaseServices) {
   testAuth();
   testRealtimeDatabase();

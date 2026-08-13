@@ -62,9 +62,8 @@ export const createOrganization =
       dispatch({ type: actions.PROFILE_EDIT_START });
       const userData = firebase.auth().currentUser;
       const { org_name, org_handle, org_country, org_website } = orgData;
-      const isOrgHandleExists = await checkOrgHandleExists(org_handle)(
-        firestore
-      );
+      const isOrgHandleExists =
+        await checkOrgHandleExists(org_handle)(firestore);
 
       if (isOrgHandleExists) {
         dispatch({
@@ -328,29 +327,28 @@ export const getUserFeedIdArray = userId => async (_, firestore) => {
   }
 };
 
-export const getUserFeedData =
-  userIdArray => async (firebase, firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.GET_USER_FEED_START });
+export const getUserFeedData = userIdArray => async (firebase, firestore, dispatch) => {
+  try {
+    dispatch({ type: actions.GET_USER_FEED_START });
 
-      if (userIdArray.length === 0) {
-        dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
-        return;
-      }
-
-      const users = await firestore
-        .collection("cl_user")
-        .where("uid", "in", userIdArray)
-        .get();
-
-      if (users.empty) {
-        dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
-      } else {
-        const userFeed = users.docs.map(doc => doc.data());
-        dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: userFeed });
-      }
-    } catch (e) {
-      dispatch({ type: actions.GET_USER_FEED_FAILED, payload: e });
-      console.error("Failed to get user feed data", e);
+    if (userIdArray.length === 0) {
+      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
+      return;
     }
-  };
+
+    const users = await firestore
+      .collection("cl_user")
+      .where("uid", "in", userIdArray)
+      .get();
+
+    if (users.empty) {
+      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
+    } else {
+      const userFeed = users.docs.map(doc => doc.data());
+      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: userFeed });
+    }
+  } catch (e) {
+    dispatch({ type: actions.GET_USER_FEED_FAILED, payload: e });
+    console.error("Failed to get user feed data", e);
+  }
+};
