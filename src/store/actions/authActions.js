@@ -134,6 +134,13 @@ export const clearRecoverPasswordError = () => async dispatch => {
   dispatch({ type: actions.CLEAR_AUTH_RECOVER_PASSWORD_STATE });
 };
 
+/**
+ *Workflow to password reset
+ * 1. call sendPasswordResetEmail with email
+ * 2. call verifyPasswordResetCode with actionCode
+ * 3. call confirmPasswordReset with actionCode and new password
+ */
+
 export const sendPasswordResetEmail = email => async (firebase, dispatch) => {
   try {
     dispatch({ type: actions.SEND_RESET_EMAIL_START });
@@ -157,15 +164,15 @@ export const verifyPasswordResetCode =
 
 export const confirmPasswordReset =
   ({ actionCode, password }) =>
-    async (firebase, dispatch) => {
-      try {
-        dispatch({ type: actions.PASSWORD_RECOVERY_START });
-        await firebase.confirmPasswordReset(actionCode, password);
-        dispatch({ type: actions.PASSWORD_RECOVERY_SUCCESS });
-      } catch (e) {
-        dispatch({ type: actions.PASSWORD_RECOVERY_FAIL, payload: getErrorMessage(e) });
-      }
-    };
+  async (firebase, dispatch) => {
+    try {
+      dispatch({ type: actions.PASSWORD_RECOVERY_START });
+      await firebase.confirmPasswordReset(actionCode, password);
+      dispatch({ type: actions.PASSWORD_RECOVERY_SUCCESS });
+    } catch (e) {
+      dispatch({ type: actions.PASSWORD_RECOVERY_FAIL, payload: getErrorMessage(e) });
+    }
+  };
 
 export const verifyEmail = actionCode => async (firebase, dispatch) => {
   try {
@@ -191,6 +198,11 @@ export const resendVerifyEmail = email => async dispatch => {
   }
 };
 
+/**
+ * Check user handle exists or not
+ * @param userHandle
+ * @returns {function(...[*]=):boolean}
+ */
 export const checkUserHandleExists = userHandle => async firebase => {
   try {
     const handle = await firebase
