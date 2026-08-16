@@ -1,7 +1,5 @@
 /// <reference types="cypress" />
 
-import { wait } from "@testing-library/react";
-
 describe("Organization Page | CodeLabz", () => {
   beforeEach(function () {
     cy.fixture("login").then(function (credentials) {
