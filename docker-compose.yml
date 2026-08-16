@@ -6,6 +6,8 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      # keep the image's functions deps; the bind mount above would hide them
+      - /app/functions/node_modules
     ports:
       - "4000:4000"
       - "9099:9099"
@@ -41,8 +43,11 @@ services:
     env_file:
       - .env
     environment:
-      VITE_APP_USE_EMULATOR: "true"
-      VITE_APP_EMULATOR_HOST: "localhost"
+      VITE_APP_FIREBASE_USE_EMULATOR: "true"
+      # localhost works when the browser runs on the host. Cypress runs inside a
+      # container, where localhost is itself, so the testing profile overrides
+      # this with EMULATOR_HOST=emulators.
+      VITE_APP_EMULATOR_HOST: ${EMULATOR_HOST:-localhost}
     depends_on:
       emulators:
         condition: service_healthy

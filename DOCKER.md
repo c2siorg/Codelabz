@@ -65,10 +65,16 @@ The `--build` flag rebuilds the app image with updated `node_modules`. Use this 
 ## Run with Cypress E2E tests (optional)
 
 ```bash
-docker compose --profile testing up --build
+EMULATOR_HOST=emulators docker compose --profile testing up --build
 ```
 
 Cypress runs headlessly against the live stack. Results appear in `cypress/videos` and `cypress/screenshots`.
+
+`EMULATOR_HOST=emulators` is required here. Cypress runs inside a container, so
+`localhost` would point at the Cypress container rather than the emulators; the
+compose service name resolves correctly on the shared network. The default
+(`localhost`) is what you want for normal development, where the browser runs on
+your host machine.
 
 ---
 
@@ -86,7 +92,7 @@ App runs at **http://localhost:3000**
 docker compose -f docker-compose.prod.yml down
 ```
 
-> **Note:** The production build bakes env vars into the static bundle at build time. `VITE_APP_USE_EMULATOR` is set to `"false"` automatically, so the SDK connects to your real Firebase project.
+> **Note:** The production build bakes env vars into the static bundle at build time. `VITE_APP_FIREBASE_USE_EMULATOR` is set to `"false"` automatically, so the SDK connects to your real Firebase project.
 
 ---
 
@@ -103,11 +109,11 @@ docker compose -f docker-compose.prod.yml down
 
 ## Firebase & Emulator
 
-`VITE_APP_USE_EMULATOR=true` in `.env` routes all Firebase SDK calls to the local emulators. The `demo-codelabz` project ID triggers Firebase's offline demo mode no real Google Cloud services are contacted.
+`VITE_APP_FIREBASE_USE_EMULATOR=true` in `.env` routes all Firebase SDK calls to the local emulators. The `demo-codelabz` project ID triggers Firebase's offline demo mode no real Google Cloud services are contacted.
 
 | Variable | Value | Effect |
 |---|---|---|
-| `VITE_APP_USE_EMULATOR` | `true` | All SDK traffic goes to local emulators |
+| `VITE_APP_FIREBASE_USE_EMULATOR` | `true` | All SDK traffic goes to local emulators |
 | `VITE_APP_EMULATOR_HOST` | `localhost` | Browser connects via host-mapped ports |
 | `VITE_APP_FIREBASE_PROJECT_ID` | `demo-codelabz` | Firebase demo mode no production access |
 

@@ -29,7 +29,7 @@ export const onlineFirebaseApp = initializeApp(firebaseConfig, "secondary");
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-if (import.meta.env.VITE_APP_USE_EMULATOR === "true") {
+if (import.meta.env.VITE_APP_FIREBASE_USE_EMULATOR === "true") {
   const host = import.meta.env.VITE_APP_EMULATOR_HOST || "localhost";
   console.log("Using emulator");
   firebase.firestore().useEmulator(host, 8080);

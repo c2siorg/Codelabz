@@ -6,3 +6,10 @@ RUN npm install -g firebase-tools@13.13.0 --no-audit --no-fund
 
 WORKDIR /app
 
+# Cloud Functions deps must live in the image. The compose bind mount would
+# otherwise rely on the host having installed them, which a fresh clone has not.
+# npm install, not npm ci: functions/package-lock.json is out of sync with
+# functions/package.json, and ci refuses to run in that state.
+COPY functions/package.json ./functions/
+RUN cd functions && npm install --omit=dev --no-audit --no-fund
+
