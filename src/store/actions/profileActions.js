@@ -1,6 +1,7 @@
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists, checkUserHandleExists } from "./authActions";
 import { getOrgBasicData } from "./orgActions";
+import { chunkedIn } from "../../helpers/firestoreQuery";
 import _ from "lodash";
 
 export const clearProfileEditError = () => async dispatch => {
@@ -297,24 +298,49 @@ export const getAllOrgsOfCurrentUser = () => async (firebase, firestore) => {
   }
 };
 
-export const getUserFeedIdArray = userId => async (_, firestore) => {
-  try {
-    const userIdArray = [];
-    const querySnapshot = await firestore.collection("cl_user").get();
-    const promises = querySnapshot.docs.map(async (doc) => {
-      const followStatus = await isUserFollower(userId, doc.id, firestore);
-      if (!followStatus) {
-        userIdArray.push(doc.id);
-      }
-    });
+// How many "who to follow" suggestions to surface in one pass.
+const SUGGESTED_USERS_LIMIT = 20;
 
-    await Promise.all(promises);
-    return userIdArray;
-  } catch (e) {
-    console.log(e);
-    throw new Error("Failed to get user feed ID array");
-  }
-};
+export const getUserFeedIdArray =
+  (userId, max = SUGGESTED_USERS_LIMIT) =>
+  async (_, firestore) => {
+    try {
+      // The card mounts from HomePage with profileData.uid, which is undefined
+      // until the profile loads. Firestore throws on an undefined comparison
+      // value, so bail out rather than letting it reject.
+      if (!userId) return [];
+
+      // Who this user already follows. Bounded by their own following
+      // count rather than by the size of cl_user, replacing the per-user
+      // isUserFollower lookup that cost one read for every user.
+      const followingSnapshot = await firestore
+        .collection("user_followers")
+        .where("followerId", "==", userId)
+        .get();
+
+      const alreadyFollowing = new Set(
+        followingSnapshot.docs.map(doc => doc.get("followingId"))
+      );
+
+      // One page of candidates instead of the whole collection. Over-fetch
+      // by the number already followed so a full page survives filtering.
+      // No orderBy on purpose: ordering by followerCount would silently
+      // drop every user never followed, since Firestore omits documents
+      // missing the field being ordered on.
+      const candidatesSnapshot = await firestore
+        .collection("cl_user")
+        .limit(max + alreadyFollowing.size + 1)
+        .get();
+
+      return candidatesSnapshot.docs
+        .map(doc => doc.id)
+        .filter(uid => uid !== userId && !alreadyFollowing.has(uid))
+        .slice(0, max);
+    } catch (e) {
+      console.log(e);
+      throw new Error("Failed to get user feed ID array");
+    }
+  };
 
 
 export const getUserFeedData = userIdArray => async (firebase, firestore, dispatch) => {
@@ -326,17 +352,16 @@ export const getUserFeedData = userIdArray => async (firebase, firestore, dispat
       return;
     }
 
-    const users = await firestore
-      .collection("cl_user")
-      .where("uid", "in", userIdArray)
-      .get();
+    const userDocs = await chunkedIn(
+      firestore.collection("cl_user"),
+      "uid",
+      userIdArray
+    );
 
-    if (users.empty) {
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
-    } else {
-      const userFeed = users.docs.map(doc => doc.data());
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: userFeed });
-    }
+    dispatch({
+      type: actions.GET_USER_FEED_SUCCESS,
+      payload: userDocs.map(doc => doc.data())
+    });
   } catch (e) {
     dispatch({ type: actions.GET_USER_FEED_FAILED, payload: e });
     console.error("Failed to get user feed data", e);
