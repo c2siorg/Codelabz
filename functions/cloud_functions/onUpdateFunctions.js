@@ -4,6 +4,10 @@ const _ = require("lodash");
 
 exports.addOrgUserHandler = async event => {
   try {
+    if (!event.data) {
+      return console.log("No change associated with the update event");
+    }
+
     const newValue = _.omit(event.data.after.data(), [
       "createdAt",
       "updatedAt"

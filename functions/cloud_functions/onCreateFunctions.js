@@ -41,6 +41,12 @@ exports.createOrganizationHandler = async event => {
   try {
     const { org_handle } = event.params;
 
+    if (!event.data) {
+      return console.log(
+        `No snapshot associated with the create event for: ${org_handle}`
+      );
+    }
+
     const org_email = event.data.get("org_email");
 
     const querySnapshot = await db
