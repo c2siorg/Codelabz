@@ -1,9 +1,9 @@
 const { rtdb } = require("../auth");
 
-exports.registerUserHandleHandler = async change => {
+exports.registerUserHandleHandler = async event => {
   try {
-    const newValue = change.after.get("handle");
-    const previousValue = change.before.get("handle");
+    const newValue = event.data.after.get("handle");
+    const previousValue = event.data.before.get("handle");
 
     if (
       previousValue === undefined &&

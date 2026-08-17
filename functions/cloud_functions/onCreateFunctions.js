@@ -1,8 +1,15 @@
 const { db, rtdb, admin } = require("../auth");
+const { FieldValue } = require("firebase-admin/firestore");
 
-exports.sendVerificationEmailHandler = async user => {
+exports.sendVerificationEmailHandler = async event => {
   try {
-    const { uid, email, emailVerified } = user;
+    // Fires on cl_user/{uid} creation rather than the Auth event directly:
+    // beforeUserCreated runs before the user record is committed, so
+    // admin.auth().generateEmailVerificationLink() can't find it yet. By the
+    // time the app writes the user's Firestore profile, the Auth user is
+    // guaranteed to already exist.
+    const { uid } = event.params;
+    const { email, emailVerified } = await admin.auth().getUser(uid);
 
     if (!email) {
       return console.log(`Email is undefined for user: ${uid}`);
@@ -30,11 +37,11 @@ exports.sendVerificationEmailHandler = async user => {
   }
 };
 
-exports.createOrganizationHandler = async (snapshot, context) => {
+exports.createOrganizationHandler = async event => {
   try {
-    const { org_handle } = context.params;
+    const { org_handle } = event.params;
 
-    const org_email = snapshot.get("org_email");
+    const org_email = event.data.get("org_email");
 
     const querySnapshot = await db
       .collection("cl_user")
@@ -71,8 +78,8 @@ exports.createOrganizationHandler = async (snapshot, context) => {
         launch: "",
         launched: false,
         tutorials: 0,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp()
       });
 
     /**

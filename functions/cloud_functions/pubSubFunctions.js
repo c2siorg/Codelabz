@@ -1,4 +1,5 @@
-const { db, rtdb, admin } = require("../auth");
+const { db, rtdb } = require("../auth");
+const { FieldValue } = require("firebase-admin/firestore");
 
 exports.deleteTutorialStepsHandler = async () => {
   console.log("starting of deleting tutorial steps");
@@ -24,8 +25,8 @@ exports.deleteTutorialStepsHandler = async () => {
         .collection(step.owner)
         .doc(step.tutorial_id)
         .update({
-          [`steps.${step.step_id}`]: admin.firestore.FieldValue.delete(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          [`steps.${step.step_id}`]: FieldValue.delete(),
+          updatedAt: FieldValue.serverTimestamp()
         });
 
       await rtdb
