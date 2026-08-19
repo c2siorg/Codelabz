@@ -2,21 +2,26 @@ name: "Issue Labeler"
 on:
   issues:
     types: [opened, edited]
-  pull_request:
-    types: [opened, edited]
+
+permissions:
+  issues: write
+  contents: read
 
 jobs:
-  triage:
+  apply-labels:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
     steps:
-      - uses: actions/checkout@v2
-      - uses: github/issue-labeler@v3.0
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Label Issues
+        uses: github/issue-labeler@v3.4
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          configuration-path: .github/labels.yml
-          enable-versioned-regex: 0
+          configuration-path: .github/labeler-v1.yml
+          enable-versioned-regex: 1
+          versioned-regex: 'issue_labeler_regex_version=(\d+)'
+          body-missing-regex-label: "broken-template"
           include-title: 1
-          body-missing-regex-label: "no-body"
+          include-body: 1
+          sync-labels: 1
