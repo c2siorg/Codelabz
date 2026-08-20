@@ -7,7 +7,11 @@ import Search from "@mui/icons-material/Search";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { searchFromTutorialsIndex } from "../../../../store/actions";
+import { useFirebase, useFirestore } from "react-redux-firebase";
+import {
+  ensureTutorialsIndexed,
+  searchFromTutorialsIndex
+} from "../../../../store/actions";
 import NewTutorial from "../../NewTutorial";
 import SearchResultsComponent from "./SearchResultsComponent";
 
@@ -16,6 +20,8 @@ const Header = () => {
   const [viewResults, setViewResults] = useState(false);
   const [indexData, setIndexData] = useState([]);
   const [visibleModal, setVisibleModal] = useState(false);
+  const firebase = useFirebase();
+  const firestore = useFirestore();
 
   const user = useSelector(
     ({
@@ -39,10 +45,12 @@ const Header = () => {
     }
   }, [user, org]);
 
-  const handleOnSearch = ({ target: { value } }) => {
+  const handleOnSearch = async ({ target: { value } }) => {
     if (value === "") {
       return setViewResults(false);
     }
+    // The index is populated on demand rather than at app start.
+    await ensureTutorialsIndexed()(firebase, firestore);
     const result = searchFromTutorialsIndex(value);
     if (result.length === 0) {
       setViewResults(true);

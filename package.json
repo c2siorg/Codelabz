@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
@@ -31,6 +34,7 @@
     "@mui/lab": "^5.0.0-alpha.115",
     "@mui/material": "^5.11.4",
     "@mui/styles": "^5.11.2",
+    "@mui/system": "^5.18.0",
     "codemirror": "^5.56.0",
     "color-thief-react": "^1.0.2",
     "dompurify": "^3.0.5",
@@ -56,6 +60,7 @@
     "react-redux-firebase": "^3.7.0",
     "react-responsive": "^8.1.0",
     "react-reveal": "^1.2.2",
+    "react-router": "^5.3.4",
     "react-router-dom": "^5.2.0",
     "react-router-hash-link": "^2.4.3",
     "react-select": "^5.7.0",
@@ -80,6 +85,7 @@
     "@types/react": "^18.0.26",
     "@vitejs/plugin-react-swc": "^3.0.0",
     "cypress": "^13.0.0",
+    "eslint": "^8.4.1",
     "eslint-plugin-react": "^7.33.2",
     "husky": "^8.0.0",
     "less": "^4.1.3",

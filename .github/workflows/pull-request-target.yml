@@ -1,0 +1,61 @@
+name: PR Target Workflow
+on:
+  pull_request_target:
+
+jobs:
+  PR-Greeting:
+    name: Pull Request Target
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add the PR Review Policy
+        uses: thollander/actions-comment-pull-request@v2
+
+        with:
+          comment_tag: pr_review_policy
+          message: |
+            # Pull Request Approval Process 🎉
+
+            Welcome and thank you for your contribution! Please ensure your PR adheres to the following guidelines to facilitate a smooth review process:
+
+            ## Testing Your Code ✅
+
+            Before submitting your PR, please make sure your code passes all tests. Our CI system will check for:
+
+            - **Code Coverage:** No reduction in overall code coverage below the target threshold.
+            - **File Coverage:** No individual file in the PR with code coverage below the threshold.
+            - **Merge Conflicts:** No merge conflicts.
+
+            ## Reviewers 👥
+
+            Do not assign reviewers. Our project maintainers will review your PR and assign reviewers. You can communicate with your assigned reviewers through:
+
+            - **Comments:** In this PR.
+            - **Slack:** Our Slack channel.
+
+            ## Reviewing Your Code 🔍
+
+            Your assigned reviewers will:
+
+            - Review your code.
+            - Mediate future discussions about the validity of your changes.
+            - Evaluate the validity of your work.
+            - Verify related issues that should be closed.
+            - Provide guidance on fixing your tests.
+
+            ## CONTRIBUTING.md 📖
+
+            Please read our [CONTRIBUTING.md](../../CONTRIBUTING.md) file. Important points include:
+
+            - **Issue Assignment:** PRs without assigned issues will be closed by the reviewer.
+            - **Issue References:** Make sure the first comment in the PR includes references to automatically close related issues upon merging.
+
+            ## Other Guidelines 📌
+
+            - **Respect Volunteers' Time:** Be considerate of our volunteers' time. Avoid contacting the person who assigned reviewers unless they request your input.
+            - **Code of Conduct:** Follow the project's [Code of Conduct](../../code_of_conduct.md) in all interactions.
+
+            ## Closing Your PR 🛑
+
+            If you need to close your PR, please comment with the reason for closure. This helps us understand why you decided to close the PR.
+
+            Thank you for your understanding and cooperation. 🙏

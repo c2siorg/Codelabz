@@ -36,7 +36,7 @@ if (import.meta.env.VITE_APP_FIREBASE_USE_EMULATOR === "true") {
     .auth()
     .useEmulator("http://localhost:9099", { disableWarnings: true });
   firebase.database().useEmulator("localhost", 9000);
-  // firebase.functions().useEmulator("localhost", 5001);
+  firebase.functions().useEmulator("localhost", 5001);
   db.settings({ merge: true });
 }
 
