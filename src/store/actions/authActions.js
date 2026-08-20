@@ -17,7 +17,7 @@ export const signIn = credentials => async (firebase, dispatch) => {
     dispatch({ type: actions.SIGN_IN_START });
     dispatch({ type: actions.CLEAR_AUTH_VERIFY_EMAIL_STATE });
     const userData = await firebase.login(credentials);
-    if (_.get(userData, "user.emailVerified", false)) {
+    if (_.get(userData, "user.user.emailVerified", false)) {
       dispatch({ type: actions.SIGN_IN_SUCCESS });
     } else {
       await firebase.logout();
@@ -31,7 +31,7 @@ export const signIn = credentials => async (firebase, dispatch) => {
       });
     }
   } catch (e) {
-    dispatch({ type: actions.SIGN_IN_FAIL, payload: getErrorMessage(e) });
+    dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
   }
 };
 
@@ -44,7 +44,7 @@ export const signInWithGoogle = () => async (firebase, dispatch) => {
     });
     dispatch({ type: actions.SIGN_IN_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.SIGN_IN_FAIL, payload: getErrorMessage(e) });
+    dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
   }
 };
 
@@ -76,7 +76,7 @@ export const signInWithProviderID =
           )}. Log in with ${methods.join(", ")} to continue.`
         });
       } else {
-        dispatch({ type: actions.SIGN_IN_FAIL, payload: getErrorMessage(e) });
+        dispatch({ type: actions.SIGN_IN_FAIL, payload: e });
       }
     }
   };
@@ -121,7 +121,7 @@ export const signUp = userData => async (firebase, dispatch) => {
     await firebase.logout();
     dispatch({ type: actions.SIGN_UP_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.SIGN_UP_FAIL, payload: getErrorMessage(e) });
+    dispatch({ type: actions.SIGN_UP_FAIL, payload: e });
   }
 };
 
@@ -147,7 +147,7 @@ export const sendPasswordResetEmail = email => async (firebase, dispatch) => {
     await firebase.resetPassword(email);
     dispatch({ type: actions.SEND_RESET_EMAIL_SUCCESS });
   } catch (e) {
-    dispatch({ type: actions.SEND_RESET_EMAIL_FAIL, payload: getErrorMessage(e) });
+    dispatch({ type: actions.SEND_RESET_EMAIL_FAIL, payload: e });
   }
 };
 
@@ -330,6 +330,6 @@ export const setUpInitialData =
       dispatch({ type: actions.INITIAL_SETUP_SUCCESS });
     } catch (e) {
       console.error("Setup initial data error:", e);
-      dispatch({ type: actions.INITIAL_SETUP_FAIL, payload: getErrorMessage(e) });
+      dispatch({ type: actions.INITIAL_SETUP_FAIL, payload: e });
     }
   };
