@@ -7,7 +7,7 @@ import * as serviceWorker from "./serviceWorker";
 import store, { rrfProps } from "./store";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import { Provider } from "react-redux";
-import { ThemeProvider } from "@mui/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./helpers/themes";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
