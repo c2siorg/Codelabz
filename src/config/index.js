@@ -9,6 +9,7 @@ import "firebase/compat/performance";
 import "firebase/compat/messaging";
 import { initializeApp } from "firebase/app";
 import { onMessage } from "firebase/messaging";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
@@ -38,6 +39,12 @@ if (import.meta.env.VITE_APP_FIREBASE_USE_EMULATOR === "true") {
   firebase.database().useEmulator("localhost", 9000);
   firebase.functions().useEmulator("localhost", 5001);
   db.settings({ merge: true });
+
+  // onlineFirebaseApp is a separate ("secondary") Firebase app instance used
+  // by the Yjs collaborative editor (FirestoreProvider). It has its own
+  // Firestore connection, so it needs to be pointed at the emulator here too
+  // -- otherwise it silently talks to the production project instead.
+  connectFirestoreEmulator(getFirestore(onlineFirebaseApp), "localhost", 8080);
 }
 
 export const functions = firebase.functions();
