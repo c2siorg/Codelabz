@@ -1,6 +1,20 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true
+    "cl_user_presence": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "cl_user_sessions": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "$other": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
   }
 }
