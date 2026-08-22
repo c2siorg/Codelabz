@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { useFirebase } from "react-redux-firebase";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
@@ -141,7 +140,7 @@ export const getOrgBasicData = org_handle => async firebase => {
     };
   } catch (e) {
     console.log(e);
-    throw e;
+    return null;
   }
 };
 
@@ -401,27 +400,38 @@ export const addFollower =
 
 export const deleteOrganization =
   org_handle =>
-  async (firebase = useFirebase(), dispatch) => {
+  async (firebase, dispatch) => {
     try {
-      const auth = firebase.auth().currentUser;
-      // remove org from the organization collection
-      await firebase
-        .firestore()
-        .collection("cl_org_general")
-        .doc(org_handle)
-        .delete();
+      dispatch({ type: actions.DELETE_ORG_START });
 
-      // remove org from the user's orgs
-      await firebase
-        .firestore()
-        .collection("cl_user")
-        .doc(auth.uid)
-        .update({
-          organizations: firebase.firestore.FieldValue.arrayRemove(org_handle)
-        });
+      const auth = firebase.auth().currentUser;
+      const db = firebase.firestore();
+
+      const orgUsersSnap = await db
+        .collection("org_users")
+        .where("org_handle", "==", org_handle)
+        .get();
+
+      const batch = db.batch();
+
+      orgUsersSnap.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+
+      batch.update(db.collection("cl_user").doc(auth.uid), {
+        organizations: firebase.firestore.FieldValue.arrayRemove(org_handle)
+      });
+
+      batch.delete(db.collection("cl_org_general").doc(org_handle));
+
+      await batch.commit();
+
+      dispatch({ type: actions.DELETE_ORG_SUCCESS });
       dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
       dispatch({ type: actions.CLEAR_ORG_USER_STATE });
+      return true;
     } catch (e) {
-      console.log(e);
+      dispatch({ type: actions.DELETE_ORG_FAIL, payload: e.message });
+      throw e;
     }
   };

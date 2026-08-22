@@ -33,24 +33,24 @@ export const getProfileData = () => async (firebase, firestore, dispatch) => {
       firestore,
       dispatch
     );
-    const organizations = userOrgs?.map(org => org.org_handle);
-    // console.log(organizations);
-    if (organizations && organizations.length > 0) {
-      const promises = organizations.map(org_handle =>
-        getOrgBasicData(org_handle)(firebase)
-      );
-      const orgs = await Promise.all(promises);
-      setCurrentOrgUserPermissions(
-        orgs[0].org_handle,
-        orgs[0].permissions
-      )(dispatch);
-      dispatch({
-        type: actions.GET_PROFILE_DATA_SUCCESS,
-        payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
-      });
-    } else {
+    const promises =
+      userOrgs?.map(org => getOrgBasicData(org.org_handle)(firebase)) ?? [];
+    const orgs = await Promise.all(promises).then(results =>
+      results.filter(Boolean)
+    );
+
+    if (orgs.length === 0) {
       dispatch({ type: actions.GET_PROFILE_DATA_END });
+      return;
     }
+
+    setCurrentOrgUserPermissions(orgs[0].org_handle, orgs[0].permissions)(
+      dispatch
+    );
+    dispatch({
+      type: actions.GET_PROFILE_DATA_SUCCESS,
+      payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
+    });
   } catch (e) {
     dispatch({ type: actions.GET_PROFILE_DATA_FAIL, payload: e.message });
   }

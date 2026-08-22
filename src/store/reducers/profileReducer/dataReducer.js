@@ -40,7 +40,8 @@ const ProfileDataReducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         isLoaded: true,
-        isEmpty: true
+        isEmpty: true,
+        organizations: []
       };
 
     default:
