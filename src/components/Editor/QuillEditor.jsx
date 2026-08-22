@@ -44,16 +44,33 @@ const QuillEditor = ({ id, data, tutorial_id }) => {
         // yjs document
         ydoc = new Y.Doc();
 
+        // Debounce timer reference to avoid saving on every keystroke
+        let saveTimeout = null;
+
         // on updating text in editor this gets triggered
         ydoc.on("update", () => {
           // deltaText is quill editor's data structure to store text
           const deltaText = ydoc.getText("quill").toDelta();
           var config = {};
           var converter = new QuillDeltaToHtmlConverter(deltaText, config);
-
           var html = converter.convert();
-          setCurrentStepContent(tutorial_id, id, html)(firestore, dispatch);
+
+          // Mark as unsaved while typing
+          setAllSaved(false);
+
+          // Debounce: only save to Firebase after user stops typing for 1 second
+          // This prevents page scroll jumping on every keystroke
+          if (saveTimeout) clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(() => {
+  const scrollY = window.scrollY;
+  setCurrentStepContent(tutorial_id, id, html)(firestore, dispatch);
+  setAllSaved(true);
+  requestAnimationFrame(() => {
+    window.scrollTo(0, scrollY);
+  });
+}, 1000);
         });
+
         provider = new FirestoreProvider(onlineFirebaseApp, ydoc, basePath, {
           disableAwareness: true
         });

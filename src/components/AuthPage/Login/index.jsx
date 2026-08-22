@@ -97,12 +97,20 @@ const Login = ({
   };
 
   const onSubmit = async e => {
-    e.preventDefault();
-    setError("");
-    if (validateEmail() & validatePassword()) {
-      await signIn({ email: email, password: password })(firebase, dispatch);
-    }
-  };
+  e.preventDefault();
+  setError("");
+  
+  // Step 1: Validate email first
+  const isEmailValid = validateEmail();
+  if (!isEmailValid) return; // Stop here, show only email error
+
+  // Step 2: Only validate password if email is valid
+  const isPasswordValid = validatePassword();
+  if (!isPasswordValid) return; // Stop here, show only password error
+
+  // Step 3: Both valid, attempt sign in
+  await signIn({ email: email, password: password })(firebase, dispatch);
+};
 
   const onFocusEmail = () => {
     setEmailValidateError(false);
