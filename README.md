@@ -43,7 +43,7 @@ No, you don't need to purchase Blaze plan to run the app. You need to purchase i
 
 ### Answer -
 
-First of all make sure that your are using version 14 of node. If the problem still persists try `npm install --legacy-peer-deps`.
+First of all make sure that you are using Node.js version 18 or higher (Node.js 14 and 16 have reached end-of-life and are incompatible with Firebase CLI v12+). If the problem still persists try `npm install --legacy-peer-deps`.
 
 <hr/>
 
@@ -53,7 +53,7 @@ First of all make sure that your are using version 14 of node. If the problem st
 
 ### Solution :-
 
-This problem generally arises when you have not setuped/started the Firebase emulators.
+This problem generally arises when you have not set up/started the Firebase emulators.
 
 1. [Setup firebase emulator](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#firebase-setup).
 2. [Start the Emulators](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#run-firebase-emulator)
