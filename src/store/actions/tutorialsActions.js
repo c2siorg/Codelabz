@@ -633,30 +633,49 @@ export const setTutorialTheme =
     };
 
 export const addNotification =
-  (tutorial_id, tutorialTitle, created_by, owner) =>
+  (tutorial_id, tutorialTitle, created_by, owner, recipient_uid) =>
     async (firebase, firestore, dispatch) => {
       try {
         dispatch({ type: actions.ADD_NOTIFICATION_START });
-
+        const isSubscribed = await isUserSubscribed(owner, firebase, firestore);
+        if (!isSubscribed) {
+          dispatch({ type: actions.ADD_NOTIFICATION_SUCCESS });
+          return;
+        }
+        const prefsDoc = await firestore
+          .collection("notification_preferences")
+          .doc(recipient_uid)
+          .get();
+        if (prefsDoc.exists) {
+          const prefs = prefsDoc.data();
+          if (prefs.blockedUsers && prefs.blockedUsers.includes(created_by)) {
+            dispatch({ type: actions.ADD_NOTIFICATION_SUCCESS });
+            return;
+          }
+        }
         const querySnapshot = await firestore
           .collection("notifications")
+          .doc(recipient_uid)
+          .collection("userNotifications")
           .where("tutorial_id", "==", tutorial_id)
           .get();
-
-        const isSubscribed = await isUserSubscribed(owner, firebase, firestore);
-
-        if (querySnapshot.empty && isSubscribed) {
-          const document = firestore.collection("notifications").doc();
+        if (querySnapshot.empty) {
+          const document = firestore
+            .collection("notifications")
+            .doc(recipient_uid)
+            .collection("userNotifications")
+            .doc();
           const documentID = document.id;
-
           const notification = {
             notification_id: documentID,
+            recipient_uid,
             content: `Posted new Tutorial ${tutorialTitle}. Learn the best practices followed in the industry in this tutorial.`,
             createdAt: firestore.FieldValue.serverTimestamp(),
             isRead: false,
             username: created_by,
             org: owner,
-            tutorial_id
+            tutorial_id,
+            type: "tutorial_published"
           };
           await document.set(notification);
         }
@@ -668,16 +687,16 @@ export const addNotification =
     };
 
 export const getNotificationData =
-  () => async (firebase, firestore, dispatch) => {
+  (uid) => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_NOTIFICATION_DATA_START });
       const notificationsSnapshot = await firestore
         .collection("notifications")
+        .doc(uid)
+        .collection("userNotifications")
         .orderBy("createdAt", "desc")
         .get();
-
       const notifications = notificationsSnapshot.docs.map(doc => doc.data());
-
       dispatch({
         type: actions.GET_NOTIFICATION_DATA_SUCCESS,
         payload: notifications
@@ -692,11 +711,14 @@ export const getNotificationData =
   };
 
 export const readNotification =
-  notification_id => async (firebase, firestore, dispatch) => {
+  (notification_id, uid) => async (firebase, firestore, dispatch) => {
     try {
-      await firestore.collection("notifications").doc(notification_id).update({
-        isRead: true
-      });
+      await firestore
+        .collection("notifications")
+        .doc(uid)
+        .collection("userNotifications")
+        .doc(notification_id)
+        .update({ isRead: true });
       dispatch({ type: actions.READ_NOTIFICATION, payload: notification_id });
     } catch (e) {
       console.log(e.message);
@@ -704,11 +726,52 @@ export const readNotification =
   };
 
 export const deleteNotification =
-  notification_id => async (firebase, firestore, dispatch) => {
+  (notification_id, uid) => async (firebase, firestore, dispatch) => {
     try {
-      await firestore.collection("notifications").doc(notification_id).delete();
+      await firestore
+        .collection("notifications")
+        .doc(uid)
+        .collection("userNotifications")
+        .doc(notification_id)
+        .delete();
       dispatch({ type: actions.DELETE_NOTIFICATION, payload: notification_id });
     } catch (e) {
       console.log(e.message);
+    }
+  };
+
+export const blockUser =
+  (currentUid, usernameToBlock) => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.BLOCK_USER_START });
+      const prefsRef = firestore
+        .collection("notification_preferences")
+        .doc(currentUid);
+      await prefsRef.set(
+        { blockedUsers: firestore.FieldValue.arrayUnion(usernameToBlock) },
+        { merge: true }
+      );
+      dispatch({ type: actions.BLOCK_USER_SUCCESS, payload: usernameToBlock });
+    } catch (e) {
+      console.error("BLOCK_USER_FAIL", e);
+      dispatch({ type: actions.BLOCK_USER_FAIL, payload: e.message });
+    }
+  };
+
+export const muteUser =
+  (currentUid, usernameToMute) => async (firebase, firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.MUTE_USER_START });
+      const prefsRef = firestore
+        .collection("notification_preferences")
+        .doc(currentUid);
+      await prefsRef.set(
+        { mutedUsers: firestore.FieldValue.arrayUnion(usernameToMute) },
+        { merge: true }
+      );
+      dispatch({ type: actions.MUTE_USER_SUCCESS, payload: usernameToMute });
+    } catch (e) {
+      console.error("MUTE_USER_FAIL", e);
+      dispatch({ type: actions.MUTE_USER_FAIL, payload: e.message });
     }
   };

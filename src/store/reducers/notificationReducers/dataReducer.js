@@ -3,16 +3,15 @@ import * as actions from "../../actions/actionTypes";
 const initialState = {
   notifications: [],
   loading: false,
-  error: null
+  error: null,
+  blockedUsers: [],
+  mutedUsers: []
 };
 
 const NotificationsDataReducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case actions.GET_NOTIFICATION_DATA_START:
-      return {
-        ...state,
-        loading: true
-      };
+      return { ...state, loading: true };
 
     case actions.GET_NOTIFICATION_DATA_SUCCESS:
       return {
@@ -23,11 +22,7 @@ const NotificationsDataReducer = (state = initialState, { type, payload }) => {
       };
 
     case actions.GET_NOTIFICATION_DATA_FAIL:
-      return {
-        ...state,
-        loading: false,
-        error: payload
-      };
+      return { ...state, loading: false, error: payload };
 
     case actions.READ_NOTIFICATION:
       return {
@@ -45,6 +40,27 @@ const NotificationsDataReducer = (state = initialState, { type, payload }) => {
         notifications: state.notifications.filter(
           notification => notification.notification_id !== payload
         )
+      };
+
+    case actions.BLOCK_USER_SUCCESS:
+      return {
+        ...state,
+        blockedUsers: [...state.blockedUsers, payload],
+        notifications: state.notifications.filter(
+          notification => notification.username !== payload
+        )
+      };
+
+    case actions.MUTE_USER_SUCCESS:
+      return {
+        ...state,
+        mutedUsers: [...state.mutedUsers, payload]
+      };
+
+    case actions.GET_BLOCKED_USERS_SUCCESS:
+      return {
+        ...state,
+        blockedUsers: payload
       };
 
     default:

@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import useStyles from "./styles";
 import { useState, useRef } from "react";
 import { blue } from "@mui/material/colors";
-import { readNotification, deleteNotification } from "../../store/actions";
+import { readNotification, deleteNotification, blockUser, muteUser } from "../../store/actions";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useDispatch } from "react-redux";
 
@@ -39,6 +39,18 @@ const NotificationBox = ({ notification, onDelete }) => {
       dispatch
     );
     await onDelete(notification.notification_id);
+  };
+  const handleBlock = async () => {
+    const currentUid = firebase.auth().currentUser?.uid;
+    if (!currentUid) return;
+    await blockUser(currentUid, notification.username)(firebase, firestore, dispatch);
+    handleClose();
+  };
+  const handleMute = async () => {
+    const currentUid = firebase.auth().currentUser?.uid;
+    if (!currentUid) return;
+    await muteUser(currentUid, notification.username)(firebase, firestore, dispatch);
+    handleClose();
   };
 
   const getRelativeTime = timestamp => {
@@ -133,3 +145,5 @@ const NotificationBox = ({ notification, onDelete }) => {
 };
 
 export default NotificationBox;
+
+
