@@ -97,7 +97,7 @@ export default function ChangeProfile({ open, saveImage, onClose }) {
   };
 
   useEffect(() => {
-    if (upImg && previewCanvasRef) {
+    if (upImg && previewCanvasRef.current) {
       const context = previewCanvasRef.current.getContext("2d");
 
       UpdateImage(context);

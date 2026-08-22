@@ -148,7 +148,7 @@ export const getOrgBasicData = org_handle => async firebase => {
     };
   } catch (e) {
     console.error(`[getOrgBasicData] error for ${org_handle}:`, e.message);
-    throw e;
+    return null;
   }
 };
 
@@ -428,6 +428,7 @@ export const deleteOrganization =
   async (firebase, dispatch) => {
     try {
       dispatch({ type: actions.DELETE_ORG_START });
+
       const db = firebase.firestore();
       const batch = db.batch();
 
@@ -460,9 +461,10 @@ export const deleteOrganization =
       dispatch({ type: actions.DELETE_ORG_SUCCESS });
       dispatch({ type: actions.CLEAR_ORG_GENERAL_STATE });
       dispatch({ type: actions.CLEAR_ORG_USER_STATE });
+      return true;
     } catch (e) {
-      console.log(e);
       dispatch({ type: actions.DELETE_ORG_FAIL, payload: e.message });
+      throw e;
     }
   };
 

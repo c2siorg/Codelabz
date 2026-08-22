@@ -399,7 +399,7 @@ function General() {
 
         {/* Delete section — owner only */}
         <RequiresRole minLevel={3}>
-          <div className={classes.deleteSection}>
+          <div className={classes.deleteSection} data-testid="org-delete">
             <Typography variant="h6" color="error" gutterBottom>
               Danger Zone
             </Typography>
@@ -414,7 +414,7 @@ function General() {
                 setDeleteError("");
                 setDeleteDialogOpen(true);
               }}
-              data-testid="delete-org-button"
+              data-testid="org-delete-button"
             >
               Delete Organization
             </Button>

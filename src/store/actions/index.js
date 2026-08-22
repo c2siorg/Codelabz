@@ -88,7 +88,7 @@ export {
   setTutorialTheme,
   updateStepTime,
   updateStepTitle,
-  fetchAndIndexTutorials,
+  ensureTutorialsIndexed,
   updateTagFrequencies,
   uploadTutorialImages
 } from "./tutorialsActions";

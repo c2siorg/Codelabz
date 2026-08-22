@@ -114,7 +114,9 @@ service cloud.firestore {
     }
 
     match /cl_user/{userId} {
-      allow read: if isAuthenticated();
+      // Public: the homepage, tutorial cards and profile pages are reachable
+      // without signing in and render author names and avatars from here.
+      allow read: if true;
 
       // Create and update are kept separate on purpose: on create `resource` is
       // null, so calling diff() against it raises a null error and denies the
@@ -143,10 +145,38 @@ service cloud.firestore {
     }
 
     match /tutorials/{tutorialId} {
-      allow read, write: if isAuthenticated();
+      // Published tutorials are the public face of the site; the feed on / is
+      // served to signed-out visitors. Drafts stay private: an anonymous read
+      // is only allowed when it is provably constrained to published rows,
+      // which every public query already is.
+      allow read: if isAuthenticated() || resource.data.isPublished == true;
+      allow write: if isAuthenticated();
+
+      /**
+       * A tutorial's body lives in this subcollection, one document per step.
+       * The catch-all at the bottom of this file only matches a two-segment
+       * path, so without an explicit rule here nothing reaches these documents
+       * and the editor cannot load or save a tutorial at all.
+       */
+      match /steps/{stepId} {
+        allow read, write: if isAuthenticated();
+      }
     }
 
     match /cl_comments/{commentId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // One document per (tutorial, user) vote. Read is public because the
+    // like counter renders on the tutorial cards on the signed-out homepage.
+    match /tutorial_likes/{likeDoc} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Comment votes only ever render on the tutorial page, which is behind
+    // auth, so unlike tutorial_likes these need no public read.
+    match /comment_likes/{likeDoc} {
       allow read, write: if isAuthenticated();
     }
 
@@ -159,11 +189,16 @@ service cloud.firestore {
     }
 
     match /tag_frequencies/{tagId} {
-      allow read, write: if isAuthenticated();
+      // Drives the public "Popular Tags" panel.
+      allow read: if true;
+      allow write: if isAuthenticated();
     }
 
     match /user_followers/{followDoc} {
-      allow read, write: if isAuthenticated();
+      // Follower counts render on public profiles, and the signed-out homepage
+      // mounts the "Who to Follow" card before auth resolves.
+      allow read: if true;
+      allow write: if isAuthenticated();
     }
 
     match /testConnection/{docId} {
