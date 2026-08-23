@@ -48,7 +48,7 @@ const Orgsocial = props => {
             // onClick={() => signInWithProviderID("facebook")(firebase, dispatch)}
             onClick={() =>
               props.toOpen
-                ? openSocialMedialLink(OrgData.org_link_facebook)
+                ? openSocialMedialLink(OrgData?.org_link_facebook)
                 : console.log("clicked")
             }
             data-testId="facebookButton"
@@ -66,7 +66,7 @@ const Orgsocial = props => {
             // onClick={() => signInWithProviderID("github")(firebase, dispatch)}
             onClick={() =>
               props.toOpen
-                ? openSocialMedialLink(OrgData.org_link_github)
+                ? openSocialMedialLink(OrgData?.org_link_github)
                 : console.log("clicked")
             }
             data-testId="githubButton"
@@ -85,7 +85,7 @@ const Orgsocial = props => {
             // onClick={() => signInWithGoogle()(firebase, dispatch)}
             onClick={() =>
               props.toOpen
-                ? openSocialMedialLink(OrgData.org_link_linkedin)
+                ? openSocialMedialLink(OrgData?.org_link_linkedin)
                 : console.log("clicked")
             }
             data-testId="googleButton"
@@ -100,7 +100,7 @@ const Orgsocial = props => {
             // onClick={() => signInWithProviderID("twitter")(firebase, dispatch)}
             onClick={() =>
               props.toOpen
-                ? openSocialMedialLink(OrgData.org_link_twitter)
+                ? openSocialMedialLink(OrgData?.org_link_twitter)
                 : console.log("clicked")
             }
             data-testId="twitterButton"

@@ -1,0 +1,6 @@
+# These files are stored with CRLF line endings (matching develop).
+# Tell git that a trailing CR is intentional here, not a whitespace error.
+src/components/TutorialPage/components/Commnets/Comment.jsx whitespace=cr-at-eol
+src/components/TutorialPage/index.jsx whitespace=cr-at-eol
+src/store/actions/tutorialPageActions.js whitespace=cr-at-eol
+src/store/reducers/tutorialPageReducers/commentReducer.js whitespace=cr-at-eol

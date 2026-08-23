@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useFirebase } from "react-redux-firebase";
 import { signOut } from "../../../../store/actions";
 import Avatar from "@mui/material/Avatar";
@@ -27,6 +27,8 @@ import {
 import { useTheme } from "@mui/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import NotificationBell from "./NotificationBell";
+import NotificationDropdown from "./NotificationDropdown";
 
 const useStyles = makeStyles(theme => ({
   menu: {
@@ -51,8 +53,18 @@ const RightMenu = ({ mode, onClick }) => {
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const { pathname } = useLocation();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [notifAnchor, setNotifAnchor] = React.useState(null);
 
   const open = Boolean(anchorEl);
+
+  const notifications = useSelector(
+    state => state.notifications?.data?.notifications ?? []
+  );
+  const unreadCount = useMemo(
+    () => notifications.filter(n => !n.isRead).length,
+    [notifications]
+  );
+
   //This will be responsible for closing the rightMenu automatically when route Changes
   useEffect(() => {
     setAnchorEl(null);
@@ -117,6 +129,18 @@ const RightMenu = ({ mode, onClick }) => {
     return (
       <React.Fragment>
         <List>
+          {allowDashboard && (
+            <ListItem key="setting:notif">
+              <NotificationBell
+                unreadCount={unreadCount}
+                onClick={e => setNotifAnchor(e.currentTarget)}
+              />
+              <NotificationDropdown
+                anchorEl={notifAnchor}
+                onClose={() => setNotifAnchor(null)}
+              />
+            </ListItem>
+          )}
           {allowDashboard && (
             <ListItem key="setting:2">
               <Link to={"/tutorials"} onClick={onClick}>
@@ -237,7 +261,20 @@ const RightMenu = ({ mode, onClick }) => {
       style={{
         marginRight: "2rem"
       }}
+      alignItems="center"
     >
+      {allowDashboard && (
+        <>
+          <NotificationBell
+            unreadCount={unreadCount}
+            onClick={e => setNotifAnchor(e.currentTarget)}
+          />
+          <NotificationDropdown
+            anchorEl={notifAnchor}
+            onClose={() => setNotifAnchor(null)}
+          />
+        </>
+      )}
       <Avatar
         style={{
           backgroundColor:

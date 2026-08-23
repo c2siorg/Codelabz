@@ -1,97 +1,87 @@
 import * as actions from "./actionTypes";
+import { createNotification } from "./notificationActions";
+import { chunkedIn } from "../../helpers/firestoreQuery";
 
-export const getTutorialFeedIdArray = uid => async (_, firestore) => {
-  try {
-    let followings = [];
-    if (uid) {
-      followings = await firestore
-        .collection("user_followers")
-        .where("followerId", "==", uid)
-        .where("isPublished", "==", true)
-        .get()
-        .then(async docs => {
-          const result = [];
-          for (const doc of docs.docs) {
-            const handle = await firestore
-              .collection("cl_user")
-              .doc(doc.data().followingId)
-              .get()
-              .then(doc => doc.data().handle);
+// How many tutorials one pass of the feed returns.
+const FEED_PAGE_LIMIT = 20;
 
-            result.push(handle);
-          }
-          return result;
-        });
-    }
-    let followingUsersTutorials = [];
-    if (followings.length > 0) {
-      followingUsersTutorials = await firestore
+export const getTutorialFeedIdArray =
+  (uid, max = FEED_PAGE_LIMIT) =>
+  async (_, firestore) => {
+    try {
+      let followedHandles = [];
+
+      if (uid) {
+        // The isPublished filter that used to sit on this query matched
+        // nothing: user_followers documents only ever carry followingId
+        // and followerId, so the personalised half of the feed never ran.
+        const followingSnapshot = await firestore
+          .collection("user_followers")
+          .where("followerId", "==", uid)
+          .get();
+
+        const followedIds = followingSnapshot.docs.map(doc =>
+          doc.get("followingId")
+        );
+
+        // One chunked query rather than a document read per followed user.
+        const followedUsers = await chunkedIn(
+          firestore.collection("cl_user"),
+          "uid",
+          followedIds
+        );
+
+        followedHandles = followedUsers
+          .map(doc => doc.get("handle"))
+          .filter(Boolean);
+      }
+
+      const publishedTutorials = firestore
         .collection("tutorials")
-        .where("created_by", "in", followings)
-        .where("isPublished", "==", true)
-        .limit(50)
-        .get()
-        .then(docs => {
-          const tutorialsArray = [];
-          docs.docs.map(doc => {
-            const tutorialId = doc.id;
-            tutorialsArray.push(tutorialId);
-          });
-          return tutorialsArray;
-        });
-    }
-    let newTutorials = [];
-    if (followings.length > 0) {
-      newTutorials = await firestore
-        .collection("tutorials")
-        .where("created_by", "not-in", followings)
-        .where("isPublished", "==", true)
-        .limit(50)
-        .get()
-        .then(docs => {
-          const tutorialsArray = [];
-          docs.docs.map(doc => {
-            const tutorialId = doc.id;
-            tutorialsArray.push(tutorialId);
-          });
-          return tutorialsArray;
-        });
-    } else {
-      newTutorials = await firestore
-        .collection("tutorials")
-        .where("isPublished", "==", true)
-        .limit(50)
-        .get()
-        .then(docs => {
-          const tutorialsArray = [];
-          docs.docs.map(doc => {
-            const tutorialId = doc.id;
-            tutorialsArray.push(tutorialId);
-          });
-          return tutorialsArray;
-        });
-    }
+        .where("isPublished", "==", true);
 
-    const tutorials = followingUsersTutorials.concat(newTutorials);
+      // Tutorials by people this user follows. The limit is applied per
+      // chunk so a user following prolific authors cannot pull the whole
+      // collection; the dedupe and slice below trim the rest.
+      const followedDocs = await chunkedIn(
+        publishedTutorials.limit(max),
+        "created_by",
+        followedHandles
+      );
 
-    return tutorials;
-  } catch (e) {
-    console.log(e);
-  }
-};
+      // Top up the page with recent tutorials. The previous not-in query is
+      // gone: it is the most expensive operator Firestore offers, and the
+      // dedupe below achieves the same result.
+      const recentSnapshot = await publishedTutorials
+        .orderBy("createdAt", "desc")
+        .limit(max)
+        .get();
+
+      const ids = [
+        ...followedDocs.map(doc => doc.id),
+        ...recentSnapshot.docs.map(doc => doc.id)
+      ];
+
+      return [...new Set(ids)].slice(0, max);
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
+  };
 
 export const getTutorialFeedData =
   tutorialIdArray => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_TUTORIAL_FEED_START });
-      const tutorials = await firestore
-        .collection("tutorials")
-        .where("tutorial_id", "in", tutorialIdArray)
-        .get();
-      if (tutorials.empty) {
+      const tutorialDocs = await chunkedIn(
+        firestore.collection("tutorials"),
+        "tutorial_id",
+        tutorialIdArray
+      );
+      if (tutorialDocs.length === 0) {
         dispatch({ type: actions.GET_TUTORIAL_FEED_SUCCESS, payload: [] });
       } else {
-        const feed = tutorials.docs.map(doc => {
+        const feed = tutorialDocs.map(doc => {
           const tutorial = doc.data();
           const tutorialData = {
             tutorial_id: tutorial?.tutorial_id,
@@ -165,7 +155,9 @@ export const getCommentData =
         .doc(commentId)
         .get();
       const comment = data.data();
-      dispatch({ type: actions.GET_COMMENT_DATA_SUCCESS, payload: comment });
+      if (comment) {
+        dispatch({ type: actions.GET_COMMENT_DATA_SUCCESS, payload: comment });
+      }
     } catch (e) {
       dispatch({ type: actions.GET_COMMENT_DATA_FAIL });
       console.log(e);
@@ -217,8 +209,55 @@ export const addComment = comment => async (firebase, firestore, dispatch) => {
         });
     }
 
+    const commenter = firebase.auth().currentUser;
+    const isTopLevelComment = comment.replyTo === comment.tutorial_id;
+
+    if (commenter && comment.tutorial_id) {
+      if (isTopLevelComment) {
+        const tutorialDoc = await firestore
+          .collection("tutorials")
+          .doc(comment.tutorial_id)
+          .get();
+        const authorUid = tutorialDoc.exists
+          ? tutorialDoc.get("created_by")
+          : null;
+        if (authorUid) {
+          await createNotification(firestore, {
+            recipient_uid: authorUid,
+            sender_uid: commenter.uid,
+            type: "comment",
+            content: `${commenter.displayName || "Someone"} commented on "${
+              tutorialDoc.get("title") || "your tutorial"
+            }"`,
+            username: commenter.displayName || "Someone",
+            tutorial_id: comment.tutorial_id
+          });
+        }
+      } else {
+        const parentCommentDoc = await firestore
+          .collection("cl_comments")
+          .doc(comment.replyTo)
+          .get();
+        const parentAuthorUid = parentCommentDoc.exists
+          ? parentCommentDoc.get("userId")
+          : null;
+        if (parentAuthorUid) {
+          await createNotification(firestore, {
+            recipient_uid: parentAuthorUid,
+            sender_uid: commenter.uid,
+            type: "reply",
+            content: `${
+              commenter.displayName || "Someone"
+            } replied to your comment`,
+            username: commenter.displayName || "Someone",
+            tutorial_id: comment.tutorial_id
+          });
+        }
+      }
+    }
+
     dispatch({ type: actions.ADD_COMMENT_SUCCESS });
-    return docref.id
+    return docref.id;
   } catch (e) {
     dispatch({ type: actions.ADD_COMMENT_FAILED, payload: e.message });
   }

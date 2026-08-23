@@ -15,21 +15,46 @@ const tutorials_index = new Elasticlunr(
   "summary"
 );
 
-export const fetchAndIndexTutorials = () => async (firebase, firestore) => {
-  try {
-    const snapshot = await firestore.collection("tutorials").get();
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const tutorial = { id: doc.id, ...data };
-      // console.log("Adding tutorial to index:", tutorial);
-      tutorials_index.addDocToIndex(tutorial);
-    });
+// Cap on how many published tutorials are pulled into the client-side search
+// index in one pass.
+const SEARCH_INDEX_LIMIT = 200;
 
-    // console.log("All docs in index:", tutorials_index.getAllDocs());
-  } catch (error) {
-    console.error("Error fetching or indexing tutorials:", error);
-  }
-};
+let tutorialsIndexPromise = null;
+
+// Built on first search rather than at app start. Indexing at start-up cost one
+// read per tutorial for every visitor, most of whom never search, and the cost
+// grew with the collection. The promise is cached so concurrent searches share
+// a single fetch.
+export const ensureTutorialsIndexed =
+  (limit = SEARCH_INDEX_LIMIT) =>
+  async (firebase, firestore) => {
+    if (tutorialsIndexPromise) return tutorialsIndexPromise;
+
+    tutorialsIndexPromise = (async () => {
+      try {
+        // Ordered by recency on purpose. Tutorial ids are auto-generated and
+        // effectively random, so an unordered limit would index an arbitrary
+        // subset and a freshly published tutorial might never be searchable.
+        const snapshot = await firestore
+          .collection("tutorials")
+          .where("isPublished", "==", true)
+          .orderBy("createdAt", "desc")
+          .limit(limit)
+          .get();
+
+        snapshot.forEach(doc => {
+          tutorials_index.addDocToIndex({ id: doc.id, ...doc.data() });
+        });
+      } catch (error) {
+        console.error("Error fetching or indexing tutorials:", error);
+        // Clear the cache so the next search retries instead of being stuck
+        // with a permanently empty index.
+        tutorialsIndexPromise = null;
+      }
+    })();
+
+    return tutorialsIndexPromise;
+  };
 
 export const searchFromTutorialsIndex = query => {
   const results = tutorials_index.searchFromIndex(query);
@@ -614,14 +639,14 @@ export const addNotification =
         dispatch({ type: actions.ADD_NOTIFICATION_START });
 
         const querySnapshot = await firestore
-          .collection("notifications")
+          .collection("cl_notifications")
           .where("tutorial_id", "==", tutorial_id)
           .get();
 
         const isSubscribed = await isUserSubscribed(owner, firebase, firestore);
 
         if (querySnapshot.empty && isSubscribed) {
-          const document = firestore.collection("notifications").doc();
+          const document = firestore.collection("cl_notifications").doc();
           const documentID = document.id;
 
           const notification = {
@@ -647,7 +672,7 @@ export const getNotificationData =
     try {
       dispatch({ type: actions.GET_NOTIFICATION_DATA_START });
       const notificationsSnapshot = await firestore
-        .collection("notifications")
+        .collection("cl_notifications")
         .orderBy("createdAt", "desc")
         .get();
 
@@ -669,7 +694,7 @@ export const getNotificationData =
 export const readNotification =
   notification_id => async (firebase, firestore, dispatch) => {
     try {
-      await firestore.collection("notifications").doc(notification_id).update({
+      await firestore.collection("cl_notifications").doc(notification_id).update({
         isRead: true
       });
       dispatch({ type: actions.READ_NOTIFICATION, payload: notification_id });
@@ -681,7 +706,7 @@ export const readNotification =
 export const deleteNotification =
   notification_id => async (firebase, firestore, dispatch) => {
     try {
-      await firestore.collection("notifications").doc(notification_id).delete();
+      await firestore.collection("cl_notifications").doc(notification_id).delete();
       dispatch({ type: actions.DELETE_NOTIFICATION, payload: notification_id });
     } catch (e) {
       console.log(e.message);

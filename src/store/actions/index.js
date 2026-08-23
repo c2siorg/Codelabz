@@ -33,6 +33,7 @@ export {
   subscribeOrg,
   unPublishOrganization,
   unSubscribeOrg,
+  updateOrgUserPermissions,
   uploadOrgProfileImage
 } from "./orgActions";
 export {
@@ -87,10 +88,17 @@ export {
   setTutorialTheme,
   updateStepTime,
   updateStepTitle,
-  fetchAndIndexTutorials,
+  ensureTutorialsIndexed,
   updateTagFrequencies,
   uploadTutorialImages
 } from "./tutorialsActions";
 export {
   getRecommendedTutorials,
 } from "./tutorialPageActions";
+export {
+  subscribeToNotifications,
+  unsubscribeFromNotifications,
+  markAllNotificationsRead,
+  saveFcmToken,
+  removeFcmToken
+} from "./notificationActions";
