@@ -1,18 +1,15 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  isEmpty,
-  isLoaded,
-  useFirebase,
-  useFirestore
-} from "react-redux-firebase";
+import { isLoaded, useFirebase, useFirestore } from "react-redux-firebase";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import {
   UserIsAllowedUserDashboard,
   UserIsAllowOrgManager,
-  UserIsNotAllowedUserDashboard
+  UserIsNotAllowedUserDashboard,
+  UserIsAdminDashboard
 } from "./auth";
 import { AllowManageUser } from "./auth/manageUserAuth";
+import AdminDashboard from "./components/AdminDashboard";
 import AuthPage from "./components/AuthPage";
 import Dashboard from "./components/Dashboard";
 import Editor from "./components/Editor";
@@ -45,7 +42,9 @@ const AuthIsLoaded = ({ children }) => {
 
   useEffect(() => {
     if (!profileLoaded) return;
+
     getProfileData()(firebase, firestore, dispatch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileLoaded]);
 
   useEffect(() => {
@@ -57,9 +56,13 @@ const AuthIsLoaded = ({ children }) => {
       sessionStorage.setItem("fcm_requested", "1");
       saveFcmToken(uid)(firebase, firestore, dispatch);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileLoaded, profile?.uid]);
 
-  if (!profileLoaded) return <Spinner />;
+  if (!profileLoaded) {
+    return <Spinner />;
+  }
+
 
   return children;
 };
@@ -155,6 +158,11 @@ const Routes = () => {
             exact
             path={"/notification"}
             component={UserIsAllowedUserDashboard(Notification)}
+          />
+          <Route
+            exact
+            path={"/admin/dashboard"}
+            component={UserIsAdminDashboard(AdminDashboard)}
           />
           <Route exact path={"*"} component={NotFound} />
         </Switch>

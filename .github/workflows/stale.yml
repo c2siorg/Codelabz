@@ -1,22 +1,29 @@
-name: Close inactive issues
+name: "Close stale issues and Pull Requests"
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: "30 18 * * *"
 
 jobs:
-  close-issues:
+  stale:
     runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/stale@v5
+      - uses: actions/stale@v9
         with:
-          days-before-issue-stale: 30
-          days-before-issue-close: 14
-          stale-issue-label: "stale"
-          stale-issue-message: "This issue is stale because it has been open for 30 days with no activity."
-          close-issue-message: "This issue was closed because it has been inactive for 14 days since being marked as stale."
-          days-before-pr-stale: -1
-          days-before-pr-close: -1
+          days-before-stale: 30
+          days-before-close: 180
+          stale-issue-label: "no-issue-activity"
+          stale-issue-message: "Hey there! 👋 This issue seems to be a bit stale, as it has been open for 30 days without any activity. Could you take a moment to review it and provide any updates if necessary? If it's no longer relevant, no worries, but we'll need to close it in 180 days if we don't hear back."
+          close-issue-message: "Oops! 🚨 This issue has been inactive for 180 days, so we're closing it now. If the problem still exists, feel free to reopen or create a new issue. Thanks for your understanding and for helping us keep things tidy!"
+          stale-pr-message: "Hi! 🌟 This pull request has been open for 30 days without any activity. Could you please check if it still applies or needs any updates? If everything looks good, great! Otherwise, let us know if you need assistance or if someone else can take over. It'll be closed in 180 days if we don't hear from you."
+          close-pr-message: "Uh-oh! 🚀 This pull request has been idle for 180 days and is now closed. If you still need this change, please feel free to reopen the PR or create a new one. Thank you for your contribution!"
+          stale-pr-label: "no-pr-activity"
+          exempt-issue-labels: "awaiting-approval, work-in-progress"
+          exempt-pr-labels: "awaiting-approval, work-in-progress"
+          only-labels: "awaiting-feedback, awaiting-answers"
+          exempt-pr-milestones: "bugfix, improvement"
+          exempt-issue-milestones: "bugfix, improvement"
+          operations-per-run: 30
           repo-token: ${{ secrets.GITHUB_TOKEN }}

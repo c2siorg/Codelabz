@@ -2,6 +2,7 @@ import * as actions from "./actionTypes";
 import { checkOrgHandleExists, checkUserHandleExists } from "./authActions";
 import { getOrgBasicData } from "./orgActions";
 import { createNotification } from "./notificationActions";
+import { chunkedIn } from "../../helpers/firestoreQuery";
 import _ from "lodash";
 
 export const clearProfileEditError = () => async dispatch => {
@@ -33,24 +34,24 @@ export const getProfileData = () => async (firebase, firestore, dispatch) => {
       firestore,
       dispatch
     );
-    const organizations = userOrgs?.map(org => org.org_handle);
-    // console.log(organizations);
-    if (organizations && organizations.length > 0) {
-      const promises = organizations.map(org_handle =>
-        getOrgBasicData(org_handle)(firebase)
-      );
-      const orgs = await Promise.all(promises);
-      setCurrentOrgUserPermissions(
-        orgs[0].org_handle,
-        orgs[0].permissions
-      )(dispatch);
-      dispatch({
-        type: actions.GET_PROFILE_DATA_SUCCESS,
-        payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
-      });
-    } else {
+    const promises =
+      userOrgs?.map(org => getOrgBasicData(org.org_handle)(firebase)) ?? [];
+    const orgs = await Promise.all(promises).then(results =>
+      results.filter(Boolean)
+    );
+
+    if (orgs.length === 0) {
       dispatch({ type: actions.GET_PROFILE_DATA_END });
+      return;
     }
+
+    setCurrentOrgUserPermissions(orgs[0].org_handle, orgs[0].permissions)(
+      dispatch
+    );
+    dispatch({
+      type: actions.GET_PROFILE_DATA_SUCCESS,
+      payload: { organizations: _.orderBy(orgs, ["permissions"], ["desc"]) }
+    });
   } catch (e) {
     dispatch({ type: actions.GET_PROFILE_DATA_FAIL, payload: e.message });
   }
@@ -73,33 +74,35 @@ export const createOrganization =
         return;
       }
 
-      await firestore.set(
-        { collection: "cl_org_general", doc: org_handle },
-        {
-          org_name,
-          org_handle,
-          org_website,
-          org_country,
-          org_email: userData.email,
-          org_created_date: firestore.FieldValue.serverTimestamp(),
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          updatedAt: firestore.FieldValue.serverTimestamp()
-        }
-      );
+      const db = firebase.firestore();
+      const batch = db.batch();
 
-      const timeOutID = setTimeout(() => {
-        firestore
-          .collection("cl_user")
-          .doc(userData.uid)
-          .update({
-            organizations: firestore.FieldValue.arrayUnion(org_handle)
-          })
-          .then(() => {
-            clearTimeout(timeOutID);
-            dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
-            window.location.reload();
-          });
-      }, 7000);
+      const orgRef = db.collection("cl_org_general").doc(org_handle);
+      batch.set(orgRef, {
+        org_name,
+        org_handle,
+        org_website,
+        org_country,
+        org_email: userData.email,
+        org_created_date: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // The founder's owner record is deliberately NOT written here. Security
+      // rules forbid a client from minting a level-3 membership, and because
+      // this is a batch that single denial would roll back the whole org.
+      // The createOrganization Cloud Function creates it via the Admin SDK on
+      // cl_org_general create, alongside the RTDB handle and org metrics.
+      const userRef = db.collection("cl_user").doc(userData.uid);
+      batch.update(userRef, {
+        organizations: firebase.firestore.FieldValue.arrayUnion(org_handle)
+      });
+
+      await batch.commit();
+
+      dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
+      await getProfileData()(firebase, firestore, dispatch);
     } catch (e) {
       dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
     }
@@ -116,29 +119,29 @@ export const updateUserProfile =
     description,
     country
   }) =>
-  async (firebase, firestore, dispatch) => {
-    try {
-      dispatch({ type: actions.PROFILE_EDIT_START });
-      await firebase.updateProfile(
-        {
-          displayName,
-          website,
-          link_facebook,
-          link_github,
-          link_linkedin,
-          link_twitter,
-          description,
-          country,
-          updatedAt: firestore.FieldValue.serverTimestamp()
-        },
-        { useSet: false, merge: true }
-      );
-      dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
-      dispatch({ type: actions.CLEAR_PROFILE_EDIT_STATE });
-    } catch (e) {
-      dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
-    }
-  };
+    async (firebase, firestore, dispatch) => {
+      try {
+        dispatch({ type: actions.PROFILE_EDIT_START });
+        await firebase.updateProfile(
+          {
+            displayName,
+            website,
+            link_facebook,
+            link_github,
+            link_linkedin,
+            link_twitter,
+            description,
+            country,
+            updatedAt: firestore.FieldValue.serverTimestamp()
+          },
+          { useSet: false, merge: true }
+        );
+        dispatch({ type: actions.PROFILE_EDIT_SUCCESS });
+        dispatch({ type: actions.CLEAR_PROFILE_EDIT_STATE });
+      } catch (e) {
+        dispatch({ type: actions.PROFILE_EDIT_FAIL, payload: e.message });
+      }
+    };
 
 export const uploadProfileImage =
   (file, user_handle) => async (firebase, dispatch) => {
@@ -191,11 +194,17 @@ export const clearUserProfile = () => dispatch => {
 };
 
 export const isUserFollower = async (followerId, followingId, firestore) => {
-  const followerDoc = await firestore
-    .collection("user_followers")
-    .doc(`${followingId}_${followerId}`)
-    .get();
-  return followerDoc.exists;
+  if (!followerId || !followingId) return false;
+  try {
+    const followerDoc = await firestore
+      .collection("user_followers")
+      .doc(`${followingId}_${followerId}`)
+      .get();
+    return followerDoc.exists;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };
 
 export const addUserFollower = async (
@@ -308,24 +317,52 @@ export const getAllOrgsOfCurrentUser = () => async (firebase, firestore) => {
   }
 };
 
-export const getUserFeedIdArray = userId => async (_, firestore) => {
-  try {
-    const userIdArray = [];
-    const querySnapshot = await firestore.collection("cl_user").get();
-    const promises = querySnapshot.docs.map(async doc => {
-      const followStatus = await isUserFollower(userId, doc.id, firestore);
-      if (!followStatus) {
-        userIdArray.push(doc.id);
-      }
-    });
+// How many "who to follow" suggestions to surface in one pass.
+const SUGGESTED_USERS_LIMIT = 20;
 
-    await Promise.all(promises);
-    return userIdArray;
-  } catch (e) {
-    console.log(e);
-    throw new Error("Failed to get user feed ID array");
-  }
-};
+export const getUserFeedIdArray =
+  (userId, max = SUGGESTED_USERS_LIMIT) =>
+  async (_, firestore) => {
+    try {
+      // The card mounts from HomePage with profileData.uid, which is undefined
+      // until the profile loads. Firestore throws on an undefined comparison
+      // value, so bail out rather than letting it reject.
+      if (!userId) return [];
+
+      // Who this user already follows. Bounded by their own following
+      // count rather than by the size of cl_user, replacing the per-user
+      // isUserFollower lookup that cost one read for every user.
+      const followingSnapshot = await firestore
+        .collection("user_followers")
+        .where("followerId", "==", userId)
+        .get();
+
+      const alreadyFollowing = new Set(
+        followingSnapshot.docs.map(doc => doc.get("followingId"))
+      );
+
+      // One page of candidates instead of the whole collection. Over-fetch
+      // by the number already followed so a full page survives filtering.
+      // No orderBy on purpose: ordering by followerCount would silently
+      // drop every user never followed, since Firestore omits documents
+      // missing the field being ordered on.
+      const candidatesSnapshot = await firestore
+        .collection("cl_user")
+        .limit(max + alreadyFollowing.size + 1)
+        .get();
+
+      return candidatesSnapshot.docs
+        .map(doc => doc.id)
+        .filter(uid => uid !== userId && !alreadyFollowing.has(uid))
+        .slice(0, max);
+    } catch (e) {
+      // Non-critical suggestions widget: a transient read failure (e.g. the
+      // auth token not yet propagated to Firestore right after sign-in)
+      // should show no suggestions, not crash the caller.
+      console.log(e);
+      return [];
+    }
+  };
 
 export const getUserFeedData = userIdArray => async (firebase, firestore, dispatch) => {
   try {
@@ -336,17 +373,16 @@ export const getUserFeedData = userIdArray => async (firebase, firestore, dispat
       return;
     }
 
-    const users = await firestore
-      .collection("cl_user")
-      .where("uid", "in", userIdArray)
-      .get();
+    const userDocs = await chunkedIn(
+      firestore.collection("cl_user"),
+      "uid",
+      userIdArray
+    );
 
-    if (users.empty) {
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: [] });
-    } else {
-      const userFeed = users.docs.map(doc => doc.data());
-      dispatch({ type: actions.GET_USER_FEED_SUCCESS, payload: userFeed });
-    }
+    dispatch({
+      type: actions.GET_USER_FEED_SUCCESS,
+      payload: userDocs.map(doc => doc.data())
+    });
   } catch (e) {
     dispatch({ type: actions.GET_USER_FEED_FAILED, payload: e });
     console.error("Failed to get user feed data", e);

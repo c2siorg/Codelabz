@@ -6,7 +6,10 @@ import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import TutorialCard from "../BaseTutorialsComponent/TutorialCard";
-import { searchFromTutorialsIndex } from "../../../../store/actions";
+import {
+  ensureTutorialsIndexed,
+  searchFromTutorialsIndex
+} from "../../../../store/actions";
 import { getTutorialFeedData } from "../../../../store/actions/tutorialPageActions";
 import CardWithPicture from "../../../Card/CardWithPicture";
 import CardWithoutPicture from "../../../Card/CardWithoutPicture";
@@ -32,14 +35,19 @@ const SearchResultsComponent = ({ results: propResults }) => {
 
   useEffect(() => {
     const query = new URLSearchParams(location.search).get("query");
-    let tutorialIdArray = propResults || [];
-
-    if (query) {
-      tutorialIdArray = searchFromTutorialsIndex(query);
-      tutorialIdArray = tutorialIdArray.map(tutorial => tutorial.ref);
-    }
 
     const getResults = async () => {
+      let tutorialIdArray = propResults || [];
+
+      if (query) {
+        // The index is populated on demand, so it has to be ready before the
+        // first search rather than having been built at app start.
+        await ensureTutorialsIndexed()(firebase, firestore);
+        tutorialIdArray = searchFromTutorialsIndex(query).map(
+          tutorial => tutorial.ref
+        );
+      }
+
       if (tutorialIdArray.length > 0) {
         await getTutorialFeedData(tutorialIdArray)(
           firebase,
