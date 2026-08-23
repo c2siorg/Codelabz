@@ -9,8 +9,14 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: actions/first-interaction@v1
+      - name: Send Greeting Message
+        id: send-greeting
+        uses: actions/first-interaction@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: "Hello 👋🏻 @${{ github.actor }}! Thankyou for creating an issue!"
-          pr-message: " Thank you @${{ github.actor }} for creating your first pull request. It will be reviewed soon"
+          issue-message: "Hello @${{ github.actor }}! 👋 Welcome to the project! 🎉 Your issue is the first step towards making this project better, and we appreciate it. We will review it as soon as possible. In the meantime, feel free to explore the project and contribute more. Happy coding! 🚀"
+          pr-message: "Congratulations @${{ github.actor }}! 🎉 Your first pull request is a milestone! 🏁 You're officially a contributor now. We appreciate your effort and your contribution will be reviewed shortly. Keep up the good work, and happy coding! 🚀"
+
+      - name: Check if Greeting Sent
+        if: steps.send-greeting.outputs.issue-message == 'sent' || steps.send-greeting.outputs.pr-message == 'sent'
+        run: echo "Greeting message sent successfully."

@@ -55,6 +55,11 @@ exports.updateOrgUser = onDocumentUpdated(
   onUpdateFunctions.addOrgUserHandler
 );
 
+exports.syncOrgUserWrite = onDocumentWritten(
+  "org_users/{memberDoc}",
+  onWriteFunctions.syncOrgUserWriteHandler
+);
+
 //++++++++++++++++++++Pub/Sub Functions++++++++++++++++++++++++++++++
 exports.deleteTutorialSteps = onSchedule(
   "every 7 days",
