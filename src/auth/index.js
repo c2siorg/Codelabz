@@ -202,3 +202,29 @@ export const UserIsAllowOrgManager = compose(
  * if the user has not completed the workflow, the user must completed the workflow
  * to move to another protected route
  */
+
+/**
+ * This auth wrapper restricts access to admin-only routes.
+ * If the user is not a platform admin, they are redirected to /dashboard/my_feed.
+ */
+const AllowAdminDashboard = connectedRouterRedirect({
+  wrapperDisplayName: "AllowAdminDashboard",
+  AuthenticatingComponent: Spinner,
+  allowRedirectBack: false,
+  redirectPath: (state, ownProps) =>
+    locationHelper.getRedirectQueryParam(ownProps) || "/dashboard/my_feed",
+  authenticatingSelector: ({ firebase: { profile } }) => {
+    return Boolean(!profile.uid);
+  },
+  authenticatedSelector: ({ firebase: { profile } }) =>
+    profile.is_platform_admin === true,
+  redirectAction: newLoc => dispatch => {
+    browserHistory.replace(newLoc);
+    dispatch({ type: "UNAUTHED_REDIRECT" });
+  }
+});
+
+export const UserIsAdminDashboard = compose(
+  UserIsAllowedUserDashboard,
+  AllowAdminDashboard
+);

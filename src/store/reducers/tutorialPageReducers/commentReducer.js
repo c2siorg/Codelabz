@@ -20,7 +20,10 @@ const CommentReducer = (state = initialState, { type, payload }) => {
         ...state,
         loading: false,
         error: false,
-        data: [...state.data, payload]
+        data: [
+          ...state.data.filter(c => c?.comment_id !== payload.comment_id),
+          payload
+        ]
       };
 
     case actions.GET_COMMENT_DATA_FAIL:
@@ -40,7 +43,10 @@ const CommentReducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         loading: false,
-        replies: [...state.replies, payload]
+        replies: [
+          ...state.replies.filter(r => r?.comment_id !== payload.comment_id),
+          payload
+        ]
       };
 
     case actions.ADD_COMMENT_START:

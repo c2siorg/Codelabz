@@ -98,7 +98,10 @@ exports.createOrganizationHandler = async event => {
       .set({
         uid: user_uid,
         org_handle,
-        permissions: [3]
+        permissions: [3],
+        // stamped so the audit trail attributes the founding owner record to
+        // the founder rather than to the system
+        updated_by: user_uid
       });
 
     await Promise.all([registerOrgHandle, setOrgMetrics, setOrgUsers]);
