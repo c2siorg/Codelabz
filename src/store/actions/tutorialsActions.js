@@ -639,14 +639,14 @@ export const addNotification =
         dispatch({ type: actions.ADD_NOTIFICATION_START });
 
         const querySnapshot = await firestore
-          .collection("notifications")
+          .collection("cl_notifications")
           .where("tutorial_id", "==", tutorial_id)
           .get();
 
         const isSubscribed = await isUserSubscribed(owner, firebase, firestore);
 
         if (querySnapshot.empty && isSubscribed) {
-          const document = firestore.collection("notifications").doc();
+          const document = firestore.collection("cl_notifications").doc();
           const documentID = document.id;
 
           const notification = {
@@ -672,7 +672,7 @@ export const getNotificationData =
     try {
       dispatch({ type: actions.GET_NOTIFICATION_DATA_START });
       const notificationsSnapshot = await firestore
-        .collection("notifications")
+        .collection("cl_notifications")
         .orderBy("createdAt", "desc")
         .get();
 
@@ -694,7 +694,7 @@ export const getNotificationData =
 export const readNotification =
   notification_id => async (firebase, firestore, dispatch) => {
     try {
-      await firestore.collection("notifications").doc(notification_id).update({
+      await firestore.collection("cl_notifications").doc(notification_id).update({
         isRead: true
       });
       dispatch({ type: actions.READ_NOTIFICATION, payload: notification_id });
@@ -706,7 +706,7 @@ export const readNotification =
 export const deleteNotification =
   notification_id => async (firebase, firestore, dispatch) => {
     try {
-      await firestore.collection("notifications").doc(notification_id).delete();
+      await firestore.collection("cl_notifications").doc(notification_id).delete();
       dispatch({ type: actions.DELETE_NOTIFICATION, payload: notification_id });
     } catch (e) {
       console.log(e.message);

@@ -30,7 +30,7 @@ import UserDashboard from "./components/UserDashboard";
 import TutorialPage from "./components/TutorialPage";
 import Notification from "./components/Notification";
 import SearchResultsComponent from "./components/Tutorials/MyTutorials/Search/SearchResultsComponent";
-import { getProfileData } from "./store/actions";
+import { getProfileData, subscribeToNotifications, saveFcmToken } from "./store/actions";
 
 const AuthIsLoaded = ({ children }) => {
   const firebase = useFirebase();
@@ -47,9 +47,22 @@ const AuthIsLoaded = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileLoaded]);
 
+  useEffect(() => {
+    if (!profileLoaded) return;
+    const uid = profile?.uid || firebase.auth().currentUser?.uid;
+    if (!uid) return;
+    subscribeToNotifications(uid)(firebase, dispatch);
+    if (!sessionStorage.getItem("fcm_requested")) {
+      sessionStorage.setItem("fcm_requested", "1");
+      saveFcmToken(uid)(firebase, firestore, dispatch);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileLoaded, profile?.uid]);
+
   if (!profileLoaded) {
     return <Spinner />;
   }
+
 
   return children;
 };

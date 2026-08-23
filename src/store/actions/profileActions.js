@@ -1,6 +1,7 @@
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists, checkUserHandleExists } from "./authActions";
 import { getOrgBasicData } from "./orgActions";
+import { createNotification } from "./notificationActions";
 import { chunkedIn } from "../../helpers/firestoreQuery";
 import _ from "lodash";
 
@@ -243,6 +244,16 @@ export const addUserFollower = async (
             ? firestore.FieldValue.increment(1)
             : 1
         });
+
+      await createNotification(firestore, {
+        recipient_uid: profileData.uid,
+        sender_uid: currentProfileData.uid,
+        type: "follow",
+        content: `${
+          currentProfileData.displayName || "Someone"
+        } started following you`,
+        username: currentProfileData.displayName || "Someone"
+      });
     }
   } catch (e) {
     console.log(e);
@@ -352,7 +363,6 @@ export const getUserFeedIdArray =
       return [];
     }
   };
-
 
 export const getUserFeedData = userIdArray => async (firebase, firestore, dispatch) => {
   try {

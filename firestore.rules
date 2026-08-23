@@ -125,9 +125,30 @@ service cloud.firestore {
         && request.auth.uid == userId
         && !('is_platform_admin' in request.resource.data);
 
+      /**
+       * Owners may edit their own profile, except for the admin flag.
+       *
+       * The second clause exists because following someone increments
+       * followerCount on the *followed* user's document, i.e. a document the
+       * caller does not own. Restricting updates to the owner alone silently
+       * breaks follow/unfollow: the write is denied, the surrounding catch
+       * swallows it, and the counters simply stop moving. Only those two
+       * counter fields may be touched this way -- profile fields and
+       * is_platform_admin remain owner-only.
+       *
+       * A Cloud Function using the Admin SDK would be the stricter home for
+       * these counters, since this still lets a signed-in user skew someone
+       * else's totals.
+       */
       allow update: if isAuthenticated()
-        && request.auth.uid == userId
-        && !('is_platform_admin' in request.resource.data.diff(resource.data).affectedKeys());
+        && (
+          (
+            request.auth.uid == userId
+            && !('is_platform_admin' in request.resource.data.diff(resource.data).affectedKeys())
+          )
+          || request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['followerCount', 'followingCount'])
+        );
 
       allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
@@ -182,6 +203,25 @@ service cloud.firestore {
 
     match /notifications/{notificationId} {
       allow read, write: if isAuthenticated();
+    }
+
+    /**
+     * Per-recipient notification feed. Without an explicit block here the
+     * catch-all at the bottom denies the collection outright and the whole
+     * notification feature fails silently.
+     *
+     * Every client read is constrained by recipient_uid == the caller, which
+     * is what makes this rule satisfiable for list queries as well as gets.
+     * Creation stays open to any signed-in user because notifications are
+     * raised *about* one user *by* another (a follow, a published tutorial),
+     * but only the recipient may mark them read or clear them.
+     */
+    match /cl_notifications/{notificationId} {
+      allow read: if isAuthenticated()
+        && resource.data.recipient_uid == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated()
+        && resource.data.recipient_uid == request.auth.uid;
     }
 
     match /org_subscribers/{subDoc} {

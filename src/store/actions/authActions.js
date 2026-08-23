@@ -1,6 +1,7 @@
 import * as actions from "./actionTypes";
 import _ from "lodash";
 import { functions } from "../../config";
+import { unsubscribeFromNotifications } from "./notificationActions";
 
 /**
  * Helper to extract error message from error object
@@ -83,6 +84,14 @@ export const signInWithProviderID =
 
 export const signOut = () => async (firebase, dispatch) => {
   try {
+    // Tears down the listener and clears this device's FCM token.
+    const auth = firebase.auth().currentUser;
+    await unsubscribeFromNotifications(auth?.uid)(
+      firebase,
+      firebase.firestore(),
+      dispatch
+    );
+
     dispatch({ type: actions.CLEAR_AUTH_PROFILE_STATE });
     dispatch({ type: actions.CLEAR_AUTH_VERIFY_EMAIL_STATE });
     dispatch({ type: actions.CLEAR_AUTH_RECOVER_PASSWORD_STATE });

@@ -112,6 +112,9 @@ const ProfileView = () => {
     e.preventDefault();
     setFollowDisable(true);
     await addUserFollower(currentProfileData, profileData, firestore, dispatch);
+    // Refetch so isFollowing and the follower counts reflect the write.
+    // Without this the button keeps reading "follow" until a manual reload.
+    await getUserProfileData(handle)(firebase, firestore, dispatch);
     setFollowDisable(false);
   };
 
@@ -124,6 +127,7 @@ const ProfileView = () => {
       firestore,
       dispatch
     );
+    await getUserProfileData(handle)(firebase, firestore, dispatch);
     setFollowDisable(false);
   };
 
