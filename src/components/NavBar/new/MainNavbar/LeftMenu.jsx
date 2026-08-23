@@ -7,7 +7,7 @@ import { useAllowDashboard } from "../../../../helpers/customHooks";
 import useGetPermissions from "../../../../helpers/customHooks/useGetPermissions";
 import AppsIcon from "@mui/icons-material/Apps";
 import { IconButton, List, ListItem, Menu } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 const useStyles = makeStyles(theme => ({
   menu: {

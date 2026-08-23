@@ -24,7 +24,7 @@ import {
   ListItem,
   Typography
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import NotificationBell from "./NotificationBell";

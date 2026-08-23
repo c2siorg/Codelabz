@@ -1,4 +1,4 @@
-import { styled } from "@mui/styles";
+import { styled } from "@mui/material/styles";
 import { alpha } from "@mui/material";
 import InputBase from "@mui/material/InputBase";
 
