@@ -33,7 +33,6 @@ export const validateHandle = async (
   lengthMsg,
   takenMsg
 ) => {
-  const handleExists = await checkUserHandleExists(handle)(firebase);
   if (validator.isEmpty(handle)) {
     setHandleValidateError(true);
     setHandleValidateErrorMessage(emptyMsg);
@@ -49,15 +48,18 @@ export const validateHandle = async (
     setHandleValidateError(true);
     setHandleValidateErrorMessage(lengthMsg);
     return false;
-  } else if (handleExists) {
+  }
+
+  const handleExists = await checkUserHandleExists(handle)(firebase);
+  if (handleExists) {
     setHandleValidateError(true);
     setHandleValidateErrorMessage(takenMsg);
     return false;
-  } else {
-    setHandleValidateError(false);
-    setHandleValidateErrorMessage("");
-    return true;
   }
+
+  setHandleValidateError(false);
+  setHandleValidateErrorMessage("");
+  return true;
 };
 
 export const validateCountry = (country, setCountryValidateError) => {

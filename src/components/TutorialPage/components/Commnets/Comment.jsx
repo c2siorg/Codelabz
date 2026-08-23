@@ -68,7 +68,7 @@ const Comment = ({ id }) => {
     }) => data
   );
 
-  const [data] = commentsArray.filter(comment => comment.comment_id == id);
+  const [data] = commentsArray.filter(comment => comment?.comment_id == id);
 
   const repliesArray = useSelector(
     ({
@@ -78,17 +78,18 @@ const Comment = ({ id }) => {
     }) => replies
   );
 
-  const [replies] = repliesArray.filter(replies => replies.comment_id == id);
+  const [replies] = repliesArray.filter(replies => replies?.comment_id == id);
 
-  const handleSubmit = comment => {
+  const handleSubmit = async comment => {
     const commentData = {
       content: comment,
       replyTo: data.comment_id,
       tutorial_id: data.tutorial_id,
       createdAt: firestore.FieldValue.serverTimestamp(),
-      userId: "codelabzuser"
+      userId: firebase.auth().currentUser?.uid
     };
-    addComment(commentData)(firebase, firestore, dispatch);
+    await addComment(commentData)(firebase, firestore, dispatch);
+    getCommentReply(id)(firebase, firestore, dispatch);
   };
 
   return (

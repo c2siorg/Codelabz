@@ -87,7 +87,7 @@ function TutorialPage({ background = "white", textColor = "black" }) {
       replyTo: id,
       tutorial_id: id,
       createdAt: firestore.FieldValue.serverTimestamp(),
-      userId: "codelabzuser"
+      userId: firebase.auth().currentUser?.uid
     };
     const commentId = await addComment(commentData)(
       firebase,

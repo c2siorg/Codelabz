@@ -1,6 +1,22 @@
 {
   "indexes": [
     {
+      "collectionGroup": "cl_notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "recipient_uid", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "org_role_audit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "org_handle", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "tutorials",
       "queryScope": "COLLECTION",
       "fields": [

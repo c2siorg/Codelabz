@@ -8,7 +8,7 @@ import "firebase/compat/analytics";
 import "firebase/compat/performance";
 import "firebase/compat/messaging";
 import { initializeApp } from "firebase/app";
-import { onMessage } from "firebase/messaging";
+import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_API_KEY,
@@ -21,8 +21,6 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENTID
 };
 
-// console.log("firebaseConfig", firebaseConfig);
-
 export const onlineFirebaseApp = initializeApp(firebaseConfig, "secondary");
 
 // Initialize firebase instance
@@ -30,57 +28,31 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 if (import.meta.env.VITE_APP_FIREBASE_USE_EMULATOR === "true") {
+  const host = import.meta.env.VITE_APP_EMULATOR_HOST || "localhost";
   console.log("Using emulator");
-  firebase.firestore().useEmulator("localhost", 8080);
+  firebase.firestore().useEmulator(host, 8080);
   firebase
     .auth()
-    .useEmulator("http://localhost:9099", { disableWarnings: true });
-  firebase.database().useEmulator("localhost", 9000);
-  firebase.functions().useEmulator("localhost", 5001);
+    .useEmulator(`http://${host}:9099`, { disableWarnings: true });
+  firebase.database().useEmulator(host, 9000);
+  firebase.storage().useEmulator(host, 9199);
+  firebase.functions().useEmulator(host, 5001);
   db.settings({ merge: true });
 }
 
 export const functions = firebase.functions();
 
-let firebase_messaging;
-function requestPermission() {
-  console.log("Requesting permission...");
-  Notification.requestPermission().then(permission => {
-    if (permission === "granted") {
-      console.log("Notification permission granted.");
-      if (firebase.messaging.isSupported()) {
-        firebase_messaging = firebase.messaging();
-        firebase_messaging
-          .getToken({
-            vapidKey: import.meta.env.VITE_APP_FIREBASE_FCM_VAPID_KEY
-          })
-          .then(curToken => {
-            if (curToken) {
-              console.log("FCM token:", curToken);
-            } else {
-              console.log("Error in getting FCM token.");
-            }
-          })
-          .catch(err => console.log("FCM token error:", err));
-      } else {
-        console.log("Messaging not supported.");
-      }
-    }
-  });
-}
-const checkMessaging = false; // set true to check messaging
-if (checkMessaging) {
-  requestPermission();
-}
-
-export const onMessageListener = () =>
-  new Promise(resolve => {
-    onMessage(firebase_messaging, payload => {
-      resolve(payload);
-    });
-  });
-
-export const messaging = firebase_messaging;
+/**
+ * Single exported messaging instance — shared across the whole app.
+ * Returns null when the browser does not support FCM (e.g. no service worker).
+ */
+export const messaging = (() => {
+  try {
+    return firebase.messaging.isSupported() ? getMessaging() : null;
+  } catch {
+    return null;
+  }
+})();
 
 const testAuth = () => {
   firebase
