@@ -44,7 +44,7 @@ const AuthIsLoaded = ({ children }) => {
     if (!profileLoaded) return;
 
     getProfileData()(firebase, firestore, dispatch);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileLoaded]);
 
   if (!profileLoaded) {
