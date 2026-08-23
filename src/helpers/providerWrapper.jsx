@@ -3,7 +3,7 @@ import { Router } from "react-router";
 import { Provider } from "react-redux";
 import store, { rrfProps } from "../store";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
-import { ThemeProvider } from "@mui/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./themes";
 
 const ProviderWrapper = ({ children }) => (

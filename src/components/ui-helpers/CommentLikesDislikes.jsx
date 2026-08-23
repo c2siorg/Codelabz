@@ -2,12 +2,38 @@ import React, { useState, useEffect } from "react";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { ThumbUp, ThumbDown } from "@mui/icons-material";
 import firebase from "../../config/index";
+import { createNotification } from "../../store/actions/notificationActions";
+
+/**
+ * Notifies a comment's author that their comment was liked.
+ * Extracted so it can be exercised directly outside the component in tests.
+ */
+export const notifyCommentLike = async (
+  db,
+  { comment_id, likerUid, likerName }
+) => {
+  const commentDoc = await db.collection("cl_comments").doc(comment_id).get();
+  const authorUid = commentDoc.exists ? commentDoc.get("userId") : null;
+  if (!authorUid) return;
+  await createNotification(db, {
+    recipient_uid: authorUid,
+    sender_uid: likerUid,
+    type: "comment_like",
+    content: `${likerName || "Someone"} liked your comment`,
+    username: likerName || "Someone",
+    tutorial_id: commentDoc.get("tutorial_id") || null
+  });
+};
 
 const CommentLikesDislikes = ({ comment_id }) => {
   const [userChoice, setUserChoice] = useState(null);
   const [upVotes, setUpVotes] = useState(0);
   const [downVotes, setDownVotes] = useState(0);
   const db = firebase.firestore();
+  // createNotification expects the same shape react-redux-firebase's
+  // firestore instance exposes; the raw compat instance needs FieldValue
+  // attached manually since it's a namespace-level static, not an instance prop.
+  db.FieldValue = firebase.firestore.FieldValue;
 
   useEffect(() => {
     const userId = firebase.auth().currentUser?.uid;
@@ -88,6 +114,15 @@ const CommentLikesDislikes = ({ comment_id }) => {
           { uid: userId, comment_id, value },
           { merge: true }
         );
+
+        if (newChoice === "like") {
+          const liker = firebase.auth().currentUser;
+          await notifyCommentLike(db, {
+            comment_id,
+            likerUid: userId,
+            likerName: liker?.displayName
+          });
+        }
       } else {
         await userChoiceRef.delete();
       }

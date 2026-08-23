@@ -11,9 +11,9 @@ import React from "react";
 import { useCallback } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useFirebase } from "react-redux-firebase";
+import { deleteOrganization, getProfileData } from "../../../store/actions";
+import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useHistory } from "react-router-dom";
-import { deleteOrganization } from "../../../store/actions/orgActions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,6 +35,7 @@ function OrgDeleteModal() {
   const history = useHistory("/");
   const firebase = useFirebase();
   const dispatch = useDispatch();
+  const firestore = useFirestore();
 
   const [deleteOrgInput, setDeleteOrgInput] = React.useState("");
 
@@ -51,9 +52,14 @@ function OrgDeleteModal() {
   );
 
   const deleteOrganizationHandler = useCallback(async () => {
-    await deleteOrganization(CurrentOrg.org_handle)(firebase, dispatch);
-    history.push("/");
-  }, [CurrentOrg.org_handle, dispatch, firebase, history]);
+    try {
+      await deleteOrganization(CurrentOrg.org_handle)(firebase, dispatch);
+      await getProfileData()(firebase, firestore, dispatch);
+      history.push("/");
+    } catch (e) {
+      console.log(e);
+    }
+  }, [CurrentOrg.org_handle, dispatch, firebase, firestore, history]);
 
   return (
     <React.Fragment>

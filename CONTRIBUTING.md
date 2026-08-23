@@ -4,7 +4,8 @@
 - [User Guide](#user-guide)
   - [Prerequisites](#prerequisites)
   - [Project Setup](#project-setup)
-    - [Using Docker-Compose](#using-docker-compose)
+    - [Option A : Docker (recommended)](#option-a--docker-recommended)
+    - [Option B : Manual setup](#option-b--manual-setup)
   - [Firebase Setup](#firebase-setup)
     - [Run Firebase Emulator](#run-firebase-emulator)
   - [Run the Project](#run-the-project)
@@ -15,39 +16,55 @@
 
 ## Prerequisites
 
-- Node.js version 14.
-- Java JDK version 11 or higher. (For running emulators)
-- make command line tool. ( optional )
-  > 📝**NOTE** : `make` is optional here. You can open `Makefile` and type the associated command manually also, but it is recommended to use `make` so you don't need to run multiple commands.
+**Docker setup (recommended):**
+- [Docker](https://docs.docker.com/get-docker/) v20+
+- [Docker Compose](https://docs.docker.com/compose/install/) v2+ (ships with Docker Desktop)
+
+**Manual setup:**
+- Node.js v18+
+- Java JDK v11+ (for Firebase emulators)
 
 ## Project Setup
 
-> 📝**NOTE**: Make sure that you are using version 14 of node.
+1. Fork the repo and clone it:
+   ```bash
+   git clone https://github.com/Codelabz.git
+   cd Codelabz
+   ```
 
-> ⚡**Tip**: You can use nvm (node version manager) tool to install multiple node versions and can switch between them easily.
+### Option A : Docker (recommended)
 
-1. Fork the repo as your own copy.
-2. Click on `Code` button and then copy HTTPs link. ( it will look like this `https://github.com/<YOUR_USERNAME>/Codelabz.git`)
-3. Clone the repo by running `git clone https://github.com/<YOUR_USERNAME>/Codelabz.git`
-4. Go to the folder `cd Codelabz`.
-5. Run `npm install` or `make install`( this will install all the dependencies in your project)
-6. Create a `.env` file in root of directory.
-7. Setup firebase and get your own set of keys. ( follow steps in [Firebase Setup](#firebase-setup) section to setup firebase )
-8. Copy all the key fields from `.env.sample` and place your own set of values there.
-9. Run `npm run dev`.
-10. Visit [http://127.0.0.1:5173/](http://127.0.0.1:5173/) in your preferred browser.
+No Node.js, Java, or Firebase CLI required on your machine.
 
-> 📝**NOTE** : Above steps are enough for you to get started with the Codelabz app. If you want to access the database you need to start the emulators.For setup husky follow [Husky Setup](#husky-setup)
-
-### Using Docker-Compose
-
-You can also use docker-compose to setup your project. Simply create your `.env` file and run
-
-```
-docker-compose up
+```bash
+cp .env.sample .env
+docker compose up --build
 ```
 
-This will setup your project along with firebase emulator in a docker environment.
+- App: http://localhost:5173
+- Emulator UI: http://localhost:4000
+
+The demo values in `.env.sample` work out of the box no Firebase credentials needed. See [DOCKER.md](./DOCKER.md) for full details.
+
+### Option B : Manual setup
+
+> 📝**NOTE**: Make sure you are using Node.js v18+.
+
+1. Install dependencies:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+2. Create a `.env` file:
+   ```bash
+   cp .env.sample .env
+   ```
+3. Fill in your Firebase credentials in `.env` (see [Firebase Setup](#firebase-setup)).
+4. Start the Firebase emulators (see [Run Firebase Emulator](#run-firebase-emulator)).
+5. Run the app:
+   ```bash
+   npm run dev
+   ```
+6. Visit http://localhost:5173
 
 ---
 
@@ -89,64 +106,39 @@ You should fill in these values in their relevant fields in the `.env` file.
 
 ### Firebase Emulator Setup
 
-1. Refer this site [https://firebase.google.com/docs/emulator-suite/install_and_configure]
-2. Make sure you have the correct jdk version installed
-3. Make sure you are in the parent directory
-4. Now lets connect your local firebase to cloub by running command (`firebase login`)
-5. Then authenticate your firebase using browser and set the selected web app for codelabz
-6. Then run the command (`firebase init`)
-7. Select all the emulator necessitites by pressing a or selecting them manually and pressing space
-8. Answer the commands
-9. Lets set up your credentials of test data
-10. Run your firebase emulator by running the following command.
+If you're using the Docker setup, the emulators start automatically, no manual setup needed.
 
-```shell
-make emulator
+For manual setup:
 
-```
+1. Install the Firebase CLI: `npm install -g firebase-tools`
+2. Log in: `firebase login`
+3. Start the emulators with testdata:
+   ```bash
+   firebase emulators:start --import=testdata --project demo-codelabz
+   ```
+4. Or use the Makefile shortcut: `make emulator-import`
 
-11. If make command isn't installed then run command
-
-```shell
-firebase emulators:start --import=testdata
-
-```
-
-12. If you want to start without any testdata , use the following command
-
-```shell
-make emulator
-
-```
-
-14.If make command isn't installed then run
-
-```shell
- firebase emulator:start
-```
-
-You will observe 3 terminals opening
+See [TESTDATA.md](./TESTDATA.md) for details on the seed data.
 
 ### Run Firebase Emulator
 
-Run your firebase emulator by running the following command.
+```bash
+# With testdata (recommended)
+firebase emulators:start --import=testdata --project demo-codelabz
 
-```shell
-make emulator-import
+# Without testdata
+firebase emulators:start --project demo-codelabz
+
+# Export current emulator state
+firebase emulators:export testdata
 ```
 
-This will run the emulator with the `testdata`. Check out [TESTDATA.md](./TESTDATA.md) for more info.
+Or using make:
 
-if you don't want to import testdata, run
-
-```
-make emulator
-```
-
-If you want to export the emulator, run
-
-```
-make emulator-export
+```bash
+make emulator-import   # start with testdata
+make emulator          # start without testdata
+make emulator-export   # export current state
 ```
 
 ---

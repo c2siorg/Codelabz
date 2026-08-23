@@ -1,19 +1,35 @@
 # Table of Content 📑
 
 1. [CodeLabz](#codelabz)
-2. [Deployment](#deployment)
-3. [Community](#community)
-4. [Contribute](#contribute)
-5. [FAQs (Frequently Asked Questions)](#faqs)
+2. [Quickstart](#quickstart)
+3. [Deployment](#deployment)
+4. [Community](#community)
+5. [Contribute](#contribute)
+6. [FAQs (Frequently Asked Questions)](#faqs)
 
 # CodeLabz
 
 **CodeLabz** is a platform where the users can engage with online tutorials and the organizations can create tutorials for the users. The platform will be developed using ReactJS frontend library and the backend will be developed using the Google Cloud Firestore and Google Firebase Real-Time database.
 
+# Quickstart
+
+The fastest way to run Codelabz locally no Node.js, Java, or Firebase account required:
+
+```bash
+git clone https://github.com/Codelabz.git
+cd Codelabz
+cp .env.sample .env
+docker compose up --build
+```
+
+- App → http://localhost:5173
+- Emulator UI → http://localhost:4000
+
+See [DOCKER.md](./DOCKER.md) for full details and [CONTRIBUTING.md](./CONTRIBUTING.md) for the manual setup path.
+
 # Deployment
 
-> ⚠️ **Note:** The live deployment is currently unavailable (DNS error).
-> Please set up the app locally using the [Contributing Guide](./CONTRIBUTING.md).
+You can see the app live at [https://dev.codelabz.io/](https://dev.codelabz.io/)
 
 # Community
 
@@ -43,7 +59,9 @@ No, you don't need to purchase Blaze plan to run the app. You need to purchase i
 
 ### Answer -
 
-First of all make sure that your are using version 14 of node. If the problem still persists try `npm install --legacy-peer-deps`.
+Make sure you are using Node.js v18+. If the problem persists try `npm install --legacy-peer-deps`.
+
+> 💡 **Tip**: Use the Docker setup to avoid Node version issues entirely `docker compose up --build` handles everything.
 
 <hr/>
 
@@ -53,17 +71,16 @@ First of all make sure that your are using version 14 of node. If the problem st
 
 ### Solution :-
 
-This problem generally arises when you have not setuped/started the Firebase emulators.
+This happens when the Firebase emulators are not running.
 
-1. [Setup firebase emulator](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#firebase-setup).
-2. [Start the Emulators](https://github.com/scorelab/Codelabz/blob/master/CONTRIBUTING.md#run-firebase-emulator)
-3. Run the app using `npm run dev`.
+**If using Docker (recommended):** make sure you started the stack with `docker compose up --build`. The emulators start automatically.
 
-> 📝**NOTE** : Remember to start the emulators before running the app.
+**If running manually:** start the emulators before the app:
 
-- To start emulators - `firebase emulators:start --import=firebase.json --project <your-project-id>`. <br/>
-- In some case all the emulator will not start. So you can execute a separate command for a particular emulator<br/>
-For example if auth emulator is not starting you can use this command - <br/> `firebase emulators:start --import=firebase.json --project <your-project-id> --only auth`.
+```bash
+firebase emulators:start --import=testdata --project demo-codelabz
+npm run dev
+```
 <hr/>
 
 ### 4. I am creating new account and it says that confirmation mail is sent to my email but I didn't got any mail.

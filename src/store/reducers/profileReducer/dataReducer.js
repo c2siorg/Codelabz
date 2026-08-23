@@ -3,7 +3,11 @@ import * as actions from "../../actions/actionTypes";
 const initialState = {
   isLoaded: true,
   isEmpty: true,
-  error: null
+  error: null,
+  // Consumers call .find/.map/.includes on this before any profile action has
+  // dispatched, so it has to be an array from the very first render rather
+  // than appearing only once GET_PROFILE_DATA_SUCCESS/END lands.
+  organizations: []
 };
 
 const ProfileDataReducer = (state = initialState, { type, payload }) => {
@@ -40,7 +44,8 @@ const ProfileDataReducer = (state = initialState, { type, payload }) => {
       return {
         ...state,
         isLoaded: true,
-        isEmpty: true
+        isEmpty: true,
+        organizations: []
       };
 
     default:

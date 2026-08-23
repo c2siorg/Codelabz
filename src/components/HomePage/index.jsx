@@ -61,7 +61,6 @@ function HomePage({ background = "white", textColor = "black" }) {
       link: "https://dev.codelabz.io/"
     }
   ]);
-  let tutorialIdArray;
   const windowSize = useWindowSize();
   const [openMenu, setOpen] = useState(false);
   const toggleSlider = () => {
@@ -117,8 +116,9 @@ function HomePage({ background = "white", textColor = "black" }) {
   const profileData = useSelector(({ firebase: { profile } }) => profile);
 
   useEffect(() => {
+    if (!profileData.uid) return; // wait until auth has settled
     const getFeed = async () => {
-      tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
+      const tutorialIdArray = await getTutorialFeedIdArray(profileData.uid)(
         firebase,
         firestore,
         dispatch
@@ -126,7 +126,7 @@ function HomePage({ background = "white", textColor = "black" }) {
       getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
     };
     getFeed();
-  }, []);
+  }, [profileData.uid]); // re-fetch when user changes, not on every render
 
   useEffect(() => {
     setTutorials(tutorialFeedArray);
@@ -173,7 +173,13 @@ function HomePage({ background = "white", textColor = "black" }) {
   };
 
   const fetchNewTutorials = async () => {
-    await getTutorialFeedData(tutorialIdArray)(firebase, firestore, dispatch);
+    if (!profileData.uid) return;
+    const ids = await getTutorialFeedIdArray(profileData.uid)(
+      firebase,
+      firestore,
+      dispatch
+    );
+    await getTutorialFeedData(ids)(firebase, firestore, dispatch);
   };
 
   const handleTabChange = (event, newValue) => {
