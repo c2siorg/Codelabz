@@ -1,6 +1,14 @@
 {
   "indexes": [
     {
+      "collectionGroup": "org_role_audit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "org_handle", "order": "ASCENDING" },
+        { "fieldPath": "timestamp", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "tutorials",
       "queryScope": "COLLECTION",
       "fields": [

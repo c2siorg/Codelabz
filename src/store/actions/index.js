@@ -33,6 +33,7 @@ export {
   subscribeOrg,
   unPublishOrganization,
   unSubscribeOrg,
+  updateOrgUserPermissions,
   uploadOrgProfileImage
 } from "./orgActions";
 export {

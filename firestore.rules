@@ -1,8 +1,212 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getOrgPermission(org_handle) {
+      return get(/databases/$(database)/documents/org_users/$(org_handle + "_" + request.auth.uid)).data.permissions[0];
+    }
+
+    function hasOrgPermission(org_handle, minLevel) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/org_users/$(org_handle + "_" + request.auth.uid))
+        && getOrgPermission(org_handle) >= minLevel;
+    }
+
+    function isOrgMember(org_handle) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/org_users/$(org_handle + "_" + request.auth.uid));
+    }
+
+    function isPlatformAdmin() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/cl_user/$(request.auth.uid)).data.get('is_platform_admin', false) == true;
+    }
+
+    function isValidRole(role) {
+      return role is int && role >= 0 && role <= 3;
+    }
+
+    function isValidOrgUserDocument(data, memberDoc) {
+      return data.keys().hasOnly(['uid', 'org_handle', 'permissions', 'updated_by'])
+        && data.uid is string
+        && data.org_handle is string
+        && data.permissions is list
+        && data.permissions.size() == 1
+        && isValidRole(data.permissions[0])
+        && memberDoc == data.org_handle + "_" + data.uid;
+    }
+
+    /**
+     * Every client write must stamp its own author. The value cannot be forged
+     * because anything other than the caller's own uid is rejected here, which
+     * is what lets the audit Cloud Function trust it.
+     *
+     * This exists because context.auth is never populated on Firestore
+     * triggers -- only on Realtime Database triggers and callable functions --
+     * so the function has no other way to learn who made the change.
+     */
+    function stampsActor(data) {
+      return data.updated_by == request.auth.uid;
+    }
+
+    /**
+     * Nobody may act on a member at or above their own level. This is what
+     * stops an admin from demoting/removing an owner, and stops one owner
+     * from staging a coup against another.
+     */
+    function canActOnTarget(org_handle, targetRole) {
+      return hasOrgPermission(org_handle, 2)
+        && targetRole < getOrgPermission(org_handle);
+    }
+
+    /**
+     * Admins (2) may only hand out roles strictly below their own, so they can
+     * never mint an owner. Owners (3) may also grant ownership, which is what
+     * makes ownership transfer possible -- without this the owner role would be
+     * unreachable for everyone except the org founder.
+     */
+    function canAssignRole(org_handle, newRole) {
+      return hasOrgPermission(org_handle, 2)
+        && (newRole < getOrgPermission(org_handle) || getOrgPermission(org_handle) == 3);
+    }
+
+    match /cl_org_general/{org_handle} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if hasOrgPermission(org_handle, 2) || isPlatformAdmin();
+      allow delete: if hasOrgPermission(org_handle, 3) || isPlatformAdmin();
+    }
+
+    match /org_users/{memberDoc} {
+      allow read: if isAuthenticated();
+
+      // The founder's own owner record is written by the createOrganization
+      // Cloud Function via the Admin SDK, which bypasses these rules. A client
+      // can therefore never bootstrap itself into an org.
+      allow create: if isAuthenticated()
+        && isValidOrgUserDocument(request.resource.data, memberDoc)
+        && stampsActor(request.resource.data)
+        && canAssignRole(request.resource.data.org_handle, request.resource.data.permissions[0]);
+
+      allow update: if isAuthenticated()
+        && isValidOrgUserDocument(resource.data, memberDoc)
+        && isValidOrgUserDocument(request.resource.data, memberDoc)
+        && stampsActor(request.resource.data)
+        && resource.data.org_handle == request.resource.data.org_handle
+        && resource.data.uid == request.resource.data.uid
+        && canActOnTarget(resource.data.org_handle, resource.data.permissions[0])
+        && canAssignRole(resource.data.org_handle, request.resource.data.permissions[0]);
+
+      // Members may leave on their own, but an owner may not -- otherwise the
+      // last owner could walk out and leave the org permanently unmanageable
+      // (org deletion requires level 3, and admins cannot promote anyone to it).
+      // To step down, an owner promotes a successor to owner first.
+      allow delete: if isAuthenticated()
+        && isValidOrgUserDocument(resource.data, memberDoc)
+        && (
+          canActOnTarget(resource.data.org_handle, resource.data.permissions[0])
+          || (resource.data.uid == request.auth.uid && resource.data.permissions[0] < 3)
+        );
+    }
+
+    match /cl_user/{userId} {
+      // Public: the homepage, tutorial cards and profile pages are reachable
+      // without signing in and render author names and avatars from here.
+      allow read: if true;
+
+      // Create and update are kept separate on purpose: on create `resource` is
+      // null, so calling diff() against it raises a null error and denies the
+      // write -- which would block profile creation at signup.
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && !('is_platform_admin' in request.resource.data);
+
+      allow update: if isAuthenticated()
+        && request.auth.uid == userId
+        && !('is_platform_admin' in request.resource.data.diff(resource.data).affectedKeys());
+
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    match /org_role_audit/{auditDoc} {
+      allow read: if isAuthenticated()
+        && (isPlatformAdmin()
+            || exists(/databases/$(database)/documents/org_users/$(resource.data.org_handle + "_" + request.auth.uid)));
+
+      // Entries are written exclusively by the syncOrgUserWrite Cloud Function
+      // through the Admin SDK, which bypasses these rules. Denying every client
+      // write is what makes the trail trustworthy: a member cannot forge an
+      // actor, a target, or a timestamp, and cannot erase their own history.
+      allow create, update, delete: if false;
+    }
+
+    match /tutorials/{tutorialId} {
+      // Published tutorials are the public face of the site; the feed on / is
+      // served to signed-out visitors. Drafts stay private: an anonymous read
+      // is only allowed when it is provably constrained to published rows,
+      // which every public query already is.
+      allow read: if isAuthenticated() || resource.data.isPublished == true;
+      allow write: if isAuthenticated();
+
+      /**
+       * A tutorial's body lives in this subcollection, one document per step.
+       * The catch-all at the bottom of this file only matches a two-segment
+       * path, so without an explicit rule here nothing reaches these documents
+       * and the editor cannot load or save a tutorial at all.
+       */
+      match /steps/{stepId} {
+        allow read, write: if isAuthenticated();
+      }
+    }
+
+    match /cl_comments/{commentId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // One document per (tutorial, user) vote. Read is public because the
+    // like counter renders on the tutorial cards on the signed-out homepage.
+    match /tutorial_likes/{likeDoc} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Comment votes only ever render on the tutorial page, which is behind
+    // auth, so unlike tutorial_likes these need no public read.
+    match /comment_likes/{likeDoc} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /org_subscribers/{subDoc} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /tag_frequencies/{tagId} {
+      // Drives the public "Popular Tags" panel.
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /user_followers/{followDoc} {
+      // Follower counts render on public profiles, and the signed-out homepage
+      // mounts the "Who to Follow" card before auth resolves.
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    match /testConnection/{docId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /{collection}/{docId} {
+      allow read, write: if false;
     }
   }
 }

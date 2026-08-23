@@ -2,6 +2,7 @@ import _ from "lodash";
 import Elasticlunr from "../../helpers/elasticlunr";
 import * as actions from "./actionTypes";
 import { checkOrgHandleExists } from "./authActions";
+import { hasPermission, getPermissionLevel, PERMISSION_LEVELS } from "../../helpers/rbac";
 
 const elasticlunr = new Elasticlunr("handle", "handle", "name");
 
@@ -44,7 +45,7 @@ export const getOrgUserData = org_handle => async (firestore, dispatch) => {
 
 // adds a user to organization's users list with a set of permissions
 export const addOrgUser =
-  ({ org_handle, handle, permissions }) =>
+  ({ org_handle, handle, permissions, actor_uid }) =>
   async (firestore, dispatch) => {
     try {
       dispatch({ type: actions.ADD_ORG_USER_START });
@@ -60,7 +61,10 @@ export const addOrgUser =
           .set({
             uid: uid,
             org_handle: org_handle,
-            permissions: permissions
+            permissions: permissions,
+            // rules reject any value but the caller's own uid, which is what
+            // makes this trustworthy as the audit trail's actor
+            updated_by: actor_uid
           });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
@@ -89,10 +93,14 @@ export const removeOrgUser =
         .get();
       if (userDoc.docs.length === 1) {
         const uid = userDoc.docs[0].get("uid");
-        await firestore
-          .collection("org_users")
-          .doc(`${org_handle}_${uid}`)
-          .delete();
+        const docRef = firestore.collection("org_users").doc(`${org_handle}_${uid}`);
+
+        // Only the membership record is removed here. Stripping the handle from
+        // the removed user's cl_user.organizations is done by the
+        // syncOrgUserWrite Cloud Function -- a client may only write its own
+        // cl_user document, so doing it here would be denied and leave a
+        // dangling org handle on the removed member.
+        await docRef.delete();
 
         await getOrgUserData(org_handle)(firestore, dispatch);
         dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
@@ -139,7 +147,7 @@ export const getOrgBasicData = org_handle => async firebase => {
       permissions: user_permissions
     };
   } catch (e) {
-    console.log(e);
+    console.error(`[getOrgBasicData] error for ${org_handle}:`, e.message);
     return null;
   }
 };
@@ -235,8 +243,24 @@ export const getOrgData =
           .collection("cl_org_general")
           .doc(org_handle)
           .get();
-        const isPublished =
-          organizations.includes(org_handle) || doc.get("org_published");
+
+        const userOrgs = Array.isArray(organizations) ? organizations : [];
+        const isOrgPublished = doc.get("org_published");
+
+        let isMember = userOrgs.includes(org_handle);
+
+        if (!isMember && !isOrgPublished) {
+          const auth = firebase.auth().currentUser;
+          if (auth) {
+            const memberDoc = await firestore
+              .collection("org_users")
+              .doc(`${org_handle}_${auth.uid}`)
+              .get();
+            isMember = memberDoc.exists;
+          }
+        }
+
+        const isPublished = isOrgPublished || isMember;
 
         if (isPublished) {
           dispatch({
@@ -257,7 +281,7 @@ export const getOrgData =
         dispatch({ type: actions.GET_ORG_DATA_SUCCESS, payload: false });
       }
     } catch (e) {
-      console.log(e);
+      console.error("getOrgData error:", e.message);
       dispatch({ type: actions.GET_ORG_DATA_FAIL, payload: e.message });
     }
   };
@@ -342,7 +366,6 @@ export const unSubscribeOrg =
   };
 export const removeFollower =
   (val, people, handle, orgFollowed, profileId) => firestore => {
-    console.log("test");
     try {
       var filteredFollowers = people.filter(function (value) {
         return value !== val;
@@ -364,9 +387,11 @@ export const removeFollower =
 export const addFollower =
   (value, people, handle, orgFollowed, profileId) => firestore => {
     try {
+      // already a follower, nothing to do
       if (people && people.includes(value)) {
-        console.log("already followed");
-      } else if (people) {
+        return;
+      }
+      if (people) {
         const arr = [...people];
         arr.push(value);
         firestore.collection("cl_org_general").doc(handle).update({
@@ -404,25 +429,32 @@ export const deleteOrganization =
     try {
       dispatch({ type: actions.DELETE_ORG_START });
 
-      const auth = firebase.auth().currentUser;
       const db = firebase.firestore();
+      const batch = db.batch();
 
+      // every membership row belonging to this org
       const orgUsersSnap = await db
         .collection("org_users")
         .where("org_handle", "==", org_handle)
         .get();
 
-      const batch = db.batch();
-
-      orgUsersSnap.docs.forEach(doc => {
-        batch.delete(doc.ref);
+      // remove org from each member's orgs, not just the owner's
+      const memberUpdates = orgUsersSnap.docs.map(async memberDoc => {
+        batch.delete(memberDoc.ref);
+        const memberUid = memberDoc.data().uid;
+        await db
+          .collection("cl_user")
+          .doc(memberUid)
+          .update({
+            organizations: firebase.firestore.FieldValue.arrayRemove(org_handle)
+          });
       });
+      await Promise.all(memberUpdates);
 
-      batch.update(db.collection("cl_user").doc(auth.uid), {
-        organizations: firebase.firestore.FieldValue.arrayRemove(org_handle)
-      });
-
-      batch.delete(db.collection("cl_org_general").doc(org_handle));
+      // remove org from the organization collection last, so a partial
+      // failure above does not leave the memberships orphaned
+      const orgRef = db.collection("cl_org_general").doc(org_handle);
+      batch.delete(orgRef);
 
       await batch.commit();
 
@@ -433,5 +465,60 @@ export const deleteOrganization =
     } catch (e) {
       dispatch({ type: actions.DELETE_ORG_FAIL, payload: e.message });
       throw e;
+    }
+  };
+
+export const updateOrgUserPermissions =
+  ({ org_handle, handle, newPermissions, actorPermissions, actor_uid }) =>
+  async (firestore, dispatch) => {
+    try {
+      dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_START });
+
+      if (!hasPermission(actorPermissions, PERMISSION_LEVELS.ADMIN)) {
+        dispatch({
+          type: actions.UPDATE_ORG_USER_PERMISSIONS_FAIL,
+          payload: "Insufficient permissions to change roles"
+        });
+        return;
+      }
+      // Mirrors canAssignRole() in firestore.rules: an admin may only hand out
+      // roles below their own, while an owner may also grant ownership so that
+      // an org can transfer or share it. The rules remain the real enforcement;
+      // this only keeps the UI from firing a write that would be rejected.
+      const actorLevel = getPermissionLevel(actorPermissions);
+      const canGrant =
+        newPermissions[0] < actorLevel || actorLevel === PERMISSION_LEVELS.OWNER;
+      if (!canGrant) {
+        dispatch({
+          type: actions.UPDATE_ORG_USER_PERMISSIONS_FAIL,
+          payload: "Cannot assign a role equal to or higher than your own"
+        });
+        return;
+      }
+
+      const userDoc = await firestore
+        .collection("cl_user")
+        .where("handle", "==", handle)
+        .get();
+      if (userDoc.docs.length !== 1) {
+        dispatch({
+          type: actions.UPDATE_ORG_USER_PERMISSIONS_FAIL,
+          payload: `User [${handle}] not found`
+        });
+        return;
+      }
+      const uid = userDoc.docs[0].get("uid");
+
+      const docRef = firestore.collection("org_users").doc(`${org_handle}_${uid}`);
+
+      await docRef.update({
+        permissions: newPermissions,
+        updated_by: actor_uid
+      });
+
+      await getOrgUserData(org_handle)(firestore, dispatch);
+      dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_SUCCESS });
+    } catch (e) {
+      dispatch({ type: actions.UPDATE_ORG_USER_PERMISSIONS_FAIL, payload: e.message });
     }
   };
