@@ -28,13 +28,15 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 if (import.meta.env.VITE_APP_FIREBASE_USE_EMULATOR === "true") {
+  const host = import.meta.env.VITE_APP_EMULATOR_HOST || "localhost";
   console.log("Using emulator");
-  firebase.firestore().useEmulator("localhost", 8080);
+  firebase.firestore().useEmulator(host, 8080);
   firebase
     .auth()
-    .useEmulator("http://localhost:9099", { disableWarnings: true });
-  firebase.database().useEmulator("localhost", 9000);
-  firebase.functions().useEmulator("localhost", 5001);
+    .useEmulator(`http://${host}:9099`, { disableWarnings: true });
+  firebase.database().useEmulator(host, 9000);
+  firebase.storage().useEmulator(host, 9199);
+  firebase.functions().useEmulator(host, 5001);
   db.settings({ merge: true });
 }
 
