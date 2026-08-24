@@ -248,6 +248,7 @@ const NewTutorial = ({ viewModal, onSidebarClick, viewCallback, active }) => {
                 onOwnerChange(data.value);
               }}
               id="orgSelect"
+              classNamePrefix="orgSelect"
             />
           </Typography>
         </Box>
