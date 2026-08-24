@@ -24,7 +24,7 @@ describe("Editor Test | CodeLabz", () => {
     cy.get("[data-testId=NewTutorialBtn]").click();
     cy.get("[data-testId=tutorialNewModal]").should("exist");
     cy.get("#orgSelect").should("exist").click();
-    cy.get("#react-select-3-listbox").eq(0).click();
+    cy.get(".orgSelect__option").first().click();
     cy.get("[data-testId=newTutorial_title]")
       .should("exist")
       .type("test tutorial");
