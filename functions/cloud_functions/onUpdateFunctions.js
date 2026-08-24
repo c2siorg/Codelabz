@@ -1,10 +1,18 @@
-const { db, admin } = require("../auth");
+const { db } = require("../auth");
+const { FieldValue } = require("firebase-admin/firestore");
 const _ = require("lodash");
 
-exports.addOrgUserHandler = async (change, context) => {
+exports.addOrgUserHandler = async event => {
   try {
-    const newValue = _.omit(change.after.data(), ["createdAt", "updatedAt"]);
-    const previousValue = _.omit(change.before.data(), [
+    if (!event.data) {
+      return console.log("No change associated with the update event");
+    }
+
+    const newValue = _.omit(event.data.after.data(), [
+      "createdAt",
+      "updatedAt"
+    ]);
+    const previousValue = _.omit(event.data.before.data(), [
       "createdAt",
       "updatedAt"
     ]);
@@ -34,24 +42,20 @@ exports.addOrgUserHandler = async (change, context) => {
         .collection("cl_user")
         .doc(addedUser[0])
         .update({
-          organizations: admin.firestore.FieldValue.arrayUnion(
-            context.params.org_handle
-          )
+          organizations: FieldValue.arrayUnion(event.params.org_handle)
         });
       return console.log(
-        `user [${addedUser[0]}] successfully updated. Added [${context.params.org_handle}] to organizations.`
+        `user [${addedUser[0]}] successfully updated. Added [${event.params.org_handle}] to organizations.`
       );
     } else if (removedUser.length > 0) {
       await db
         .collection("cl_user")
         .doc(removedUser[0])
         .update({
-          organizations: admin.firestore.FieldValue.arrayRemove(
-            context.params.org_handle
-          )
+          organizations: FieldValue.arrayRemove(event.params.org_handle)
         });
       return console.log(
-        `user [${removedUser[0]}] successfully updated. Removed [${context.params.org_handle}] from organizations.`
+        `user [${removedUser[0]}] successfully updated. Removed [${event.params.org_handle}] from organizations.`
       );
     } else {
       return console.log(`No new added users or removed users`);
