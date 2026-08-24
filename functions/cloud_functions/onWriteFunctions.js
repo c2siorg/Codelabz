@@ -76,10 +76,14 @@ const actorOf = after => {
  *
  * @type {Promise<void>}
  */
-exports.syncOrgUserWriteHandler = async change => {
+exports.syncOrgUserWriteHandler = async event => {
   try {
-    const before = change.before.exists ? change.before.data() : null;
-    const after = change.after.exists ? change.after.data() : null;
+    if (!event.data) {
+      return console.log("No change associated with the write event");
+    }
+
+    const before = event.data.before.exists ? event.data.before.data() : null;
+    const after = event.data.after.exists ? event.data.after.data() : null;
 
     const record = after || before;
     if (!record || !record.uid || !record.org_handle) {

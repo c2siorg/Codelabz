@@ -60,7 +60,6 @@ exports.syncOrgUserWrite = onDocumentWritten(
   onWriteFunctions.syncOrgUserWriteHandler
 );
 
-
 //++++++++++++++++++++Pub/Sub Functions++++++++++++++++++++++++++++++
 exports.deleteTutorialSteps = onSchedule(
   "every 7 days",
