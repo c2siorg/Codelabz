@@ -1,9 +1,13 @@
 const { db, rtdb, admin } = require("../auth");
 
-exports.registerUserHandleHandler = async change => {
+exports.registerUserHandleHandler = async event => {
   try {
-    const newValue = change.after.get("handle");
-    const previousValue = change.before.get("handle");
+    if (!event.data) {
+      return console.log("No change associated with the write event");
+    }
+
+    const newValue = event.data.after.get("handle");
+    const previousValue = event.data.before.get("handle");
 
     if (
       previousValue === undefined &&
@@ -72,10 +76,14 @@ const actorOf = after => {
  *
  * @type {Promise<void>}
  */
-exports.syncOrgUserWriteHandler = async change => {
+exports.syncOrgUserWriteHandler = async event => {
   try {
-    const before = change.before.exists ? change.before.data() : null;
-    const after = change.after.exists ? change.after.data() : null;
+    if (!event.data) {
+      return console.log("No change associated with the write event");
+    }
+
+    const before = event.data.before.exists ? event.data.before.data() : null;
+    const after = event.data.after.exists ? event.data.after.data() : null;
 
     const record = after || before;
     if (!record || !record.uid || !record.org_handle) {

@@ -20,7 +20,7 @@ import {
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import Spinner from "../../helpers/spinner";
 import AddNewStepModal from "./subComps/AddNewStep";
-import QuillEditor from "../Editor/QuillEditor";
+import TiptapEditor from "../Editor/TiptapEditor";
 import HtmlTextRenderer from "./subComps/HtmlTextRenderer";
 import { Collapse, Button } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -281,7 +281,7 @@ const ViewTutorial = () => {
                           step_time={stepsData[currentStep].time}
                         />
 
-                        <QuillEditor
+                        <TiptapEditor
                           data={stepsData[currentStep].content}
                           tutorial_id={tutorialData.tutorial_id}
                           id={stepsData[currentStep].id}

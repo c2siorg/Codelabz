@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [18]
+        node: [22]
 
     env:
       CI: false
@@ -73,6 +73,12 @@ jobs:
       - name: Install Functions Dependencies
         run: npm install --legacy-peer-deps
         working-directory: functions
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
