@@ -43,7 +43,7 @@ Contributions are always welcome!
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for ways to get started.
 
-Please adhere to this project's [code of conduct](./code_of_conduct.md).
+Please adhere to this project's [code of conduct](./CODE_OF_CONDUCT.md).
 
 # FAQs
 
@@ -59,7 +59,7 @@ No, you don't need to purchase Blaze plan to run the app. You need to purchase i
 
 ### Answer -
 
-Make sure you are using Node.js v18+. If the problem persists try `npm install --legacy-peer-deps`.
+Make sure you are using Node.js v22. If the problem persists try `npm install --legacy-peer-deps`.
 
 > 💡 **Tip**: Use the Docker setup to avoid Node version issues entirely `docker compose up --build` handles everything.
 

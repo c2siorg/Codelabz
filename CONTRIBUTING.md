@@ -21,8 +21,8 @@
 - [Docker Compose](https://docs.docker.com/compose/install/) v2+ (ships with Docker Desktop)
 
 **Manual setup:**
-- Node.js v18+
-- Java JDK v11+ (for Firebase emulators)
+- Node.js v22
+- Java JDK v21+ (for Firebase emulators)
 
 ## Project Setup
 
@@ -48,7 +48,7 @@ The demo values in `.env.sample` work out of the box no Firebase credentials nee
 
 ### Option B : Manual setup
 
-> 📝**NOTE**: Make sure you are using Node.js v18+.
+> 📝**NOTE**: Make sure you are using Node.js v22.
 
 1. Install dependencies:
    ```bash

@@ -119,12 +119,6 @@ docker compose -f docker-compose.prod.yml down
 
 ---
 
-## Known limitations
-
-The Cloud Functions emulator currently fails to load the functions codebase (`Functions codebase could not be analyzed successfully`). This is caused by a pre-existing Node 18/22 version mismatch (`functions/package.json` pins Node 18) combined with `firebase.functions().useEmulator()` being commented out in `src/config/index.js`. This is unrelated to this Docker setup and is being addressed separately. Features that call Cloud Functions directly (e.g. `resendVerificationEmail` in the auth flow) will not work against the local emulator until that fix lands. Auth, Firestore, Realtime Database, and Storage all work correctly.
-
----
-
 ## Troubleshooting
 
 ### Emulator startup failure
@@ -147,14 +141,20 @@ sudo chown -R $USER:$USER testdata/
 
 Run this whenever `git status` or file access shows permission errors on `testdata/`.
 
-### HMR not working
+### HMR not working, or the app is running stale dependencies
 
-Rebuild the app image to refresh `node_modules`:
+Dependencies live in an anonymous Docker volume (`/app/node_modules`) so the `.:/app` bind mount
+doesn't hide the image's install. That volume survives `docker compose build`, `--no-cache`, and
+`up`, none of which touch it. After any change to `package.json` (yours or one pulled in by
+`git pull`), rebuild from scratch:
 
 ```bash
-docker compose build --no-cache app
-docker compose up
+docker compose down -v
+docker compose up --build
 ```
+
+`-v` is the part that matters, it's what actually drops the stale volume. The same applies to
+`Dockerfile.emulators` and `functions/node_modules`.
 
 ### Port already in use
 
