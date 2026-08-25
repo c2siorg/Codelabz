@@ -1,13 +1,14 @@
-const {
+import { before, after, afterEach, describe, test } from "node:test";
+import {
   initializeTestEnvironment,
   assertFails,
   assertSucceeds,
-} = require("@firebase/rules-unit-testing");
-const fs = require("fs");
+} from "@firebase/rules-unit-testing";
+import fs from "node:fs";
 
 let testEnv;
 
-beforeAll(async () => {
+before(async () => {
   testEnv = await initializeTestEnvironment({
     projectId: "codelabz-rules-test",
     firestore: {
@@ -18,7 +19,7 @@ beforeAll(async () => {
   });
 });
 
-afterAll(async () => await testEnv.cleanup());
+after(async () => await testEnv.cleanup());
 afterEach(async () => await testEnv.clearFirestore());
 
 async function seedOrgUser(uid, orgHandle, permission) {
