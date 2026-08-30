@@ -6,6 +6,7 @@ import {
   isUserSubscribed
 } from "./";
 import _ from "lodash";
+import { chunkedArrayContainsAny } from "../../helpers/firestoreQuery";
 
 const tutorials_index = new Elasticlunr(
   "tutorial_id",
@@ -240,20 +241,28 @@ export const updateTagFrequencies = (tags) => async (firebase, firestore) => {
   }
 };
 
-export const getTutorialsByTopTags = (limit = 10) => async (firebase, firestore) => {
-  const tutorialCollectionRef = firestore.collection('tutorials');
-  const tagCollectionRef = firestore.collection('tag_frequencies');
+export const getTutorialsByTopTags =
+  (limit = 10) =>
+  async (firebase, firestore) => {
+    const tagCollectionRef = firestore.collection("tag_frequencies");
 
-  const tagSnapshot = await tagCollectionRef.orderBy('count', 'desc').limit(limit).get();
-  const topTags = tagSnapshot.docs.map(doc => doc.id);
-  // console.log("topTags", topTags);
+    const tagSnapshot = await tagCollectionRef
+      .orderBy("count", "desc")
+      .limit(limit)
+      .get();
+    const topTags = tagSnapshot.docs.map(doc => doc.id);
 
-  // Query tutorials that contain any of the top tags
-  const tutorialSnapshot = await tutorialCollectionRef.where('tut_tags', 'array-contains-any', topTags).get();
-  const tutorials = tutorialSnapshot.docs.map(doc => doc.data());
+    // tag_frequencies is only written when a tutorial is published, so it is
+    // empty on a fresh database and topTags comes back as []. Querying that
+    // directly threw and left the Featured feed permanently blank.
+    const tutorialDocs = await chunkedArrayContainsAny(
+      firestore.collection("tutorials"),
+      "tut_tags",
+      topTags
+    );
 
-  return tutorials;
-};
+    return tutorialDocs.map(doc => doc.data());
+  };
 
 export const checkUserOrOrgHandle = handle => async (firebase, firestore) => {
   const userHandleExists = await checkUserHandleExists(handle)(firebase);
