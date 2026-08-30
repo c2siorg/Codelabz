@@ -33,3 +33,39 @@ export const chunkedIn = async (query, field, values) => {
 
   return snapshots.flatMap(snapshot => snapshot.docs);
 };
+
+/**
+ * Runs an `array-contains-any` query over a list of any length by splitting
+ * it into chunks that fit the limit and querying them in parallel.
+ *
+ * An empty or missing list is treated as "nothing to match" and returns no
+ * documents. Firestore rejects such a filter outright -- and it does so
+ * synchronously, while the query is being built -- so callers that pass a
+ * list straight through from data that has not loaded yet would otherwise
+ * fail before a single read is issued.
+ *
+ * Unlike `chunkedIn`, which matches a single-valued field, a document can
+ * hold values from more than one chunk and would then come back once per
+ * chunk, so the results are de-duplicated by document id.
+ *
+ * @param query a Firestore CollectionReference or Query to filter
+ * @param field the array field to match against
+ * @param values the values to match, of any length
+ * @returns the combined, de-duplicated QueryDocumentSnapshots
+ */
+export const chunkedArrayContainsAny = async (query, field, values) => {
+  if (!Array.isArray(values) || values.length === 0) return [];
+
+  const snapshots = await Promise.all(
+    chunkValues(values).map(chunk =>
+      query.where(field, "array-contains-any", chunk).get()
+    )
+  );
+
+  const docsById = new Map();
+  snapshots.forEach(snapshot =>
+    snapshot.docs.forEach(doc => docsById.set(doc.id, doc))
+  );
+
+  return [...docsById.values()];
+};
