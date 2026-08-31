@@ -51,9 +51,17 @@ export const subscribeToNotifications = uid => (firebase, dispatch) => {
     notificationUnsubscribe = db
       .collection("cl_notifications")
       .where("recipient_uid", "==", uid)
+      // Without an explicit order Firestore falls back to document id, and
+      // the ids here come from auto-generated keys, so limit(50) kept an
+      // arbitrary fifty rather than the fifty most recent. Both writers set
+      // createdAt, so ordering on it cannot drop a notification.
+      .orderBy("createdAt", "desc")
       .limit(50)
       .onSnapshot(
         snapshot => {
+          // A notification that has just been written reads back with a
+          // null createdAt until the server resolves the timestamp, so the
+          // ordering is repeated here to keep those pending writes in place.
           const notifications = snapshot.docs
             .map(doc => ({ notification_id: doc.id, ...doc.data() }))
             .sort((a, b) => {
