@@ -30,6 +30,17 @@ async function seedOrgUser(uid, orgHandle, permission) {
   });
 }
 
+async function seedNotification(recipientUid, content) {
+  await testEnv.withSecurityRulesDisabled(async (ctx) => {
+    await ctx.firestore().collection("cl_notifications").add({
+      recipient_uid: recipientUid,
+      content,
+      isRead: false,
+      createdAt: new Date(),
+    });
+  });
+}
+
 /**
  * Cases where a failing rule hands someone power they should not have.
  */
@@ -322,6 +333,45 @@ describe("real users can still do their job", () => {
     const db = testEnv.authenticatedContext("adminUid").firestore();
     await assertSucceeds(
       db.doc("cl_org_general/org1").update({ org_published: false })
+    );
+  });
+});
+
+/**
+ * Notification rules are evaluated against the query, not against the
+ * documents it would return, so a read has to name its recipient up front.
+ * An unconstrained read of the collection is rejected even when every
+ * document in it happens to belong to the caller.
+ */
+describe("notifications stay private to their recipient", () => {
+  test("reading the whole collection is denied", async () => {
+    await seedNotification("alice", "for alice");
+    const db = testEnv.authenticatedContext("alice").firestore();
+    await assertFails(
+      db.collection("cl_notifications").orderBy("createdAt", "desc").get()
+    );
+  });
+
+  test("a user can read the notifications addressed to them", async () => {
+    await seedNotification("alice", "for alice");
+    const db = testEnv.authenticatedContext("alice").firestore();
+    await assertSucceeds(
+      db
+        .collection("cl_notifications")
+        .where("recipient_uid", "==", "alice")
+        .orderBy("createdAt", "desc")
+        .get()
+    );
+  });
+
+  test("a user cannot read someone else's notifications", async () => {
+    await seedNotification("bob", "for bob");
+    const db = testEnv.authenticatedContext("alice").firestore();
+    await assertFails(
+      db
+        .collection("cl_notifications")
+        .where("recipient_uid", "==", "bob")
+        .get()
     );
   });
 });
