@@ -671,8 +671,20 @@ export const getNotificationData =
   () => async (firebase, firestore, dispatch) => {
     try {
       dispatch({ type: actions.GET_NOTIFICATION_DATA_START });
+
+      const uid = firebase.auth().currentUser?.uid;
+      if (!uid) {
+        dispatch({ type: actions.GET_NOTIFICATION_DATA_SUCCESS, payload: [] });
+        return;
+      }
+
       const notificationsSnapshot = await firestore
         .collection("cl_notifications")
+        // Security rules allow reading a notification only when it is
+        // addressed to the signed-in user, and Firestore checks that against
+        // the query rather than the documents it would return, so reading the
+        // collection without naming the recipient is rejected outright.
+        .where("recipient_uid", "==", uid)
         .orderBy("createdAt", "desc")
         .get();
 
