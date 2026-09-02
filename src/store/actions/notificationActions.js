@@ -22,7 +22,14 @@ export const createNotification = async (
 ) => {
   if (!recipient_uid || recipient_uid === sender_uid) return;
   try {
-    const ref = await firestore.collection("cl_notifications").add({
+    // The id is generated up front and written with the document. Stamping it
+    // in a follow-up update cannot work: rules only let the recipient update a
+    // notification, and the sender is never the recipient here because the
+    // guard above returns early in that case, so that second write was always
+    // rejected and the field never landed.
+    const ref = firestore.collection("cl_notifications").doc();
+    await ref.set({
+      notification_id: ref.id,
       recipient_uid,
       type,
       content,
@@ -32,7 +39,6 @@ export const createNotification = async (
       isRead: false,
       createdAt: firestore.FieldValue.serverTimestamp()
     });
-    await ref.update({ notification_id: ref.id });
   } catch (e) {
     console.error(`createNotification (${type}) error:`, e.message);
   }

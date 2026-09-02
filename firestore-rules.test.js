@@ -325,3 +325,50 @@ describe("real users can still do their job", () => {
     );
   });
 });
+
+/**
+ * A notification is written by its sender but owned by its recipient, and the
+ * rules only let the recipient update one. Anything the sender needs on the
+ * document therefore has to be written when the document is created.
+ */
+describe("a notification carries its id from the moment it is created", () => {
+  const notification = (recipientUid) => ({
+    recipient_uid: recipientUid,
+    type: "comment",
+    content: "alice commented on your tutorial",
+    username: "alice",
+    org: "",
+    tutorial_id: "tut1",
+    isRead: false,
+    createdAt: new Date(),
+  });
+
+  test("the sender cannot stamp the id on in a second write", async () => {
+    const db = testEnv.authenticatedContext("alice").firestore();
+    const ref = await db.collection("cl_notifications").add(notification("bob"));
+    await assertFails(ref.update({ notification_id: ref.id }));
+  });
+
+  test("the sender can create the notification with its id already on it", async () => {
+    const db = testEnv.authenticatedContext("alice").firestore();
+    const ref = db.collection("cl_notifications").doc();
+    await assertSucceeds(
+      ref.set({ ...notification("bob"), notification_id: ref.id })
+    );
+  });
+
+  test("the recipient can still mark their own notification read", async () => {
+    let id;
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      const ref = await ctx
+        .firestore()
+        .collection("cl_notifications")
+        .add(notification("bob"));
+      id = ref.id;
+    });
+    const db = testEnv.authenticatedContext("bob").firestore();
+    await assertSucceeds(
+      db.doc(`cl_notifications/${id}`).update({ isRead: true })
+    );
+  });
+});
