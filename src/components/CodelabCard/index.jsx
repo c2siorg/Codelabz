@@ -47,14 +47,10 @@ const CardComponent = ({
               {logoPath ? (
                 <Grid container>
                   <Grid item className={classes.headerGrid}>
-                    <img
-                      src="/logo.jpeg"
-                      alt="logo"
-                      className={classes.logoImg}
-                    />
+                    <img src="/logo.jpeg" alt="organization logo" className={classes.logoImg} />
                     <img
                       src={require(`../../assets/images/${profilePic}`).default}
-                      alt=""
+                      alt="user profile picture"
                       height="20rem"
                       width="20rem"
                       className={classes.personImg}
@@ -64,7 +60,7 @@ const CardComponent = ({
               ) : (
                 <img
                   src={require(`../../assets/images/${profilePic}`).default}
-                  alt=""
+                  alt="user profile picture"
                   className={classes.avatar}
                 />
               )}
