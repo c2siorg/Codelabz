@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
 import {
-  alpha,
-  styled,
   Card,
-  InputBase,
-  InputLabel,
   TextField,
-  FormControl,
-  Typography,
-  OutlinedInput,
-  Select,
   MenuItem,
   Button,
-  InputAdornment
+  InputAdornment,
+  Box,
+  Typography
 } from "@mui/material";
-import useStyles from "./styles";
 import { useParams } from "react-router-dom";
 import { useFirebase, useFirestore } from "react-redux-firebase";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,97 +28,36 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 
-const Input = styled(InputBase)(({ theme }) => ({
-  "label + &": {
-    marginTop: theme.spacing(3)
-  },
-  "& .MuiInputBase-input": {
-    borderRadius: 4,
-    position: "relative",
-    backgroundColor: theme.palette.mode === "light" ? "#fcfcfb" : "#fff",
-    border: "1px solid #ced4da",
-    fontSize: 16,
-    width: "auto",
-    padding: "10px 12px",
-    transition: theme.transitions.create([
-      "border-color",
-      "background-color",
-      "box-shadow"
-    ]),
-    // Use the system font instead of the default Roboto font.
-    fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"].join(","),
-    "&:focus": {
-      boxShadow: `${alpha(theme.palette.primary.main, 0.25)} 0 0 0 0.2rem`,
-      borderColor: theme.palette.primary.main
-    }
-  }
-}));
-
 const UserForm = () => {
-  const classes = useStyles();
-
   const { handle } = useParams();
   const firestore = useFirestore();
   const firebase = useFirebase();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  const getData = prop => (Boolean(prop) ? prop : "");
   const profileData = useSelector(({ firebase: { profile } }) => profile);
+
+  const getData = (prop) => (Boolean(prop) ? prop : "");
+
   const [name, setName] = useState(getData(profileData.displayName));
   const [nameValidateError, setNameValidateError] = useState(false);
   const [nameValidateErrorMessage, setNameValidateErrorMessage] = useState("");
+
   const [country, setCountry] = useState(getData(profileData.country));
   const [countryValidateError, setCountryValidateError] = useState(false);
+
   const [website, setWebsite] = useState(getData(profileData.website));
   const [websiteValidateError, setWebsiteValidateError] = useState(false);
-  const [websiteValidateErrorMessage, setWebsiteValidateErrorMessage] =
-    useState("");
-  const [description, setDescription] = useState(
-    getData(profileData.description)
-  );
-  const [descriptionValidateError, setDescriptionValidateError] =
-    useState(false);
-  const [descriptionValidateErrorMessage, setDescriptionValidateErrorMessage] =
-    useState("");
+  const [websiteValidateErrorMessage, setWebsiteValidateErrorMessage] = useState("");
+
+  const [description, setDescription] = useState(getData(profileData.description));
+  const [descriptionValidateError, setDescriptionValidateError] = useState(false);
+  const [descriptionValidateErrorMessage, setDescriptionValidateErrorMessage] = useState("");
+
   const [facebook, setFacebook] = useState(getData(profileData.link_facebook));
-  const [facebookValidateError, setFacebookValidateError] = useState(false);
-  const [facebookValidateErrorMessage, setFacebookValidateErrorMessage] =
-    useState("");
   const [twitter, setTwitter] = useState(getData(profileData.link_twitter));
-  const [twitterValidateError, setTwitterValidateError] = useState(false);
-  const [twitterValidateErrorMessage, setTwitterValidateErrorMessage] =
-    useState("");
   const [linkedin, setLinkedin] = useState(getData(profileData.link_linkedin));
-  const [linkedinValidateError, setLinkedinValidateError] = useState(false);
-  const [linkedinValidateErrorMessage, setLinkedinValidateErrorMessage] =
-    useState("");
   const [github, setGithub] = useState(getData(profileData.link_github));
-  const [githubValidateError, setGithubValidateError] = useState(false);
-  const [githubValidateErrorMessage, setGithubValidateErrorMessage] =
-    useState("");
-
-  const children = [];
-  for (let i = 0; i < countryList.length; i++) {
-    children.push(
-      <MenuItem
-        key={countryList[i].code}
-        value={countryList[i].name}
-        data-testId="selectCountryItem"
-      >
-        {countryList[i].name}
-      </MenuItem>
-    );
-  }
-
-  const onChangeName = name => setName(name);
-  const onChangeCountry = country => setCountry(country);
-  const onChangeOrgWebsite = website => setWebsite(website);
-  const onChangeDescription = description => setDescription(description);
-  const onChangeFacebook = facebook => setFacebook(facebook);
-  const onChangeTwitter = twitter => setTwitter(twitter);
-  const onChangeLinkedin = linkedin => setLinkedin(linkedin);
-  const onChangeGithub = github => setGithub(github);
 
   const validated = () => {
     const countryValid = validateCountry(country, setCountryValidateError);
@@ -148,12 +79,7 @@ const UserForm = () => {
       setDescriptionValidateErrorMessage,
       "Please enter a description"
     );
-
-    if (nameValid && countryValid && orgWebsiteValid && descriptionValid) {
-      return true;
-    } else {
-      return false;
-    }
+    return nameValid && countryValid && orgWebsiteValid && descriptionValid;
   };
 
   const onSubmit = () => {
@@ -171,14 +97,7 @@ const UserForm = () => {
     }
   };
 
-  const loadingProps = useSelector(
-    ({
-      profile: {
-        edit: { loading }
-      }
-    }) => loading
-  );
-
+  const loadingProps = useSelector(({ profile: { edit: { loading } } }) => loading);
   useEffect(() => {
     setLoading(loadingProps);
   }, [loadingProps]);
@@ -190,230 +109,163 @@ const UserForm = () => {
     };
   }, [firebase, firestore, dispatch, handle]);
 
+  const countryOptions = countryList.map((c) => (
+    <MenuItem key={c.code} value={c.name} data-testId="selectCountryItem">
+      {c.name}
+    </MenuItem>
+  ));
+
   return (
-    <Card className={classes.root} data-testId="profilePage">
+    <Card
+      sx={{
+        p: 3,
+        borderRadius: 2,
+        boxShadow: 3,
+        maxWidth: 600,
+        mx: "auto",
+        mt: -3,
+        transform: 'translateY(-20px)',
+      }}
+      data-testId="profilePage"
+    >
       <Box
         component="form"
         noValidate
         sx={{
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
+          gap: 3,
         }}
       >
-        <Box>
-          <FormControl
-            variant="standard"
-            style={{ marginRight: 25, marginBottom: 10 }}
-          >
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-              error={nameValidateError}
-              helperText={nameValidateError ? nameValidateErrorMessage : null}
-            >
-              Name
-            </InputLabel>
-            <Input
-              value={name}
-              id="bootstrap-input"
-              className={classes.input}
-              data-testId="name"
-              onChange={event => onChangeName(event.target.value)}
-              helperText={nameValidateError ? nameValidateErrorMessage : null}
-            />
-            <Typography className={classes.errorMessage}>
-              {nameValidateErrorMessage}
-            </Typography>
-          </FormControl>
-          <Box
-            variant="standard"
-            style={{ display: "inline-flex", flexDirection: "column" }}
-          >
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-              error={countryValidateError}
-            >
-              Country of residence
-            </InputLabel>
-            <FormControl
-              data-testId="selectCountry"
-              style={{ marginTop: "3px" }}
-            >
-              <Select
-                value={country}
-                onChange={event => onChangeCountry(event.target.value)}
-                input={<OutlinedInput style={{ height: 40, width: 250 }} />}
-                displayEmpty
-                inputProps={{ "aria-label": "Without label" }}
-              >
-                {children}
-              </Select>
-            </FormControl>
-          </Box>
-        </Box>
-        <Box>
-          <FormControl
-            variant="standard"
-            style={{ marginTop: "15px", marginRight: "25px" }}
-          >
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-            >
-              Website
-            </InputLabel>
-            <Input
-              value={website}
-              id="bootstrap-input"
-              className={classes.input}
-              data-testId="website"
-              onChange={event => onChangeOrgWebsite(event.target.value)}
-            />
-            <Typography className={classes.errorMessage}>
-              {websiteValidateErrorMessage}
-            </Typography>
-          </FormControl>
-          <FormControl variant="standard" style={{ marginTop: "13px" }}>
-            <InputLabel
-              shrink
-              htmlFor="bootstrap-input"
-              style={{ color: "#000", fontSize: "20px" }}
-            >
-              Description
-            </InputLabel>
-            <Input
-              value={description}
-              id="bootstrap-input"
-              className={classes.input}
-              data-testId="description"
-              onChange={event => onChangeDescription(event.target.value)}
-            />
-            <Typography className={classes.errorMessage}>
-              {descriptionValidateErrorMessage}
-            </Typography>
-          </FormControl>
-        </Box>
-        <Box style={{ marginTop: 30 }}>
-          <TextField
-            label="Facebook"
-            variant="outlined"
-            placeholder="username"
-            value={facebook}
-            data-testId="editProfileFacebook"
-            onChange={event => onChangeFacebook(event.target.value)}
-            fullWidth
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <FacebookIcon className={classes.fb}>
-                    <span className="sm-text">Facebook</span>
-                  </FacebookIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    facebook.com/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
-        <Box style={{ marginTop: 15 }}>
-          <TextField
-            label="Twitter"
-            variant="outlined"
-            value={twitter}
-            placeholder="username"
-            data-testId="editProfileTwitter"
-            onChange={event => onChangeTwitter(event.target.value)}
-            fullWidth
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <TwitterIcon className={classes.tw}>
-                    <span className="sm-text">Twitter</span>
-                  </TwitterIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    twitter.com/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
+        <TextField
+          label="Name"
+          variant="outlined"
+          fullWidth
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          error={nameValidateError}
+          helperText={nameValidateError && nameValidateErrorMessage}
+          data-testId="name"
+        />
 
-        <Box style={{ marginTop: 15 }}>
-          <TextField
-            label="LinkedIn"
-            variant="outlined"
-            value={linkedin}
-            data-testId="editProfileLinkedin"
-            placeholder="username"
-            onChange={event => onChangeLinkedin(event.target.value)}
-            fullWidth
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <LinkedInIcon className={classes.li}>
-                    <span className="sm-text">Twitter</span>
-                  </LinkedInIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    linkedin.com/in/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
+        <TextField
+          select
+          label="Country of residence"
+          variant="outlined"
+          fullWidth
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          error={countryValidateError}
+          data-testId="selectCountry"
+        >
+          {countryOptions}
+        </TextField>
 
-        <Box style={{ marginTop: 15 }}>
-          <TextField
-            label="GitHub"
-            variant="outlined"
-            value={github}
-            placeholder="username"
-            onChange={event => onChangeGithub(event.target.value)}
-            fullWidth
-            data-testId="editProfileGithub"
-            autoComplete="handle"
-            style={{ marginBottom: "15px" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start" style={{ padding: "25px 0" }}>
-                  <GitHubIcon className={classes.git}>
-                    <span className="sm-text">Github</span>
-                  </GitHubIcon>
-                  <p style={{ margin: "15px 0px 15px 8px", color: "grey" }}>
-                    github.com/
-                  </p>
-                </InputAdornment>
-              )
-            }}
-          />
-        </Box>
+        <TextField
+          label="Enter Website name"
+          variant="outlined"
+          fullWidth
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          error={websiteValidateError}
+          helperText={websiteValidateError && websiteValidateErrorMessage}
+          data-testId="website"
+        />
+
+        <TextField
+          label="Describe Yourself"
+          variant="outlined"
+          fullWidth
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          error={descriptionValidateError}
+          helperText={descriptionValidateError && descriptionValidateErrorMessage}
+          data-testId="description"
+        />
+
+        <TextField
+          label="Facebook"
+          variant="outlined"
+          placeholder="username"
+          fullWidth
+          value={facebook}
+          onChange={(e) => setFacebook(e.target.value)}
+          data-testId="editProfileFacebook"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" sx={{ pr: 0.5 }}>
+                <FacebookIcon sx={{ color: "#1877F2" }} />
+                <Typography sx={{ ml: 1, color: "grey.800" }}>facebook.com/</Typography>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="Twitter"
+          variant="outlined"
+          placeholder="username"
+          fullWidth
+          value={twitter}
+          onChange={(e) => setTwitter(e.target.value)}
+          data-testId="editProfileTwitter"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" sx={{ pr: 0.5 }}>
+                <TwitterIcon sx={{ color: "#1DA1F2" }} />
+                <Typography sx={{ ml: 1, color: "grey.800" }}>twitter.com/</Typography>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="LinkedIn"
+          variant="outlined"
+          placeholder="username"
+          fullWidth
+          value={linkedin}
+          onChange={(e) => setLinkedin(e.target.value)}
+          data-testId="editProfileLinkedin"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" sx={{ pr: 0.5 }}>
+                <LinkedInIcon sx={{ color: "#0077B5" }} />
+                <Typography sx={{ ml: 1, color: "grey.800" }}>linkedin.com/in/</Typography>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="GitHub"
+          variant="outlined"
+          placeholder="username"
+          fullWidth
+          value={github}
+          onChange={(e) => setGithub(e.target.value)}
+          data-testId="editProfileGithub"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" sx={{ pr: 0.5 }}>
+                <GitHubIcon sx={{ color: "#000000" }} />
+                <Typography sx={{ ml: 1, color: "grey.800" }}>github.com/</Typography>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <Button
+          fullWidth
+          size="small"
+          variant="contained"
+          sx={{ backgroundColor: "SeaGreen", mt: 2 }}
+          data-testId="editProfileSave"
+          onClick={onSubmit}
+        >
+          {loading ? "Saving..." : "Save"}
+        </Button>
       </Box>
-      <Button
-        fullWidth
-        size="small"
-        variant="contained"
-        color="primary"
-        style={{
-          backgroundColor: "SeaGreen",
-          marginTop: 15
-        }}
-        data-testId="editProfileSave"
-        onClick={onSubmit}
-      >
-        {loading ? "Saving..." : "Save"}
-      </Button>
     </Card>
   );
 };
