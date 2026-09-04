@@ -142,7 +142,7 @@ export const removeOrgUser =
   ({ org_handle, handle }) =>
   async (firestore, dispatch) => {
     try {
-      dispatch({ type: actions.ADD_ORG_USER_START });
+      dispatch({ type: actions.REMOVE_ORG_USER_START });
       const userDoc = await firestore
         .collection("cl_user")
         .where("handle", "==", handle)
@@ -167,16 +167,15 @@ export const removeOrgUser =
         });
 
         await getOrgUserData(org_handle)(firestore, dispatch);
-        dispatch({ type: actions.ADD_ORG_USER_SUCCESS });
+        dispatch({ type: actions.REMOVE_ORG_USER_SUCCESS });
       } else {
         dispatch({
-          type: actions.ADD_ORG_USER_FAIL,
+          type: actions.REMOVE_ORG_USER_FAIL,
           payload: `User [${handle}] is not registered with CodeLabz`
         });
       }
     } catch (e) {
-      console.log(e);
-      dispatch({ type: actions.ADD_ORG_USER_FAIL, payload: e.message });
+      dispatch({ type: actions.REMOVE_ORG_USER_FAIL, payload: e.message });
     }
   };
 
