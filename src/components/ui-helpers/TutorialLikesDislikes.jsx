@@ -9,20 +9,19 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
   const [downVotes, setDownVotes] = useState(0);
   const db = firebase.firestore();
 
-  useEffect(() => {
+useEffect(() => {
     const userId = firebase.auth().currentUser?.uid;
 
-    if (!userId) {
-      // User not authenticated
-      return;
-    }
+    if (!userId) return;
 
     const tutorialDocRef = db.collection("tutorials").doc(tutorial_id);
     const userChoiceRef = db
       .collection("tutorial_likes")
       .doc(`${tutorial_id}_${userId}`);
 
-    // Fetch initial data and set up real-time listeners
+    let unsubscribeLikes = null;
+    let unsubscribeDislikes = null;
+
     const fetchData = async () => {
       try {
         const tutorialDoc = await tutorialDocRef.get();
@@ -30,7 +29,6 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
           throw new Error("Tutorial not found");
         }
 
-        // Fetch existing choice of user (if any)
         const userChoiceDoc = await userChoiceRef.get();
         if (userChoiceDoc.exists) {
           const existingChoice = userChoiceDoc.data().value;
@@ -39,8 +37,7 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
           setUserChoice(null);
         }
 
-        // Subscribe to real-time updates for likes and dislikes
-        const unsubscribeLikes = db
+        unsubscribeLikes = db
           .collection("tutorial_likes")
           .where("tut_id", "==", tutorial_id)
           .where("value", "==", 1)
@@ -49,7 +46,7 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
             tutorialDocRef.update({ upVotes: snapshot.size });
           });
 
-        const unsubscribeDislikes = db
+        unsubscribeDislikes = db
           .collection("tutorial_likes")
           .where("tut_id", "==", tutorial_id)
           .where("value", "==", -1)
@@ -58,17 +55,18 @@ const TutorialLikesDislikes = ({ tutorial_id }) => {
             tutorialDocRef.update({ downVotes: snapshot.size });
           });
 
-        // Cleanup function to unsubscribe from listeners when component unmounts
-        return () => {
-          unsubscribeLikes();
-          unsubscribeDislikes();
-        };
       } catch (error) {
         console.error("Error fetching tutorial data:", error);
       }
     };
 
     fetchData();
+
+    // Cleanup — this now actually runs when component unmounts
+    return () => {
+      if (unsubscribeLikes) unsubscribeLikes();
+      if (unsubscribeDislikes) unsubscribeDislikes();
+    };
   }, [tutorial_id, db]);
 
   const handleUserChoice = async (event, newChoice) => {
