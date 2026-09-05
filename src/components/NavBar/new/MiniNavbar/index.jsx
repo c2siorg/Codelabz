@@ -178,8 +178,8 @@ function MiniNavbar() {
                   style={{
                     display: "inline-block",
                     width:
-                      screenSize.dynamicWidth < "959" &&
-                      screenSize.dynamicWidth > "575"
+                      screenSize.dynamicWidth < 959 &&
+                      screenSize.dynamicWidth > 575
                         ? "93.5%"
                         : "88.5%"
                   }}
